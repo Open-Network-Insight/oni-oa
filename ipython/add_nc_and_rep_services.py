@@ -33,12 +33,6 @@ def get_gti_rep(ip,gti_command=''):
         result_dict = json.loads(response_json[0:len(response_json) - 1])
         reputation = result_dict['a'][0]['rep']
         reputation = int(reputation)
-        '''if int(reputation) < 29:
-            reputation = 0
-        elif int(reputation) >= 30 and int(reputation) <= 49:
-            reputation = 1
-        elif int(reputation) > 49:
-            reputation = 3'''
     except Exception, err:
         print err
         reputation = -1
@@ -48,18 +42,10 @@ def get_gti_rep(ip,gti_command=''):
 def get_norse_rep(ip, norse_command=''):
     reputation = -1
     try:
-        response = subprocess.check_output(norse_command.format(norse_api_key, ip, norse_url), shell=True)
+        response = subprocess.check_output(norse_command.format(norse_api_key, ip, NORSE_URL), shell=True)
         # the executed curl command returns an XML as response 
         root_element = ET.fromstring(response)
         reputation = root_element.find("./response/risk_name").text
-        '''if reputation == 'Low':
-            reputation = 0
-        elif reputation == 'Medium':
-            reputation = 1
-        elif reputation == 'High':
-            reputation = 3
-        elif reputation == 'Extreme':
-            reputation = 4 '''
     except:
         #reputation = -1        
         reputation = "Low"
@@ -87,7 +73,7 @@ def main():
     # Assuming the client already has a Norse license
 
     norse_api_key = ''
-    norse_url = 'http://us.api.ipviking.com/api/'
+    NORSE_URL = 'http://us.api.ipviking.com/api/'
     norse_command = 'curl -d apikey={0} -d method=ipview -d ip={1} {2}'
 
     sconnects_path = '/{0}/ipython/user/{1}/'
@@ -99,6 +85,7 @@ def main():
         gti_server = config['gti_server']
         gti_user = config['gti_user']
         gti_password = config['gti_password']
+	gti_ci = config['gti_ci']
     
     if not os.path.isfile('./norseConfig.json'):
         print "Norse Config file not found. the norseConfig.json file should be in the same folder as this script"
@@ -171,9 +158,7 @@ def main():
         lda_bu += 'dns_scores_bu.csv'
         lda_temp += 'dns_scores_temp.csv'
 
-    gti_command = (rest_client_path + ' -s '+ gti_server 
-                  + ' -q \'{"ci":{"cliid":"87d8d1082c2f2f821f438b2359b7a5b4", "prn":"Duxbury", "sdkv":"1.0", "pv":"1.0.0", "pev":1, "rid":1, "affid":"0"},"q":[{"op":"ip","ip":"###IP###"}]}\''
-                  + ' -i '+ gti_user + ' -p \'' + gti_password + '\' -t')
+    gti_command = "{0} -s {1} -q \'{2}\' -i {3} -p \'{4}\' -t".format(rest_client_path, gti_server, gti_ci, gti_user, gti_password)
 
     ip_ranges = []
 
@@ -216,15 +201,14 @@ def main():
 
     if not os.path.isfile(network_context_file):
         print "Network context csv file not found at: " + network_context_file
-        for i, line in enumerate(new_content_lines): 
-            if i == 0:                
-                new_content_lines[0] = line.replace('\n','').replace('\r','') + ',srcIpInternal,destIpInternal\n'                                                        
-            else:
-                new_content_lines[i] = line.replace('\n','').replace('\r','') + ',,\n'
+       	header = new_content_lines[0].strip() + ',srcIpInternal,destIpInternal'
+	lines = map(lambda line: line.strip()+",,",new_content_lines[1:])
+	new_content_lines = [header] + lines                                        
     else:
         print "Adding IP Context..."
         with open(network_context_file, 'rb') as f:
-            for line in f:
+            ip_ranges += map(lambda line: (
+	    for line in f:
                 line_parts = line.split(',')
                 ip_ranges.append([ip_to_int(line_parts[0]), ip_to_int(line_parts[1])])
 

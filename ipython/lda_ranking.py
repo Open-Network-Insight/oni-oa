@@ -5,19 +5,17 @@ import json
 
 def write_new_rows(schema_config, outfile, rows):
     outfile.write(','.join(schema_config['lda_scores_file_columns']) + "\n")
+    rows_to_write = []
                 
     for i, row in enumerate(rows):
-        row = row[0:len(row)-1]
+        row = row.rstrip()
         row_columns = row.split(',')
-        new_row = '0' # new First column ('sev')
-
-        for index in schema_config['column_indexes']:
-            new_row += ',' + row_columns[index]
-
-        new_row += ','+ row_columns[len(row_columns)-1] + ',' + str(i) + '\n'
-
-        outfile.write(new_row)
-
+        
+	new_row = '0,' + ','.join(map(row_columns.__getitem__,schema_config['column_indexes'])) + ','+ row_columns[len(row_columns)-1] + ',' + str(i)
+        rows_to_write.append(new_row)
+	
+    outfile.write('\n'.join(rows_to_write))
+        
 def main():
     ldadate = ''
     sconnects_folder = '/{0}/ipython/user/{1}/'	
@@ -61,7 +59,7 @@ def main():
         print 'INFO: no --flow or --dns options detected. The script will use flow schema by default'
         flow = True
 
-    sconnects_folder = sconnects_folder.format(user,ldadate)
+    sconnects_folder = sconnects_folder.format(user,ldadate)    
     ifile = sconnects_folder + ifile
     scores_f = sconnects_folder + scores_f
 

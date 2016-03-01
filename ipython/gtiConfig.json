@@ -1,5 +1,6 @@
 {
     "gti_server": "<gtiServer>",
     "gti_user": "<gtiuser>",
-    "gti_password": "<gtiPassword>"
+    "gti_password": "<gtiPassword>",
+    "gti_ci": "{\"ci\":{\"cliid\":\"<cliid>\", \"prn\":\"<prn>\", \"sdkv\":\"<sdkv>\", \"pv\":\"<pv>\", \"pev\":<pve>, \"rid\":<rid>, \"affid\":\"<affid>\"},\"q\":[{\"op\":\"ip\",\"ip\":\"###IP###\"}]}"
 }
