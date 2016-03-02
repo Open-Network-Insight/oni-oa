@@ -167,6 +167,7 @@ def main():
     ip_dict = {}
 
     new_content_lines = []
+    temp_lines = []
 
     src_ip_index = 0
     dst_ip_index = 0
@@ -199,171 +200,140 @@ def main():
 
             new_content_lines.append(line)
 
+    header = new_content_lines[0].strip() + ',srcIpInternal,destIpInternal'
+    
     if not os.path.isfile(network_context_file):
         print "Network context csv file not found at: " + network_context_file
-       	header = new_content_lines[0].strip() + ',srcIpInternal,destIpInternal'
-	lines = map(lambda line: line.strip()+",,",new_content_lines[1:])
-	new_content_lines = [header] + lines                                        
+       	temp_lines = map(lambda line: line.strip()+",,",new_content_lines[1:])
+	new_content_lines = [header] + temp_lines                                        
     else:
         print "Adding IP Context..."
         with open(network_context_file, 'rb') as f:
-            ip_ranges += map(lambda line: (
-	    for line in f:
-                line_parts = line.split(',')
-                ip_ranges.append([ip_to_int(line_parts[0]), ip_to_int(line_parts[1])])
+            ip_ranges += map(lambda line: (ip_to_int(line.split(',')[0]),ip_to_int(line.split(',')[1])),f)
+	
+	 #new_content_lines = []        
+        for i, line in enumerate(new_content_lines[1:]): 
+	    line_parts = line.split(',')
+            src_ip = line_parts[src_ip_index]
+            dst_ip = line_parts[dst_ip_index]
+            is_src_ip_internal = check_if_ip_is_internal(src_ip, ip_ranges)
+            is_dst_ip_internal = check_if_ip_is_internal(dst_ip, ip_ranges)
+            if src_ip in ip_dict:
+		ip_dict[src_ip]['isInternal'] = is_src_ip_internal
+            if dst_ip in ip_dict:
+		ip_dict[dst_ip]['isInternal'] = is_dst_ip_internal
 
-        #new_content_lines = []        
-        for i, line in enumerate(new_content_lines): 
-            if i == 0:
-                new_content_lines[0] = line.replace('\n','').replace('\r','') + ',srcIpInternal,destIpInternal\n'                                                        
-            else:                    
-                line_parts = line.split(',')
-                src_ip = line_parts[src_ip_index]
-                dst_ip = line_parts[dst_ip_index]
-                is_src_ip_internal = check_if_ip_is_internal(src_ip, ip_ranges)
-                is_dst_ip_internal = check_if_ip_is_internal(dst_ip, ip_ranges)
-                if src_ip in ip_dict:
-                    ip_dict[src_ip]['isInternal'] = is_src_ip_internal
-                if dst_ip in ip_dict:
-                    ip_dict[dst_ip]['isInternal'] = is_dst_ip_internal
-
-                new_line = line.replace('\n','').replace('\r','')
-                new_line += ',' + str(is_src_ip_internal) + ',' + str(is_dst_ip_internal) + "\n"
-
-                new_content_lines[i] = new_line
+	    temp_lines.append(line.strip() + ',' + str(is_src_ip_internal) + ',' + str(is_dst_ip_internal))
+	
+	new_content_lines = [header] + temp_lines
     
+    temp_lines = []
+    
+    if flow:
+	header = new_content_lines[0].strip() + ',srcGeo,dstGeo,srcDomain,dstDomain'
+    elif dns:
+	header = new_content_lines[0].strip() + ',dnsAGeo,dnsADomain'
+
     if not os.path.isfile(iploc):
         print "IP location file not found at: " + iploc
-
-        for i, line in enumerate(new_content_lines):
-            if i == 0:
-                if flow:
-                    new_content_lines[0] = line.replace('\n','').replace('\r','') + ',srcGeo,dstGeo,srcDomain,dstDomain\n'
-                elif dns:
-                    new_content_lines[0] = line.replace('\n','').replace('\r','') + ',dnsAGeo,dnsADomain\n'
-            else:
-                if flow:
-                    new_content_lines[i] = line.replace('\n', '').replace('\r','') + ',,,,\n'
-                elif dns:
-                    new_content_lines[i] = line.replace('\n', '').replace('\r','') + ',,\n'
+	if flow:
+	    temp_lines = map(lambda line: line.strip() + ",,,,",new_content_lines[1:])
+	elif dns:
+	    temp_lines = map(lambda line: line.strip() + ",,", new_content_lines[1:])
+	new_content_lines = [header] + temp_lines
     else:        
         print 'loading IP location context...'
         iplist = np.loadtxt(iploc,dtype=np.uint32,delimiter=',',usecols={0},
                     converters={0: lambda s: np.uint32(s.replace('"',''))})
         print 'Adding Geo Location context...'
-        for i, line in enumerate(new_content_lines):            
-            if flow:                
-                if i == 0:                
-                    new_content_lines[0] = line.replace('\n','').replace('\r','') + ',srcGeo,dstGeo,srcDomain,dstDomain\n'
-                else:
-                    line_parts = line.split(',')
-                    src_ip = line_parts[src_ip_index]
-                    dst_ip = line_parts[dst_ip_index]
+        for i, line in enumerate(new_content_lines[1:]):            
+            if flow:
+		line_parts = line.split(',')
+                src_ip = line_parts[src_ip_index]
+                dst_ip = line_parts[dst_ip_index]
 
-                    src_geo = ";".join(get_geo_ip(src_ip,iploc, iplist).replace('"','').split(',')[4:6])+ " " + ";".join(get_geo_ip(src_ip, iploc, iplist).replace('"','').split(',')[8:9])
-                    dst_geo = ";".join(get_geo_ip(dst_ip, iploc, iplist).replace('"','').split(',')[4:6]) + " " + ";".join(get_geo_ip(dst_ip, iploc, iplist).replace('"','').split(',')[8:9])
+                src_geo = ";".join(get_geo_ip(src_ip,iploc, iplist).replace('"','').split(',')[4:6])+ " " + ";".join(get_geo_ip(src_ip, iploc, iplist).replace('"','').split(',')[8:9])
+                dst_geo = ";".join(get_geo_ip(dst_ip, iploc, iplist).replace('"','').split(',')[4:6]) + " " + ";".join(get_geo_ip(dst_ip, iploc, iplist).replace('"','').split(',')[8:9])
 
-                    src_domain = get_geo_ip(src_ip, iploc, iplist).replace('"','').split(',')[9:10][0]
-                    dst_domain = get_geo_ip(dst_ip, iploc, iplist).replace('"','').split(',')[9:10][0]
+                src_domain = get_geo_ip(src_ip, iploc, iplist).replace('"','').split(',')[9:10][0]
+                dst_domain = get_geo_ip(dst_ip, iploc, iplist).replace('"','').split(',')[9:10][0]
 
-                    ip_dict[src_ip]['geo'] = src_geo
-                    ip_dict[src_ip]['domain'] = src_domain
+                ip_dict[src_ip]['geo'] = src_geo
+                ip_dict[src_ip]['domain'] = src_domain
 
-                    ip_dict[dst_ip]['geo'] = dst_geo
-                    ip_dict[dst_ip]['domain'] = dst_domain
+                ip_dict[dst_ip]['geo'] = dst_geo
+                ip_dict[dst_ip]['domain'] = dst_domain
 
-                    new_line = line.replace('\n','').replace('\r','')
+                temp_lines.append(line.strip() + ',' + ip_dict[src_ip]['geo'] + ',' + ip_dict[dst_ip]['geo'] + ',' + ip_dict[src_ip]['domain'] + ',' + ip_dict[dst_ip]['domain'])
 
-                    new_line += ',' + ip_dict[src_ip]['geo'] + ',' + ip_dict[dst_ip]['geo'] + ',' + ip_dict[src_ip]['domain'] + ',' + ip_dict[dst_ip]['domain']
+	    elif dns:
+		dns_a_column_index = dns_config['lda_file_schema']['dns_a']             
+                line_parts = line.split(',')                    
+                dns_a_ip = line_parts[dns_a_column_index]      
+                  
+                dns_a_geo = ''
+                dns_a_domain = ''
 
-                    new_content_lines[i] = new_line + '\n'
-            elif dns:
-                dns_a_column_index = dns_config['lda_file_schema']['dns_a']
-                if i == 0:                
-                    new_content_lines[0] = line.replace('\n','').replace('\r','') + ',dnsAGeo,dnsADomain\n'
-                else:
-                    line_parts = line.split(',')                    
-                    dns_a_ip = line_parts[dns_a_column_index]      
+                if dns_a_ip.strip() != '':
+		    dns_a_geo = ";".join(get_geo_ip(dns_a_ip, iploc, iplist).replace('"','').split(',')[4:6])+ " " + ";".join(get_geo_ip(dns_a_ip, iploc, iplist).replace('"','').split(',')[8:9])                    
+                    dns_a_domain = get_geo_ip(dns_a_ip, iploc, iplist).replace('"','').split(',')[9:10][0]
                     
-                    dns_a_geo = ''
-                    dns_a_domain = ''
+                ip_dict[dns_a_ip]['geo'] = dns_a_geo
+                ip_dict[dns_a_ip]['domain'] = dns_a_domain                
+                 
+                temp_lines.append(line.strip() + ',' + ip_dict[dns_a_ip]['geo'] + ',' + ip_dict[dns_a_ip]['domain'])
+	
+	new_content_lines = [header] + temp_lines
 
-                    if dns_a_ip.strip() != '':
-                        dns_a_geo = ";".join(get_geo_ip(dns_a_ip, iploc, iplist).replace('"','').split(',')[4:6])+ " " + ";".join(get_geo_ip(dns_a_ip, iploc, iplist).replace('"','').split(',')[8:9])                    
-                        dns_a_domain = get_geo_ip(dns_a_ip, iploc, iplist).replace('"','').split(',')[9:10][0]
-                    
-                    ip_dict[dns_a_ip]['geo'] = dns_a_geo
-                    ip_dict[dns_a_ip]['domain'] = dns_a_domain                
-
-                    new_line = line.replace('\n','').replace('\r','')
-
-                    new_line += ',' + ip_dict[dns_a_ip]['geo'] + ',' + ip_dict[dns_a_ip]['domain'] 
-
-                    new_content_lines[i] = new_line + '\n'
-
+    temp_lines = []
+    header = new_content_lines[0].strip() +  ',gtiSrcRep,gtiDstRep'
+ 
+    
     if gti_server == '' or gti_password == '' or gti_user == '':
         print 'More than one GTI Config values are empty, Can\'t add GTI reputation '
-        for i, line in enumerate(new_content_lines):            
-            if flow:
-                if i == 0:
-                    new_content_lines[0] = line.replace('\n','').replace('\r','') +  ',gtiSrcRep,gtiDstRep\n'
-                else:
-                    new_content_lines[i] = line.replace('\n','').replace('\r','') +  ',,\n'
-
+        temp_lines = map(lambda line: line.strip() + ",,", new_content_lines[1:])
+	new_content_lines = [header] + temp_lines
     else:
-        for i, line in enumerate(new_content_lines):            
+        for i, line in enumerate(new_content_lines[1:]):            
             if flow:
-                if i == 0:
-                    new_content_lines[0] = line.replace('\n','').replace('\r','') +  ',gtiSrcRep,gtiDstRep\n'
-                else:
-                    line_parts = line.split(',')
-                    src_ip = line_parts[2]
-                    dst_ip = line_parts[3]
+                line_parts = line.split(',')
+                src_ip = line_parts[2]
+                dst_ip = line_parts[3]
 
-                    if 'gti_rep' not in ip_dict[src_ip]:
-                        ip_dict[src_ip]['gti_rep'] = get_gti_rep(src_ip, gti_command)
+                if 'gti_rep' not in ip_dict[src_ip]:
+		    ip_dict[src_ip]['gti_rep'] = get_gti_rep(src_ip, gti_command)
 
-                    if 'gti_rep' not in ip_dict[dst_ip]:
-                        ip_dict[dst_ip]['gti_rep'] = get_gti_rep(dst_ip, gti_command)
+                if 'gti_rep' not in ip_dict[dst_ip]:
+		    ip_dict[dst_ip]['gti_rep'] = get_gti_rep(dst_ip, gti_command)
 
-                    new_line = line.replace('\n','').replace('\r','')
+                temp_lines.appned(line.strip() + ',' + ip_dict[src_ip]['gti_rep'] + ',' + ip_dict[dst_ip]['gti_rep'])
 
-                    new_line += ',' + ip_dict[src_ip]['gti_rep'] + ',' + ip_dict[dst_ip]['gti_rep']
-
-                    new_line += '\n'
-
-                    new_content_lines[i] = new_line
+        new_content_lines = [header] + temp_lines
     
+    temp_lines = []
+    header = new_content_lines[0].strip() + ',norseSrcRep,norseDstRep'
+
     if norse_api_key == '' or norse_url == '':
         print 'Norse Configurations missing values, Can\'t add Norse Reputation'
-        for i, line in enumerate(new_content_lines):            
-            if flow:
-                if i == 0:
-                    new_content_lines[0] = line.replace('\n','').replace('\r','') +  ',norseSrcRep,norseDstRep\n'
-                else:
-                    new_content_lines[i] = line.replace('\n','').replace('\r','') +  ',,\n'
-
+        if flow:
+	    temp_lines = map(lambda line: line.strip() + ',,'
+	    new_content_lines = [header] + temp_lines
     else:
-        for i, line in enumerate(new_content_lines):
+        for i, line in enumerate(new_content_lines[1:]):
             if flow:
-                if i == 0:
-                    new_content_lines[0] = line.replace('\n','') +  ',norseSrcRep,norseDstRep\n'
-                else:
-                    line_parts = line.split(',')
-                    src_ip = line_parts[2]
-                    dst_ip = line_parts[3]
+                line_parts = line.split(',')
+                src_ip = line_parts[2]
+                dst_ip = line_parts[3]
 
-                    if 'norse_rep' not in ip_dict[src_ip]:
-                        ip_dict[src_ip]['norse_rep'] = get_norse_rep(src_ip, norse_command)
-                    if 'norse_rep' not in ip_dict[dst_ip]:
-                        ip_dict[dst_ip]['norse_rep'] = get_norse_rep(dst_ip, norse_command)
+                if 'norse_rep' not in ip_dict[src_ip]:
+                    ip_dict[src_ip]['norse_rep'] = get_norse_rep(src_ip, norse_command)
+                if 'norse_rep' not in ip_dict[dst_ip]:
+                    ip_dict[dst_ip]['norse_rep'] = get_norse_rep(dst_ip, norse_command)
 
-                    new_line = line.replace('\n','')
-                    new_line += ',' + ip_dict[src_ip]['norse_rep'] + ',' + ip_dict[dst_ip]['norse_rep']
-                    new_line += '\n'
-                    new_content_lines[i] = new_line
-
-    new_content = ''.join(new_content_lines)
+                temp_lines.append(line.strip() + ',' + ip_dict[src_ip]['norse_rep'] + ',' + ip_dict[dst_ip]['norse_rep']
+	new_content_lines = [header] + temp_lines
+                
+    new_content = '\n'.join(new_content_lines)
     
     if new_content != '':
         f = open(lda_bu, 'wb')
