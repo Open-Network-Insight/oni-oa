@@ -204,20 +204,18 @@ def main():
     
     if not os.path.isfile(network_context_file):
         print "Network context csv file not found at: " + network_context_file
-       	temp_lines = map(lambda line: line.strip()+",,",new_content_lines[1:])
+	temp_lines = map(lambda line: line.strip()+",,",new_content_lines[1:])
 	new_content_lines = [header] + temp_lines                                        
     else:
         print "Adding IP Context..."
         with open(network_context_file, 'rb') as f:
-            ip_ranges += map(lambda line: (ip_to_int(line.split(',')[0]),ip_to_int(line.split(',')[1])),f)
-	
-	 #new_content_lines = []        
-        for i, line in enumerate(new_content_lines[1:]): 
+            ip_ranges += map(lambda line: (ip_to_int(line.split(',')[0]),ip_to_int(line.split(',')[1])),f)        
+        for line in enumerate(new_content_lines[1:]): 
 	    line_parts = line.split(',')
-            src_ip = line_parts[src_ip_index]
-            dst_ip = line_parts[dst_ip_index]
-            is_src_ip_internal = check_if_ip_is_internal(src_ip, ip_ranges)
-            is_dst_ip_internal = check_if_ip_is_internal(dst_ip, ip_ranges)
+	    src_ip = line_parts[src_ip_index]
+	    dst_ip = line_parts[dst_ip_index]
+	    is_src_ip_internal = check_if_ip_is_internal(src_ip, ip_ranges)
+	    is_dst_ip_internal = check_if_ip_is_internal(dst_ip, ip_ranges)
             if src_ip in ip_dict:
 		ip_dict[src_ip]['isInternal'] = is_src_ip_internal
             if dst_ip in ip_dict:
@@ -243,10 +241,9 @@ def main():
 	new_content_lines = [header] + temp_lines
     else:        
         print 'loading IP location context...'
-        iplist = np.loadtxt(iploc,dtype=np.uint32,delimiter=',',usecols={0},
-                    converters={0: lambda s: np.uint32(s.replace('"',''))})
+        iplist = np.loadtxt(iploc,dtype=np.uint32,delimiter=',',usecols={0},converters={0: lambda s: np.uint32(s.replace('"',''))})
         print 'Adding Geo Location context...'
-        for i, line in enumerate(new_content_lines[1:]):            
+        for line in enumerate(new_content_lines[1:]):            
             if flow:
 		line_parts = line.split(',')
                 src_ip = line_parts[src_ip_index]
@@ -276,7 +273,7 @@ def main():
 
                 if dns_a_ip.strip() != '':
 		    dns_a_geo = ";".join(get_geo_ip(dns_a_ip, iploc, iplist).replace('"','').split(',')[4:6])+ " " + ";".join(get_geo_ip(dns_a_ip, iploc, iplist).replace('"','').split(',')[8:9])                    
-                    dns_a_domain = get_geo_ip(dns_a_ip, iploc, iplist).replace('"','').split(',')[9:10][0]
+		    dns_a_domain = get_geo_ip(dns_a_ip, iploc, iplist).replace('"','').split(',')[9:10][0]
                     
                 ip_dict[dns_a_ip]['geo'] = dns_a_geo
                 ip_dict[dns_a_ip]['domain'] = dns_a_domain                
@@ -294,7 +291,7 @@ def main():
         temp_lines = map(lambda line: line.strip() + ",,", new_content_lines[1:])
 	new_content_lines = [header] + temp_lines
     else:
-        for i, line in enumerate(new_content_lines[1:]):            
+        for line in enumerate(new_content_lines[1:]):            
             if flow:
                 line_parts = line.split(',')
                 src_ip = line_parts[2]
@@ -319,7 +316,7 @@ def main():
 	    temp_lines = map(lambda line: line.strip() + ',,'
 	    new_content_lines = [header] + temp_lines
     else:
-        for i, line in enumerate(new_content_lines[1:]):
+        for line in enumerate(new_content_lines[1:]):
             if flow:
                 line_parts = line.split(',')
                 src_ip = line_parts[2]
