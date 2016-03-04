@@ -6,6 +6,7 @@ import sys, getopt
 import os
 from subprocess import call
 from subprocess import check_output
+from collections import Counter
 def main():
     sdate = ''
     spath = '{0}/ipython/user/{1}/'
@@ -33,9 +34,10 @@ def main():
     with open(scores_full_path, 'rb') as f:
         reader = csv.reader(f,delimiter=',') 
         reader.next();
-        rowct = 1
-        for row in reader:
-            if int(row[0]) < 3: # 3 is the don't care
+        for i,row in enumerate(reader):
+            if i >= topct:
+		break
+	    if int(row[0]) < 3: # 3 is the don't care
                 # get src ip and dst ip
                 sip = row[2]
                 dip = row[3]
@@ -47,32 +49,33 @@ def main():
                 mm = row[1].split(' ')[1].split(':')[1]
                 #TODO: using netflow_avro table, this query should change - no more minute(), hour()
                 # also, there are more columns to return           
-                conn = (sip,dip,dy,hr,mm)
-                if conn not in conns_list:
-                    conns_list.append(conn)                    
-                if rowct == topct:
-                    break
-                rowct = rowct + 1
-    for conn in conns_list:
-        sip = conn[0]
-        dip = conn[1]
-        dy = conn[2]
-        hr = conn[3]
-        mm = conn[4]
-    
-        hivestr = (" \"set hive.cli.print.header=true; SELECT treceived as tstart,sip as srcip," +
-        "dip as dstip,sport as sport,dport as dport,proto as proto,flag as flags,stos as TOS," +
-        "ibyt as bytes, ipkt as pkts,input as input, output as output, rip as rip " +
-         " from " + os.environ['DBNAME'] + "." + os.environ['DSOURCES']  +  
-        " WHERE ( (sip=\'" + sip + "\' AND dip=\'" + dip + "\') OR " +
-        "(sip=\'" + dip + "\' AND dip=\'" + sip + "\') ) AND m="+mh+" AND d="+dy+" AND h="+hr +
-        " AND trminute="+mm +" SORT BY tstart LIMIT 100; \"  > " + spath+ "edge-" + sip.replace(".","_") + "-" + 
-        dip.replace(".","_") + "-" + hr + "-" + mm + ".tsv")
-        
-        print 'processing line ',rowct
-        print hivestr
-        #call(["hive","-S","-e", hivestr])
-        check_output("hive -S -e " + hivestr, shell=True)
+                if (sip,dip,dy,hr,mm) not in conns_list:
+		    conns_list.append(sip,dip,dy,hr,mm)		    
+		    hivestr = (" \"set hive.cli.print.header=true; "
+		    "SELECT treceived as tstart, "
+		    "sip as srcip, "
+		    "dip as dstip, "
+		    "sport as sport, "
+		    "dport as dport, "
+		    "proto as proto, "
+		    "flag as flags, "
+		    "stos as TOS, "
+		    "ibyt as bytes, "
+		    "ipkt as pkts, "
+		    "input as input, " 
+		    "output as output, " 
+		    "rip as rip "
+		    "FROM {0}.{1} " 
+		    "WHERE ( (sip=\'{2}\' AND dip=\'{3}\') OR (sip=\'{3}\' AND dip=\'{2}\') ) "
+		    "AND m={4} AND d={5} AND h={6} "
+		    "AND trminute={7} "
+		    "SORT BY tstart LIMIT 100; \"  > {8}edge-{9}-{10}-{6}-{7}.tsv").format(os.environ['DBNAME'],
+		    os.environ['DSOURCES'],sip,dip,mh,dy,hr,mm,spath,sip.replace(".","_"),dip.replace(".","_"))
+       
+		    print 'processing line ', i + 1
+		    print hivestr
+		    #call(["hive","-S","-e", hivestr])
+		    check_output("hive -S -e " + hivestr, shell=True)
 
     print "Done Creating Edge Files..."
 
@@ -82,19 +85,8 @@ def main():
     with open(scores_full_path, 'rb') as f:
         reader = csv.reader(f,delimiter=',') 
         reader.next();
-        rowct = 1
-        for row in reader:
-            if row[2] in srcdict:
-                srcdict[row[2]] += 1
-            else:
-                srcdict[row[2]] = 1
-            if row[3] in srcdict:
-                srcdict[row[3]] += 1
-            else:
-                srcdict[row[3]] = 1
-            rowct += 1
-            if rowct == topct:
-                break
+	srcs = map(lambda line: line.split(',')[2],reader[:topct]) + map(lambda line: line.split(',')[3],reader[:topct])
+	srcdict = dict(Counter(srcs)
 
     ipct = 1
     for ip in srcdict:
@@ -115,12 +107,19 @@ def main():
 
             if len(dstdict.keys()) > 1:
                 dstip = "'%s',"*len(dstdict.keys()) % tuple(dstdict.keys())
-                hivestr = (" \"set hive.cli.print.header=true; SELECT sip as srcip," +
-                "dip as dstip, MAX(ibyt) as maxbyte, AVG(ibyt) as avgbyte,  MAX(ipkt) as maxpkt, AVG(ipkt) as avgpkt " +
-                " from " + os.environ['DBNAME'] + "." + os.environ['DSOURCES']  +  
-                " WHERE m="+mh+" AND d="+dy+" AND ( (sip=\'" + ip + "\' AND dip IN("+ dstip[:-1] + ")" +
-                " OR sip IN(" + dstip[:-1] + ") AND dip=\'" + ip + "\') ) " +
-                " GROUP BY sip,dip \"  > " + spath + "chord-" + ip.replace(".","_") + ".tsv")                
+		
+		hivestr = (" \"set hive.cli.print.header=true; "
+		"SELECT sip as srcip, "
+		"dip as dstip, "
+		"MAX(ibyt) as maxbyte, "
+		"AVG(ibyt) as avgbyte, " 
+		"MAX(ipkt) as maxpkt, "
+		"AVG(ipkt) as avgpkt "
+		"FROM {0}.{1} "
+		"WHERE m={2} AND d={3} AND ( (sip=\'{4}\' AND dip IN({5}) "
+		"OR sip IN({5}) AND dip=\'{4}\') ) "
+		"GROUP BY sip,dip \"  > {6}chord-{7}.tsv").format(os.environ['DBNAME'],
+		os.environ['DSOURCES'],mh,dy,ip,dstip[:-1],spath,ip.replace(".","_"))                  
                 print 'processing line ',ipct
                 print hivestr
                 #call(["hive", "-S", "-e", hivestr])
