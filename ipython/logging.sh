@@ -1,12 +1,8 @@
 #!/bin/bash
 
-red=$(tput setaf 1)
-green=$(tput setaf 76)
-
-log_info() {
-	printf "${green}[$(date) INFO]: %s\n" "$@" 
+log_info(){
+    printf "[$(date) INFO]: %s\n" "$1"
 }
 log_error(){
-	printf "${red}[$(date) ERROR]: %s\n" "$@"
+    printf "[$(date) ERROR]: %s\n" "$1"
 }
-
