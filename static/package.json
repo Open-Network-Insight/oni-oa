@@ -1,0 +1,21 @@
+{
+  "name": "oni-oa",
+  "version": "0.0.1",
+  "author": "Intel Corporation",
+  "description": "Open Network Insight :: Threat Intelligence",
+  "dependencies": {
+    "jquery": "^2.0.0",
+    "bootstrap": "3.3.5",
+    "bootstrap-datepicker": "1.6.0"
+  },
+  "devDependencies": {
+    "browserify": "~6.2.0",
+    "watchify": "~2.1.0"
+  },
+  "scripts": {
+    "build-all": "npm run build-dns",
+    "build-dns": "cd ../dns/static/ && npm run build-all && cd ../../static/",
+    "install-all": "npm install && npm run install-dns",
+    "install-dns": "cd ../dns/static/ && npm install && cd ../../static"
+  }
+}

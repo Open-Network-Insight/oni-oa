@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Security Analytics {% block title %}{% endblock %}</title>
+    <!--CDN for font awesome ICONS-->
+    <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css">
+    <!--Styles Sheet (Based on bootstrap)-->
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/custom.min.css') }}" />
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/app.css') }}" />
+    <!--Bootstrap Date picker styles-->
+    <link rel="stylesheet" href="{{ url_for('static', filename='node_modules/bootstrap-datepicker/dist/css/bootstrap-datepicker.min.css') }}" />
+    {% block css_stylesheets %}{% endblock %}
+    <style>
+    {% block css_inline %}{% endblock %}
+    </style>
+</head>
+<body>
+    <nav class="navbar navbar-inverse">
+        <div class="container-fluid">
+            <!-- App name and toggle get grouped for better mobile display -->
+            <div class="navbar-header">
+                <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#main-menu">
+                    <span class="sr-only">Toggle navigation</span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                </button>
+                <span class="navbar-brand">Open Network Insight :: {{ self.title() }}</span>
+            </div>
+            <!-- Collect the nav links, forms, and other content for toggling -->
+            <div class="collapse navbar-collapse" id="main-menu">
+              <ul class="nav navbar-nav navbar-right">
+                <li>
+                  <a href="{{ url_for('dns.index') }}">Suspicious Connects</a>
+                </li>
+                <li>
+                  <a href="{{ url_for('dns.threat_investigation') }}">Threat Investigation</a>
+                </li>
+                <li>
+                  <a href="{{ url_for('dns.story_board') }}">Story Board</a>
+                </li>
+              </ul>
+            </div>
+            {% block toolbar %}{% endblock %}
+        </div>
+    </nav>
+    <div class="container-fluid">
+      <!-- MAIN Content row-->
+      <div class="row">{% block body %}
+      {% endblock %}</div>
+    </div>
+
+    <!-- SCRIPTS -->
+    <script src="{{ url_for('static', filename='node_modules/jquery/dist/jquery.min.js') }}"></script>
+    <script src="{{ url_for('static', filename='node_modules/bootstrap/dist/js/bootstrap.min.js') }}"></script>
+    <script src="{{ url_for('static', filename='node_modules/bootstrap-datepicker/dist/js/bootstrap-datepicker.min.js') }}"></script>
+    {% block js_scripts %}{% endblock %}
+    <script type="application/javascript">{% block js_inline %}{% endblock %}</script>
+</body>
+</html>

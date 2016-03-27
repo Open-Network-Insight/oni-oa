@@ -1,0 +1,37 @@
+{% extends "root.html" %}
+{% block title %}DNS :: Threat Investigation{% endblock %}
+{% block css_inline %}
+    .container-fluid
+    {
+        min-height: 90%;
+        height: 90%;
+    }
+
+    .container-fluid > .row
+    {
+        height: 100%;
+    }
+
+    iframe {
+        width: 100%;
+        min-height: 100%;
+    }
+{% endblock %}
+{% block js_scripts %}
+  <script type="application/javascript" src="{{ url_for('dns.static', filename='js/threat_investigation.bundle.min.js') }}"></script>
+{% endblock %}
+{% block js_inline %}
+    {% include 'dns/keep_location_hash.js' %}
+{% endblock %}
+{% block toolbar %}
+            <div class="row bg-default text-right" id="collapse_box">
+                <!--Tools Buttons-->
+                <div class="col-md-12 pd-top-btm5">
+                    <div id="nav_form" class="col-md-12 form-inline"></div>
+                </div>
+            </div> <!-- /Tools Buttons-->
+{% endblock %}
+{% block body %}
+            <!--Main Content - In here we will be adding sub-columns to form the sections layout-->
+            <iframe></iframe>
+{% endblock %}

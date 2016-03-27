@@ -1,0 +1,56 @@
+.oni #header,
+.oni #site,
+.oni #pager
+{
+  position: absolute;
+  top: -10000px;
+  left: -10000px;
+}
+
+.oni.oni_easy_mode .widget-area
+{
+  position: fixed;
+  top: 0px;
+  left: 0px;
+  width: 100%;
+}
+
+.oni.oni_easy_mode .widget-area > .prompt
+{
+  display: none;
+}
+
+.oni.oni_easy_mode .widget-area > .widget-subarea > .widget-box
+{
+  position: relative;
+  margin: 0 auto;
+}
+
+.oni.oni_ninja_mode #header,
+.oni.oni_ninja_mode #site,
+.oni.oni_ninja_mode #pager
+{
+  position: relative;
+  top: 0px;
+  left: 0px;
+}
+
+.oni_easy_mode_loader
+{
+    text-align: center;
+    margin-top: 50px;
+}
+
+.oni.oni_ninja_mode .oni_easy_mode_loader
+{
+    display: none;
+}
+
+.oni .oni_easy_mode_spinner
+{
+    display: inline-block;
+    width: 16px;
+    height: 11px;
+    margin-left: 5px;
+    background-image: url(/app/static/images/ajax-loader.gif);
+}

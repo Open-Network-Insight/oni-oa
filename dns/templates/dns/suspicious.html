@@ -1,0 +1,32 @@
+{% extends "root.html" %}
+{% block title %}DNS :: Suspicious{% endblock %}
+{% block css_inline %}
+    {% include 'dns/dendrogram.css' %}
+    .dns_qry_name
+    {
+        white-space: nowrap;
+    }
+{% endblock %}
+{% block js_scripts %}
+  <script type="application/javascript" src="{{ url_for('dns.static', filename='js/suspicious.bundle.min.js') }}"></script>
+{% endblock %}
+{% block js_inline %}
+    {% include 'dns/keep_location_hash.js' %}
+{% endblock %}
+{% block toolbar %}
+            <div class="row bg-default text-right" id="collapse_box">
+                <!--Tools Buttons-->
+                <div class="col-md-12 pd-top-btm5">
+                    <div id="nav_form" class="col-md-12 form-inline"></div>
+                </div>
+            </div> <!-- /Tools Buttons-->
+{% endblock %}
+{% block body %}
+            <!--Main Content - In here we will be adding sub-columns to form the sections layout-->
+              <span id="lda_scores"></span>
+              <span id="netflow_diagram"></span>
+
+              <span id="notebook"></span>
+              <span id="details"></span>
+
+{% endblock %}

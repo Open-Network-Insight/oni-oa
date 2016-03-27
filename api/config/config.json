@@ -1,0 +1,28 @@
+{ 
+	"API":{
+		"DBENGINE":"Impala",
+		"DATABASE":"duxbury",
+		"DEFAULT_DATE":"20151114",
+		"Impala":{
+			"DB_HOST":"cdh-sec3.local.com",
+			"PORT":"21050",
+			"AUTH_MECHANISM":"NOSASL",
+			"LDAP_USER":"duxbury",
+			"LDAP_PWD": ""
+		},
+		"Hive":{
+			"DB_HOST":"cdh-sec4.local.com",
+			"PORT":"10000", 
+			"AUTH_MECHANISM":"NOSASL",
+			"LDAP_USER":"duxbury",
+			"LDAP_PWD": ""
+			},
+
+		"IANA": {
+			"dns_qry_class":"/home/duxbury/dns/DuxburyBay/api/iana/dns-qclass.csv",
+			"dns_qry_type":"/home/duxbury/dns/DuxburyBay/api/iana/dns-qtype.csv",
+			"dns_qry_rcode":"/home/duxbury/dns/DuxburyBay/api/iana/dns-rcode.csv"
+		}
+
+	} 
+}

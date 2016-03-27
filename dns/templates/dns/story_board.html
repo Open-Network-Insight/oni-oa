@@ -1,0 +1,32 @@
+{% extends "root.html" %}
+{% block title %}DNS :: Story Board{% endblock %}
+{% block css_inline %}
+    {% include 'dns/dendrogram.css' %}
+
+    .oni-panel .panel-body
+    {
+        min-height: 450px;
+        max-height: 450px;
+    }
+{% endblock %}
+{% block js_scripts %}
+  <script type="application/javascript" src="{{ url_for('dns.static', filename='js/story_board.bundle.min.js') }}"></script>
+{% endblock %}
+{% block js_inline %}
+    {% include 'dns/keep_location_hash.js' %}
+{% endblock %}
+{% block toolbar %}
+            <div class="row bg-default text-right" id="collapse_box">
+                <!--Tools Buttons-->
+                <div class="col-md-12 pd-top-btm5">
+                    <div id="nav_form" class="col-md-12 form-inline"></div>
+                </div>
+            </div> <!-- /Tools Buttons-->
+{% endblock %}
+{% block body %}
+            <!--Main Content - In here we will be adding sub-columns to form the sections layout-->
+              <span id="executive_threat_briefing"></span>
+              <span id="incident_progression"></span>
+
+              <span id="timeline"></span>
+{% endblock %}
