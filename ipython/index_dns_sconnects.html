@@ -199,7 +199,7 @@
                                 <button id="btnToggleNotebook" data-target="#notebook" class="btn btn-default btn-xs">Expand</button>
                             </div>
                         </div>
-                        <iframe name="nbView" id="nbView" class="nbView" src="../../notebooks/user/20150418/Edge_Investigation_Dns_20150418.ipynb"></iframe>
+                        <iframe name="nbView" id="nbView" class="nbView" src="../../notebooks/ipython/user/20150418/Edge_Investigation_Dns_20150418.ipynb"></iframe>
                     </div>
 
                 </div>
@@ -397,18 +397,18 @@
 
         /*
             Gets the Ipython Edge Investigation notebook path by using the selected data date as a parameter. If the user didn't select a date then it trys to load the notebook from the following path:
-            "../../notebooks/vast/Edge_Investigation_vast.ipynb"
+            "../../notebooks/ipython/vast/Edge_Investigation_vast.ipynb"
         */
 
         function getNotebookPath() {
-            var path = "/../../notebooks/user/"
+            var path = "/../../notebooks/ipython/user/"
             var dataDate = getParam("dataDate") == undefined ? "20150807" : getParam("dataDate").replace(/-/g, "");
 
             if (dataDate != undefined && dataDate != null) {
                 path = path + dataDate + "/Edge_Investigation_Dns_" + dataDate + ".ipynb"
             }
             else {
-                path = "../../notebooks/vast/Edge_Investigation_vast.ipynb"
+                path = "../../notebooks/ipython/vast/Edge_Investigation_vast.ipynb"
             }
 
             return path;

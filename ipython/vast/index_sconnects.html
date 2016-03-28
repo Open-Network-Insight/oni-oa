@@ -248,7 +248,7 @@
                                 <button id="btnToggleNotebook" data-target="#notebook" class="btn btn-default btn-xs">Expand</button>
                             </div>
                         </div>
-                        <iframe name="nbView" id="nbView" class="nbView" src="../../notebooks/user/20150418/Edge_Investigation_20150418.ipynb"></iframe>
+                        <iframe name="nbView" id="nbView" class="nbView" src="../../../notebooks/ipython/user/20150418/Edge_Investigation_20150418.ipynb"></iframe>
                     </div>
 
                 </div>
@@ -330,7 +330,7 @@
         // Document ready
         $(function () {
 
-            var tiNotebookPath = "/notebooks/vast/user/vast/Threat_Investigation_vast.ipynb";
+            var tiNotebookPath = "/notebooks/ipython/vast/user/vast/Threat_Investigation_vast.ipynb";
             $("#detect > a").attr('href', tiNotebookPath);
             $("#stboard > a").attr('href', "storyboard_sconnect.html?dataDate=" + dataDate);
 
@@ -454,18 +454,18 @@
 
         /*
             Gets the Ipython Edge Investigation notebook path by using the selected data date as a parameter. If the user didn't select a date then it trys to load the notebook from the following path:
-            "../../notebooks/vast/Edge_Investigation_vast.ipynb"
+            "../../../notebooks/ipthon/vast/Edge_Investigation_vast.ipynb"
         */
 
         function getNotebookPath() {
-            var path = "../../notebooks/user/"
+            var path = "../../../notebooks/ipython/user/"
             var dataDate = getParam("dataDate"); // == undefined ? "20150417" : getParam("dataDate").replace(/-/g, "");
 
             if (dataDate != undefined && dataDate != null) {
                 path = path + dataDate + "/Edge_Investigation_" + dataDate + ".ipynb"
             }
             else {
-                path = "../../notebooks/vast/Edge_Investigation_vast.ipynb"
+                path = "../../../notebooks/ipython/vast/Edge_Investigation_vast.ipynb"
             }
 
             return path;
