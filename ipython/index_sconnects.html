@@ -194,6 +194,7 @@
                                 <span class="header-title">Notebook</span>
                             </div>
                             <div class="col-lg-4 text-right padding2">
+                                <button id="btnToggleModeNotebook" class="btn btn-default btn-xs"><span class="glyphicon glyphicon-education" aria-hidden="true"></span></button>
                                 <button id="btnToggleNotebook" data-target="#notebook" class="btn btn-default btn-xs">Expand</button>
                             </div>
                         </div>
@@ -306,6 +307,7 @@
             $("#nbView").attr("src", getNotebookPath());
 
             $("#btnToggleNotebook").click(toggleSection);
+            $("#btnToggleModeNotebook").click(toggleNotebookMode);
             $("#btnToggleLdaScores").click(toggleSection);
             $("#btnToggleNetflowDiagram").click(toggleSection);
             $("#btnToggleDetails").click(toggleSection);
@@ -401,7 +403,24 @@
             }
         }
 
+        function toggleNotebookMode()
+        {
+            var iframe = $('#nbView');
 
+            if (iframe.length==0) return;
+            iframe = iframe[0];
+
+            if (!/showNinjaMode/.test(iframe.contentWindow.location.hash))
+            {
+              iframe.contentWindow.location.hash = 'showNinjaMode';
+            }
+            else
+            {
+              iframe.contentWindow.location.hash = 'showEasyMode';
+            }
+
+            $(this).children().toggleClass('glyphicon-education').toggleClass('glyphicon-user');
+        }
 
         /*
             Gets the Ipython Edge Investigation notebook path by using the selected data date as a parameter. If the user didn't select a date then it trys to load the notebook from the following path:
