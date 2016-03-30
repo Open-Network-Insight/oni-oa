@@ -1,11 +1,10 @@
+import ast  
 import os
 import json
 import urllib2
 import requests
 import json
-import ast  
-import csv 
-import subprocess  
+import csv   
 import urllib 
 import subprocess
 from pyhive import hive
@@ -18,10 +17,10 @@ from impala.dbapi import connect
 from iana import iana_transform
   
 blueprint = Blueprint('data_api', __name__) 
-
-#move to config file
+ 
 FILE_PATH = 'ipython/dns/user/'
 CONTENT_TYPE = 'application/json'  
+ 
 
 #-------------------------------------------DNS METHODS------------------------------------------------#
 @blueprint.route('/dns/suspicious/<date>', methods=['GET','POST']) 
@@ -30,7 +29,9 @@ def get_dns_suspicious(date=None):
         and only ones that haven't been ranked by the security analyst. 
     """
     conf = current_app.config["API"]     
-    date = date if date != None else configData['DEFAULT_DATE']    
+    date = date if date != None else configData['DEFAULT_DATE'] 
+    dbname = conf["DATABASE"]
+
     try:  
         if int(date):
             yy = date[0:4]
@@ -42,8 +43,8 @@ def get_dns_suspicious(date=None):
         if not yy or not mm or not dd:
             return "Unexpected date format", 400 
         else: 
-            qry = "SELECT susp.frame_time, susp.ip_dst, susp.dns_qry_name, susp.dns_qry_class, susp.dns_qry_type, susp.dns_qry_rcode, susp.score, susp.query_rep, susp.hh FROM " + conf["DATABASE"] + ".dns_susp as susp "
-            qry = qry + " LEFT JOIN " + conf["DATABASE"] + ".dns_scores as scores ON scores.dns_qry_name = susp.dns_qry_name WHERE scores.dns_qry_name IS NULL "
+            qry = "SELECT susp.frame_time, susp.ip_dst, susp.dns_qry_name, susp.dns_qry_class, susp.dns_qry_type, susp.dns_qry_rcode, susp.score, susp.query_rep, susp.hh FROM " + dbname + ".dns_susp as susp "
+            qry = qry + " LEFT JOIN " + dbname + ".dns_scores as scores ON scores.dns_qry_name = susp.dns_qry_name WHERE scores.dns_qry_name IS NULL "
             qry = qry + " AND susp.y=" + yy + " AND susp.m=" + mm + " AND susp.d=" + dd + " "
     if request.method == 'POST' and request.headers['Content-Type'] == CONTENT_TYPE:
         try:
@@ -55,7 +56,8 @@ def get_dns_suspicious(date=None):
     qry = qry + " LIMIT 250"   
     res = ExecuteReader(qry)   
     if isinstance(res[1], (int, long)):
-         return res
+        print res
+        return res
     else: 
         ian = IanaCodesReplace(res[1])
         return jsonify({'headers':res[0] , 'data':ian})
@@ -80,8 +82,7 @@ def get_dns_details(date=None):
                 time = obj["time"] if obj.has_key("time") else ""
                 hh = ""
                 if time != "" :
-                    hh = time[0:time.find(":")]
-                print hh 
+                    hh = time[0:time.find(":")] 
                 qry = qry + " AND dns_qry_name LIKE '%" + obj["dns_qry_name"]+ "%' " if obj.has_key("dns_qry_name") else qry + ""            
                 qry = qry + " AND h=" + hh + " " if hh != "" else qry + ""
             except Exception, e:
@@ -97,8 +98,7 @@ def get_dns_details(date=None):
 
 
 @blueprint.route('/dns/details/visual/<date>', methods=['POST'])  
-def get_dns_details_visual(date=None): 
-    """Returns the list of dns queried and it's corresponding answers, designed to populate the dendrogram"""
+def get_dns_details_visual(date=None):  
     configData=current_app.config["API"]     
     date = date if date != None else configData['DEFAULT_DATE']   
     try:  
@@ -119,7 +119,7 @@ def get_dns_details_visual(date=None):
             except Exception, e:
                 return "Bad request", 400 
             else:
-                qry=qry + " LIMIT 1000) AS tmp GROUP BY dns_qry_name, dns_a, ip_dst"
+                qry=qry + ") AS tmp GROUP BY dns_qry_name, dns_a, ip_dst"   
                 res = ExecuteReader(qry)   
                 if isinstance(res[1], (int, long)):
                     return res
@@ -142,7 +142,7 @@ def get_edge_investigation(date=None):
     except ValueError:        
         return "Unexpected date format", 400
     else:       
-        if request.method == 'POST' and request.headers['Content-Type'] == 'application/json' :
+        if request.method == 'POST' and request.headers['Content-Type'] == CONTENT_TYPE:
             try:  
                obj = json.loads(request.data)    
                qry = "SELECT DISTINCT (susp."+ obj["filter"] +") FROM " + configData["DATABASE"] + ".dns_susp as susp "
@@ -161,7 +161,7 @@ def get_edge_investigation(date=None):
                 else:
                     return jsonify({'headers':res[0] , 'data':res[1] })        
      
-
+ 
 @blueprint.route('/dns/threat_investigation/<date>', methods=['GET']) 
 def get_threat_investigation(date=None):  
     configData=current_app.config["API"]     
@@ -174,7 +174,13 @@ def get_threat_investigation(date=None):
     except ValueError:        
         return "Unexpected date format", 400
     else: 
-        qry = "SELECT ip_dst, dns_qry_name, dns_sev, ip_sev FROM " + configData["DATABASE"] + ".dns_scores WHERE y=" + yy + " AND m=" + mm + " AND d=" + dd + " AND (dns_sev=1 OR ip_sev=1) LIMIT 100"
+        qry = " SELECT DISTINCT(score.ip_dst), ip_sev, 0 AS dns_sev FROM {0}.dns_scores AS score\
+                LEFT JOIN {0}.dns_comments AS com ON score.ip_dst=com.ip_dst AND com.y={1} AND com.m={2} AND com.d={3}\
+                WHERE com.ip_dst IS NULL AND ip_sev=1 AND score.y={1} AND score.m={2} AND score.d={3}\
+                UNION\
+                SELECT DISTINCT(score.dns_qry_name), 0 AS ip_sev, dns_sev FROM {0}.dns_scores AS score\
+                LEFT JOIN {0}.dns_comments AS com ON score.dns_qry_name=com.dns_qry_name AND com.y={1} AND com.m={2} AND com.d={3}\
+                WHERE com.dns_qry_name IS NULL AND dns_sev=1 AND score.y={1} AND score.m={2} AND score.d={3}".format(configData["DATABASE"], yy, mm, dd)
         res = ExecuteReader(qry)   
         if isinstance(res[1], (int, long)):
             return res
@@ -183,10 +189,9 @@ def get_threat_investigation(date=None):
 
 
 @blueprint.route('/dns/threat_investigation/comments/<date>', methods=['GET', 'POST']) 
-def get_threat_investigation_comments(date=None): 
-    """Get stored comments for given date"""
+def get_threat_investigation_comments(date=None):  
     configData=current_app.config["API"]     
-    date = date if date != None else configData['DEFAULT_DATE']
+    date = date if date != None else configData['DEFAULT_DATE'] 
     try:  
         if int(date):
             yy = date[0:4]
@@ -196,14 +201,26 @@ def get_threat_investigation_comments(date=None):
         return "Unexpected date format", 400
     else:       
         if request.method == 'GET': 
-            try:
-                tf = open(FILE_PATH + date + "/threat_comments.tsv", 'rU')
-                content = csv.DictReader(tf, fieldnames = ("ip_dst", "dns_qry_name", "title", "summary" ), delimiter='|')
-                data = [row for row in content] 
-                return jsonify({'data':data})
-            except Exception, e:                
-                return jsonify({'data':""})  
-
+            qry = "SELECT ip_dst, dns_qry_name, title, summary FROM {0}.dns_comments WHERE y={1} AND m={2} AND d={3} ".format(configData["DATABASE"], yy, mm, dd)
+            res = ExecuteReader(qry)
+            if isinstance(res[1], (int, long)):
+                return res
+            else:  
+                return jsonify({'headers':res[0] , 'data':res[1] })
+            return jsonify({'data':data})
+        if request.method == 'POST':
+            obj = json.loads(request.data) 
+            engine = configData["DBENGINE"]
+            if obj.has_key("data"):
+                document = obj["data"]
+                load_to_hadoop_script ="hive -e \"LOAD DATA LOCAL INPATH '{0}' INTO TABLE {1}.dns_comments;\"".format(document, configData["DATABASE"]) 
+                print load_to_hadoop_script
+                subprocess.call(load_to_hadoop_script,shell=True)    
+                if engine == "Impala": 
+                    invalidate_metadata()
+                return "Success", 200
+            else:
+                return "Bad request", 400
 
 
 @blueprint.route('/dns/threat_investigation/visual/<date>', methods=['POST']) 
@@ -218,14 +235,22 @@ def get_threat_investigation_visual(date=None):
     except ValueError:        
         return "Unexpected date format", 400
     else:        
-        if request.method == 'POST' and request.headers['Content-Type'] == 'application/json':
+        if request.method == 'POST' and request.headers['Content-Type'] == CONTENT_TYPE:
             try:  
                 obj = json.loads(request.data)   
                 if obj.has_key("dns_qry_name"):
-                    qry = "SELECT COUNT(ip_dst) as total, dns_qry_name, ip_dst FROM {0}.dns_susp WHERE y={2} AND m={3} AND d={4} AND dns_qry_name='{1}' GROUP BY ip_dst, dns_qry_name ORDER BY total DESC".format(configData["DATABASE"], obj["dns_qry_name"], yy,mm,dd )
+                    # qry = "SELECT COUNT(ip_dst) as total, dns_qry_name, ip_dst FROM {0}.dns_susp WHERE y={2} AND m={3} AND d={4} AND dns_qry_name='{1}' GROUP BY ip_dst, dns_qry_name ORDER BY total DESC".format(configData["DATABASE"], obj["dns_qry_name"], yy,mm,dd)
+                    qry = "SELECT COUNT(s.ip_dst) as total, s.dns_qry_name, s.ip_dst, ISNULL(sc.ip_sev,0) as sev FROM {0}.dns_susp as s\
+                            LEFT JOIN {0}.dns_scores as sc ON sc.ip_dst = s.ip_dst AND sc.y={2} AND sc.m={3} AND sc.d={4}\
+                            WHERE s.y={2} AND s.m={3} AND s.d={4} AND s.dns_qry_name='{1}' GROUP BY s.ip_dst, s.dns_qry_name, sc.ip_sev\
+                            ORDER BY sev DESC".format(configData["DATABASE"], obj["dns_qry_name"], yy,mm,dd)
                     res = ExecuteReader(qry)   
                 elif obj.has_key("ip_dst"):
-                    qry = "SELECT COUNT(dns_qry_name) as total, dns_qry_name, ip_dst FROM " + configData["DATABASE"] + ".dns_scores WHERE y=" + yy + " AND m=" + mm + " AND d=" + dd + " AND ip_dst='" + obj["ip_dst"] + "' AND dns_sev = 1 GROUP BY dns_qry_name, ip_dst ORDER BY total DESC"
+                    # qry = "SELECT COUNT(dns_qry_name) as total, dns_qry_name, ip_dst FROM {0}.dns_scores WHERE y={2} AND m={3} AND d={4} AND ip_dst='{1}' GROUP BY dns_qry_name, ip_dst ORDER BY dns_sev DESC".format(configData["DATABASE"], obj["ip_dst"], yy,mm,dd)
+                    qry ="SELECT COUNT(s.dns_qry_name) as total, s.dns_qry_name, s.ip_dst, ISNULL(sc.dns_sev,0) as sev FROM {0}.dns_susp as s\
+                            LEFT JOIN {0}.dns_scores as sc ON sc.dns_qry_name = s.dns_qry_name AND sc.y={2} AND sc.m={3} AND sc.d={4}\
+                            WHERE s.y={2} AND s.m={3} AND s.d={4} AND s.ip_dst='{1}' GROUP BY s.dns_qry_name, s.ip_dst, sc.dns_sev\
+                            ORDER BY sev DESC".format(configData["DATABASE"], obj["ip_dst"], yy,mm,dd)
                     res = ExecuteReader(qry)   
                 else:
                     return "Unexpected parameters", 400
@@ -242,23 +267,40 @@ def get_threat_investigation_visual(date=None):
 @blueprint.route('/config', methods=['GET']) 
 def get_config_data():  
     configData=current_app.config["API"]  
-    return jsonify({'config':configData})
- 
+    if configData != "":
+        return jsonify({'config':configData})
+
+
+
+@blueprint.route('/dns/clear_staging', methods=['GET']) 
+def clear_staging(): 
+    configData = current_app.config["API"]   
+    engine = configData["DBENGINE"]  
+    try:
+        if engine == "Impala": 
+            invalidate_metadata()
+    except Exception, e:
+        return "Internal server error", 500
+    else:
+        return "No Content", 204 
+
 
 @blueprint.route('/dns/scoring', methods=['POST']) 
-def insert_file():  
+def insert_scores_file():  
     obj = json.loads(request.data) 
-    configData=current_app.config["API"]   
+    configData = current_app.config["API"]   
     engine = configData["DBENGINE"]
     if obj.has_key("data") and obj.has_key("date"):
         document = obj["data"]
     	year = obj["date"][0:4]
     	month = obj["date"][4:6]
     	day = obj["date"][6:8]
-        database = configData["DATABASE"]
+        database = configData["DATABASE"] 
     try:
+        clear_staging_files ="hadoop fs -rm -R -skipTrash '/user/duxbury/dns/scores/stage/*'"
+        subprocess.call(clear_staging_files, shell=True)         
         load_to_hadoop_script ="hive -e \"LOAD DATA LOCAL INPATH '{0}' INTO TABLE {1}.dns_scores_tmp;\"".format(document, configData["DATABASE"]) 
-        subprocess.call(load_to_hadoop_script,shell=True)	
+        subprocess.call(load_to_hadoop_script, shell=True)	
         load_to_avro = " hive -e \"INSERT INTO TABLE {3}.dns_scores PARTITION (y={0}, m={1}, d={2}) SELECT d.ip_dst, d.dns_qry_name, d.ip_sev, d.dns_sev, d.mod_date, d.mod_user FROM {3}.dns_scores_tmp d;\"".format(year,month,day, database)
         subprocess.call(load_to_avro,shell=True)
         if engine == "Impala": 
@@ -275,14 +317,18 @@ def ExecuteReader(query=None):
     """Executes a given query selecting the engine and db configured in config.json"""
     configData=current_app.config["API"]    
     engine = configData["DBENGINE"]    
- 
+    dbhost = configData[engine]["DB_HOST"]
+    dbport = int(configData[engine]["PORT"])
+    dbname = configData["DATABASE"]
+    dbauth = configData[engine]["AUTH_MECHANISM"]
+    dbuser = configData[engine]["LDAP_USER"] 
     if engine == "Impala": 
         try:  
-            conn=connect(host=configData[engine]["DB_HOST"], port=int(configData[engine]["PORT"]), database=configData["DATABASE"], auth_mechanism=configData[engine]["AUTH_MECHANISM"], user=configData[engine]["LDAP_USER"])
+            conn=connect(host=dbhost, port=dbport, database=dbname, auth_mechanism=dbauth, user=dbuser)
             cur=conn.cursor()     
             cur.execute(query)
         except Exception, e:
-           return "Internal server error", 500 
+           return "Error trying to connect to db", 500 
         else:  
             headers={row[0]:row[0] for row in cur.description}
             data=[dict((cur.description[i][0],value) \
@@ -293,11 +339,11 @@ def ExecuteReader(query=None):
 
     elif engine == "Hive":
         try:
-            conn = hive.Connection(host=configData[engine]["DB_HOST"], port=int(configData[engine]["PORT"]), database=configData["DATABASE"], username=configData[engine]["LDAP_USER"])
+            conn = hive.Connection(host=dbhost, port=dbport, database=dbname, username=dbuser)
             cur = conn.cursor()   
             cur.execute(query)
         except Exception, e:
-           return "Internal server error", 500 
+           return "Error trying to connect to db", 500 
         else:   
             headers={row[0]:row[0] for row in cur.description}
              
@@ -306,37 +352,41 @@ def ExecuteReader(query=None):
              
             cur.close()
             conn.close()
-            return headers, data 
+            return headers, data  
           
 
 def ExecuteNonReader(query=None):
     """Executes a given query selecting the engine and db configured in config.json"""
     configData=current_app.config["API"]    
     engine = configData["DBENGINE"]
-
-    result = ""
+    dbhost = configData[engine]["DB_HOST"]
+    dbport = int(configData[engine]["PORT"])
+    dbname = configData["DATABASE"]
+    dbauth = configData[engine]["AUTH_MECHANISM"]
+    dbuser = configData[engine]["LDAP_USER"]
+    result = "" 
     if engine == "Impala": 
         try: 
-            conn=connect(host=configData[engine]["DB_HOST"], port=int(configData[engine]["PORT"]), database=configData["DATABASE"], auth_mechanism=configData[engine]["AUTH_MECHANISM"], user=configData[engine]["LDAP_USER"])
+            conn=connect(host=dbhost, port=dbport, database=dbname, auth_mechanism=dbauth, user=dbuser)
             cur=conn.cursor()
             cur.execute(query)
         except Exception, e:
-            return "Internal server error", 500 
+           return "Error trying to connect to db", 500 
         else:  
             result=True
     elif engine == "Hive":
         try:
-            conn = hive.Connection(host=configData[engine]["DB_HOST"], port=int(configData[engine]["PORT"]), database=configData["DATABASE"], username=configData[engine]["LDAP_USER"])
+            conn = hive.Connection(host=dbhost, port=dbport, database=dbname, username=dbuser)
             cur = conn.cursor()
             cur.execute(query)
         except Exception, e:
-            return "Internal server error", 500 
+           return "Error trying to connect to db", 500 
         else:    
             result=True
-
     cur.close()
     conn.close()
-    return result
+    return result 
+        
                                                       
 
 def IanaCodesReplace(jsonData):
