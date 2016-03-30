@@ -3,7 +3,7 @@ var easyMode = {
     KERNEL_READY: 1,
     NOTEBOOK_READY: 2,
     DOM_READY: 4,
-    UP_AND_RUNNING: 7,
+    ENV_READY: 7,
     building: false,
     present: false,
     ready: false,
@@ -50,33 +50,14 @@ function isEasyModePresent()
     return $('.widget-area > .widget-subarea > .widget-box').length>0;
 }
 
-/**
- *  Show a progress indicator to users
- */
-function showProgressIndicator()
+function insertProgressIndicator()
 {
     $(document.body).append(
-        '<div class="oni_easy_mode_loader">' +
-            '<div>' +
-                'Building UI <span class="oni_easy_mode_progress">0</span>%' +
-                '<span class="oni_easy_mode_spinner"></span>' +
-            '</div>' +
-            '<div class="oni_easy_mode_details">' +
-            '</div>' +
+        '<div id="oni_easy_mode_loader">' +
+            '<span id="oni_easy_mode_loader_details"></span>' +
+            '<span id="oni_easy_mode_loader_spinner"></span>' +
         '</div>'
     );
-}
-
-/**
- *  Update progress indicator
- */
-function updateProgressIndicator()
-{
-    var p;
-
-    p = (easyMode.cells.total-easyMode.cells.execution_queue.length) * 100 / easyMode.cells.total;
-
-    $('.oni_easy_mode_progress').text(Math.floor(p));
 }
 
 /**
@@ -84,12 +65,44 @@ function updateProgressIndicator()
  */
 function removeProgressIndicator()
 {
-    $('.oni_easy_mode_loader').remove();
+    $('#oni_easy_mode_loader').remove();
+}
+
+/**
+ *  Updates progress indicator's details
+ */
+function updateProgressIndicator(content)
+{
+    $('#oni_easy_mode_loader_details').html(content);
+}
+
+/**
+ *  Show a progress indicator to users
+ */
+function showBuildingUiIndicator()
+{
+    insertProgressIndicator();
+
+    updateProgressIndicator(
+        'Building UI <span id="oni_easy_mode_loader_progress">0</span>%'
+    );
+}
+
+/**
+ *  Update progress indicator
+ */
+function updateBuildingUiIndicator()
+{
+    var p;
+
+    p = (easyMode.cells.total-easyMode.cells.execution_queue.length) * 100 / easyMode.cells.total;
+
+    $('#oni_easy_mode_loader_progress').text(Math.floor(p));
 }
 
 function easyModeBootStrap (IPython)
 {
-    if (easyMode.stage!=easyMode.UP_AND_RUNNING) return;
+    if (easyMode.stage!=easyMode.ENV_READY) return;
 
     // 1. Look for widgets
     if (isEasyModePresent())
@@ -116,9 +129,6 @@ function easyModeBootStrap (IPython)
             if (cell.cell_type==='code')
             {
                 easyMode.cells.total++;
-                cell.code_mirror.on("change", function () {
-                    console.dir(arguments);
-                });
             }
         });
         // Make it twice to show progress when requesting execution
@@ -127,7 +137,7 @@ function easyModeBootStrap (IPython)
         // 1.2.2 Execute all cells ( Generate UI )
         IPython.notebook.execute_all_cells();
 
-        updateProgressIndicator();
+        updateBuildingUiIndicator();
     }
 }
 function isEasyModeAvailable()
@@ -151,6 +161,26 @@ define(['base/js/namespace', 'base/js/events'], function(IPython, events)
     // Let Notebook be aware it is running on an iframe
     IPython._target = '_self';
 
+    events.on('kernel_busy.Kernel', function ()
+    {
+        // Skip this event while building UI
+        if (!easyMode.ready) return;
+
+        $('#notebook button.btn:not([disabled])').addClass('oniDisabled').attr('disabled', 'disabled');
+
+        insertProgressIndicator();
+    });
+
+    events.on('kernel_idle.Kernel', function ()
+    {
+        // Skip this event while building UI
+        if (!easyMode.ready) return;
+
+        removeProgressIndicator();
+
+        $('#notebook button.btn.oniDisabled').removeClass('oniDisabled').removeAttr('disabled');
+    });
+
     events.on('kernel_ready.Kernel', function ()
     {
         console.info('ONI: Kernel is ready');
@@ -171,9 +201,8 @@ define(['base/js/namespace', 'base/js/events'], function(IPython, events)
 
     events.on('shell_reply.Kernel', function (evt, data)
     {
-        var kernel, reply, cell, cellIdx;
+        var reply, cell, cellIdx;
 
-        kernel = data.kernel;
         reply = data.reply;
         cell = easyMode.cells.execution_queue.shift();
 
@@ -211,7 +240,7 @@ define(['base/js/namespace', 'base/js/events'], function(IPython, events)
         }
         else
         {
-            updateProgressIndicator();
+            updateBuildingUiIndicator();
         }
     });
 
@@ -255,6 +284,6 @@ $(function ()
     });
 
     // Show progress indicator
-    showProgressIndicator();
+    showBuildingUiIndicator();
 });
 

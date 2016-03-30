@@ -35,18 +35,26 @@
   left: 0px;
 }
 
-.oni_easy_mode_loader
+.oni #oni_easy_mode_loader
 {
     text-align: center;
     margin-top: 50px;
 }
 
-.oni.oni_ninja_mode .oni_easy_mode_loader
+.oni.oni_easy_mode #oni_easy_mode_loader
+{
+    position: fixed;
+    top: 10px;
+    right: 10px;
+    margin-top: 0px;
+}
+
+.oni.oni_ninja_mode #oni_easy_mode_loader
 {
     display: none;
 }
 
-.oni .oni_easy_mode_spinner
+.oni #oni_easy_mode_loader_spinner
 {
     display: inline-block;
     width: 16px;
