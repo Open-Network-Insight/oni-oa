@@ -56,33 +56,46 @@ function filterDataAndBuildGraph(selectedEdgeId, sourceIpNodeId, targetIpNodeId,
 
   // Get the edges from the data
   var edges = data.map(function (d, i)
-                       {
-                          var fSrc = nodes.map(function (n, i) { if (n.name == getDnsNodeName(d.dns_qry_name)) return i }).filter(isFinite)
-                          var fDst = nodes.map(function (n, i) { if (n.name == d.ip_dst) return i }).filter(isFinite);
-                          var id;
+                        {
+                            var nodeName, ii, n, source, target, id;
 
-                          id = getDnsNodeName(d.dns_qry_name) + "-" + d.ip_dst;
+                            nodeName = getDnsNodeName(d.dns_qry_name);
+
+                            source = -1;
+                            target = -1;
+
+                            // Look for first match in the array
+                            for (ii=0, n=nodes.length ; ii<n ; ii++)
+                            {
+                                if (source==-1 && nodes[ii].name==nodeName)
+                                {
+                                    source = ii;
+                                }
+
+                                if (target==-1 && nodes[ii].name==d.ip_dst)
+                                {
+                                    target = ii;
+                                }
+
+                                if (source>=0 && target>=0) break;
+                            }
+
+                          id = nodeName + "-" + d.ip_dst;
                           id = encodeNodeId(id);
 
                           return {
-                            source: fSrc.length > 0 ? fSrc[0] : -1,
-                            target: fDst.length > 0 ? fDst[0] : -1,
+                            source: source,
+                            target: target,
                             weight: -Math.log(d.lda_score),
                             id: "k" + id
                           };
                         });
 
-  // small function to know if an edge is suspicious
-  var edgeIsSuspect = function (d) { return true; };
-
   // Update the degree in the edges if the edge is a suspect
   edges.forEach(function (d)
                 {
-                  if (edgeIsSuspect(d))
-                  {
                     nodes[d.source].degree = nodes[d.source].degree + 1 || 1;
                     nodes[d.target].degree = nodes[d.target].degree + 1 || 1;
-                  }
                 });
 
   // define an opacity function
@@ -139,7 +152,7 @@ function filterDataAndBuildGraph(selectedEdgeId, sourceIpNodeId, targetIpNodeId,
   // Group and append the edges to the main SVG
   svg.append('g')
                .selectAll('.edge')
-               .data(edges.filter(edgeIsSuspect))
+               .data(edges)
                .enter()
                     .append('line')
                     .classed('edge', true)
@@ -159,10 +172,10 @@ function filterDataAndBuildGraph(selectedEdgeId, sourceIpNodeId, targetIpNodeId,
 
   var node = svg.append('g')
                             .selectAll('.node')
-                            /*.data(nodes.filter(function (d)
+                            .data(nodes.filter(function (d)
                             {
                               return d.degree > 0;
-                            }))*/
+                            }))
                             .data(nodes)
                             .enter().append('path')
                                     .classed('node', true)
