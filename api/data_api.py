@@ -239,14 +239,12 @@ def get_threat_investigation_visual(date=None):
             try:  
                 obj = json.loads(request.data)   
                 if obj.has_key("dns_qry_name"):
-                    # qry = "SELECT COUNT(ip_dst) as total, dns_qry_name, ip_dst FROM {0}.dns_susp WHERE y={2} AND m={3} AND d={4} AND dns_qry_name='{1}' GROUP BY ip_dst, dns_qry_name ORDER BY total DESC".format(configData["DATABASE"], obj["dns_qry_name"], yy,mm,dd)
                     qry = "SELECT COUNT(s.ip_dst) as total, s.dns_qry_name, s.ip_dst, ISNULL(sc.ip_sev,0) as sev FROM {0}.dns_susp as s\
                             LEFT JOIN {0}.dns_scores as sc ON sc.ip_dst = s.ip_dst AND sc.y={2} AND sc.m={3} AND sc.d={4}\
                             WHERE s.y={2} AND s.m={3} AND s.d={4} AND s.dns_qry_name='{1}' GROUP BY s.ip_dst, s.dns_qry_name, sc.ip_sev\
                             ORDER BY sev DESC".format(configData["DATABASE"], obj["dns_qry_name"], yy,mm,dd)
                     res = ExecuteReader(qry)   
                 elif obj.has_key("ip_dst"):
-                    # qry = "SELECT COUNT(dns_qry_name) as total, dns_qry_name, ip_dst FROM {0}.dns_scores WHERE y={2} AND m={3} AND d={4} AND ip_dst='{1}' GROUP BY dns_qry_name, ip_dst ORDER BY dns_sev DESC".format(configData["DATABASE"], obj["ip_dst"], yy,mm,dd)
                     qry ="SELECT COUNT(s.dns_qry_name) as total, s.dns_qry_name, s.ip_dst, ISNULL(sc.dns_sev,0) as sev FROM {0}.dns_susp as s\
                             LEFT JOIN {0}.dns_scores as sc ON sc.dns_qry_name = s.dns_qry_name AND sc.y={2} AND sc.m={3} AND sc.d={4}\
                             WHERE s.y={2} AND s.m={3} AND s.d={4} AND s.ip_dst='{1}' GROUP BY s.dns_qry_name, s.ip_dst, sc.dns_sev\
@@ -264,25 +262,11 @@ def get_threat_investigation_visual(date=None):
             return "Bad Request",  400
                 
 
-@blueprint.route('/config', methods=['GET']) 
-def get_config_data():  
-    configData=current_app.config["API"]  
-    if configData != "":
-        return jsonify({'config':configData})
-
-
-
-@blueprint.route('/dns/clear_staging', methods=['GET']) 
-def clear_staging(): 
-    configData = current_app.config["API"]   
-    engine = configData["DBENGINE"]  
-    try:
-        if engine == "Impala": 
-            invalidate_metadata()
-    except Exception, e:
-        return "Internal server error", 500
-    else:
-        return "No Content", 204 
+# @blueprint.route('/config', methods=['GET']) 
+# def get_config_data():  
+#     configData=current_app.config["API"]  
+#     if configData != "":
+#         return jsonify({'config':configData})
 
 
 @blueprint.route('/dns/scoring', methods=['POST']) 

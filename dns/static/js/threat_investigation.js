@@ -20,12 +20,32 @@ function onDateChange(e)
     reloadNotebook(date);
 }
 
+function onToggleModeClick()
+{
+    var loc;
+
+    $('#toggleModeButton > span').toggleClass('glyphicon-education').toggleClass('glyphicon-user');
+
+    loc = document.getElementsByTagName('iframe')[0].contentWindow.location;
+    if (!/showNinjaMode/.test(loc.hash))
+    {
+      loc.hash = 'showNinjaMode';
+    }
+    else
+    {
+      loc.hash = 'showEasyMode';
+    }
+}
+
 React.render(
-  (
-    <div className="form-group">
-      <label htmlFor="dataDatePicker" className="control-label">Data Date:</label>
-      <DateInput id="dataDatePicker" onChange={onDateChange} />
-    </div>
+    (
+        <div className="form-group">
+            <button id="toggleModeButton" type="button" className="btn btn-default btn-xs" onClick={onToggleModeClick}>
+                <span className="glyphicon glyphicon-education" aria-hidden="true"></span>
+            </button>
+            <label htmlFor="dataDatePicker" className="control-label">Data Date:</label>
+            <DateInput id="dataDatePicker" onChange={onDateChange} />
+        </div>
   ),
   document.getElementById('nav_form')
 );

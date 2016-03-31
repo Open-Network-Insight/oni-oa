@@ -142,7 +142,7 @@ function easyModeBootStrap (IPython)
 }
 function isEasyModeAvailable()
 {
-    return window.parent!=window && window.location.pathname.indexOf('Edge_Investigation')>0;
+    return window.parent!=window;
 }
 
 /**
