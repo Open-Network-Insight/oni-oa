@@ -214,11 +214,10 @@ def get_threat_investigation_comments(date=None):
             if obj.has_key("data"):
                 document = obj["data"]
                 load_to_hadoop_script ="hive -e \"LOAD DATA LOCAL INPATH '{0}' INTO TABLE {1}.dns_comments;\"".format(document, configData["DATABASE"]) 
-                print load_to_hadoop_script
                 subprocess.call(load_to_hadoop_script,shell=True)    
                 if engine == "Impala": 
                     invalidate_metadata()
-                return "Success", 200
+                return "No Content", 204
             else:
                 return "Bad request", 400
 
