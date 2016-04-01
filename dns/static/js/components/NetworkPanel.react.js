@@ -323,8 +323,8 @@ function filterDataAndBuildGraph(selectedEdgeId, sourceIpNodeId, targetIpNodeId,
 function nodeclick (d)
 {
   DnsActions.selectSrcIp(d.fullName);
-  DnsActions.reloadVisualDetails();
   DnsActions.toggleMode(DnsConstants.DETAILS_PANEL, DnsConstants.VISUAL_DETAILS_MODE);
+  DnsActions.reloadVisualDetails();
 }
 
 function nodeContextualClick (d, i)
