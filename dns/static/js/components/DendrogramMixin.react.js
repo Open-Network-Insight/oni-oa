@@ -108,7 +108,7 @@ function buildDendrogram (root, ipsrc)
     node = svg.selectAll('.node')
                               .data(nodes)
                               .enter().append('g')
-                                                  .attr('class', 'node')
+                                                  .attr('class', function (d) { return 'node depth_' + d.depth; })
                                                   .attr('transform', function (d) { return 'translate(' + d.y + ',' + d.x + ')'; });
 
     node.append('circle')

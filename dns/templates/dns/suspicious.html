@@ -2,6 +2,12 @@
 {% block title %}DNS :: Suspicious{% endblock %}
 {% block css_inline %}
     {% include 'dns/dendrogram.css' %}
+
+    .dendrogram .node.depth_1 text
+    {
+        transform: translateY(-10px);
+    }
+
     .dns_qry_name
     {
         white-space: nowrap;
