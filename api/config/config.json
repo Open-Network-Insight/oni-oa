@@ -2,7 +2,7 @@
 	"API":{
 		"DBENGINE":"",
 		"DATABASE":"",
-		"DEFAULT_DATE":"20151114",
+		"DEFAULT_DATE":"",
 		"Impala":{
 			"DB_HOST":"",
 			"PORT":"",
