@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Security Analytics Open Network Insight :: DNS :: Story Board</title>
+
+    <meta charset="UTF-8">
+
+    <!--CDN for font awesome ICONS-->
+    <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css">
+    <!--Styles Sheet (Based on bootstrap)-->
+    <link rel="stylesheet" type="text/css" href="../css/custom.min.css" />
+    <link rel="stylesheet" type="text/css" href="static/css/app.css" />
+    <!--Bootstrap Date picker styles-->
+    <link rel="stylesheet" href="../css/bootstrap-datepicker3.min.css" />
+    <link rel="stylesheet" href="static/css/dendrogram.css" />
+    <style>
+        .oni-panel .panel-body
+        {
+            min-height: 450px;
+            max-height: 450px;
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar navbar-inverse">
+        <div class="container-fluid">
+            <!-- App name and toggle get grouped for better mobile display -->
+            <div class="navbar-header">
+                <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#main-menu">
+                    <span class="sr-only">Toggle navigation</span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                </button>
+                <span class="navbar-brand">Open Network Insight :: DNS :: Story Board</span>
+            </div>
+            <!-- Collect the nav links, forms, and other content for toggling -->
+            <div class="collapse navbar-collapse" id="main-menu">
+              <ul class="nav navbar-nav navbar-right">
+                <li>
+                  <a href="index_sdns.html">Suspicious Connects</a>
+                </li>
+                <li>
+                  <a href="threat_investigation.html">Threat Investigation</a>
+                </li>
+                <li>
+                  <a href="story_board.html">Story Board</a>
+                </li>
+              </ul>
+            </div>
+            <div class="row bg-default text-right" id="collapse_box">
+                <!--Tools Buttons-->
+                <div class="col-md-12 pd-top-btm5">
+                    <div id="nav_form" class="col-md-12 form-inline"></div>
+                </div>
+            </div> <!-- /Tools Buttons-->
+        </div>
+    </nav>
+    <div class="container-fluid">
+      <!-- MAIN Content row-->
+      <div class="row">
+            <!--Main Content - In here we will be adding sub-columns to form the sections layout-->
+              <span id="executive_threat_briefing"></span>
+              <span id="incident_progression"></span>
+
+              <span id="timeline"></span>
+      </div>
+    </div>
+
+    <!-- SCRIPTS -->
+    <script type="application/javascript" src="../js/jquery.min.js"></script>
+    <script type="application/javascript" src="../js/d3.min.js"></script>
+    <script type="application/javascript" src="../js/cubehelix/cubehelix.js"></script>
+    <script type="application/javascript" src="../js/bootstrap.min.js"></script>
+    <script type="application/javascript" src="../js/bootstrap-datepicker.min.js"></script>
+    <script type="application/javascript" src="static/js/story_board.bundle.min.js"></script>
+    <script type="application/javascript" src="static/js/keep_location_hash.js"></script>
+</body>
+</html>

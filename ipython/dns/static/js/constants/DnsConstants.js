@@ -1,0 +1,32 @@
+var DnsConstants = {
+  // Actions
+  UPDATE_FILTER: 'UPDATE_FILTER',
+  UPDATE_DATE: 'UPDATE_DATE',
+  RELOAD_SUSPICIOUS: 'RELOAD_SUSPICIOUS',
+  RELOAD_DETAILS: 'RELOAD_DETAILS',
+  RELOAD_DETAILS_VISUAL: 'RELOAD_DETAILS_VISUAL',
+  RELOAD_COMMENTS: 'RELOAD_COMMENTS',
+  EXPAND_PANEL: 'EXPAND_PANEL',
+  RESTORE_PANEL: 'RESTORE_PANEL',
+  TOGGLE_MODE_PANEL: 'TOGGLE_MODE_PANEL',
+  HIGHLIGHT_THREAT: 'HIGHLIGHT_THREAT',
+  UNHIGHLIGHT_THREAT: 'UNHIGHLIGHT_THREAT',
+  SELECT_THREAT: 'SELECT_THREAT',
+  SELECT_SRC_IP: 'SELECT_SRC_IP',
+  SELECT_COMMENT: 'SELECT_COMMENT',
+  // Panels
+  DETAILS_PANEL: 'Details',
+  // Panel Modes
+  DETAILS_MODE: 'DETAILS_MODE',
+  VISUAL_DETAILS_MODE: 'VISUAL_DETAILS_MODE',
+  // Notebooks
+  THREAT_INVESTIGATION_NOTEBOOK: '/notebooks/dns/user/{date}/Threat_Investigation.ipynb',
+  // API URLS
+  API_SUSPICIOUS: 'user/${date}/dns_scores',
+  API_DETAILS: 'user/${date}/edge-${dns_qry_name}_${time}',
+  API_VISUAL_DETAILS: 'user/${date}/dendro-${ip_dst}',
+  API_COMMENTS: 'user/${date}/threats',
+  API_INCIDENT_PROGRESSION: 'user/${date}/threat-dendro-${id}'
+};
+
+module.exports = DnsConstants;
