@@ -102,11 +102,20 @@ var SuspiciousPanel = React.createClass({
     return cellBody;
   },
   // Hidden cells
-  _render_resp_h_cell: false,
-  _render_query_rep_cell: false,
-  _render_hh_cell: false,
   _render_dns_sev_cell: false,
+  _render_domain_cell: false,
+  _render_frame_len_cell: false,
+  _render_hh_cell: false,
   _render_ip_sev_cell: false,
+  _render_num_periods_cell: false,
+  _render_query_length_cell: false,
+  _render_query_rep_cell: false,
+  _render_resp_h_cell: false,
+  _render_subdomain_cell: false,
+  _render_subdomain_entropy_cell: false,
+  _render_subdomain_length_cell: false,
+  _render_top_domain_cell: false,
+  _render_word_cell: false,
   _onChange: function ()
   {
     var state;
