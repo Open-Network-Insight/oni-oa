@@ -86,7 +86,7 @@ assign(RestStore.prototype, EventEmitter.prototype, {
     {
       url = url.replace('${'+name+'}', this._filters[name]);
     }
-    url = url.replace(/\.|:/g, '_') + '.csv';
+    url = url.replace(/:/g, '_') + '.csv';
 
     $.ajax(url, {
       method: 'GET',

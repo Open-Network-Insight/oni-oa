@@ -14,13 +14,36 @@ var UNHIGHLIGHT_THREAT_EVENT = 'unhightlight_thread';
 var SELECT_THREAT_EVENT = 'select_treath';
 
 var filter = '';
+var filterName = '';
 var date = '';
 var highlightedThread = null;
 var selectedThread = null;
+var unfilteredData = null;
 
 var SuspiciousStore = assign(new RestStore(DnsConstants.API_SUSPICIOUS), {
   errorMessages: {
     404: 'Please choose a different date, no data has been found'
+  },
+  getData: function ()
+  {
+    if (!filter || !unfilteredData) return this._data;
+
+    return assign(
+                  {},
+                  unfilteredData,
+                  {
+                    data: unfilteredData.data.filter(function (item)
+                    {
+                      return item[filterName]==filter;
+                    })
+                  }
+    );
+  },
+  setData: function (data)
+  {
+    this._data = unfilteredData = data;
+    
+    this.emitChangeData();
   },
   setFilter: function (newFilter)
   {
@@ -28,6 +51,7 @@ var SuspiciousStore = assign(new RestStore(DnsConstants.API_SUSPICIOUS), {
     
     if (filter==='')
     {
+      filterName = '';
       this.removeRestFilter(IP_FILTER);
       this.removeRestFilter(DNS_FILTER);
     }
@@ -35,11 +59,13 @@ var SuspiciousStore = assign(new RestStore(DnsConstants.API_SUSPICIOUS), {
     {
       this.removeRestFilter(DNS_FILTER);
       this.setRestFilter(IP_FILTER, filter);
+      filterName = IP_FILTER;
     }
     else
     {
       this.removeRestFilter(IP_FILTER);
       this.setRestFilter(DNS_FILTER, filter);
+      filterName = DNS_FILTER;
     }
     
     this.emitChangeFilter();

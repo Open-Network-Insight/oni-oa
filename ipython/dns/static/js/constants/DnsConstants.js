@@ -23,7 +23,7 @@ var DnsConstants = {
   THREAT_INVESTIGATION_NOTEBOOK: '/notebooks/dns/user/{date}/Threat_Investigation.ipynb',
   // API URLS
   API_SUSPICIOUS: 'user/${date}/dns_scores',
-  API_DETAILS: 'user/${date}/edge-${dns_qry_name}-${time}',
+  API_DETAILS: 'user/${date}/edge-${dns_qry_name}_${time}',
   API_VISUAL_DETAILS: 'user/${date}/dendro-${ip_dst}',
   API_COMMENTS: 'user/${date}/threats',
   API_INCIDENT_PROGRESSION: 'user/${date}/threat-dendro-${id}'
