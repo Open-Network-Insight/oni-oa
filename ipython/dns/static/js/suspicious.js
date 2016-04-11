@@ -59,7 +59,7 @@ React.render(
 
 var IPythonNotebookPanel = require('./components/IPythonNotebookPanel.react');
 React.render(
-  <Panel title="Notebook" expandable toggleable>
+  <Panel title="Notebook" expandable>
      <IPythonNotebookPanel date={OniUtils.getCurrentDate()} />
   </Panel>,
   document.getElementById('notebook')

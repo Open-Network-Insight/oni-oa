@@ -11,12 +11,10 @@ var NotebookPanel = React.createClass({
   componentDidMount: function ()
   {
     SuspiciousStore.addChangeDateListener(this._onDateChange);
-    DnsAppStore.addPanelToggleModeListener(this._toggleMode);
   },
   componentWillUnmount: function ()
   {
     SuspiciousStore.removeChangeDateListener(this._onDateChange);
-    DnsAppStore.removePanelToggleModeListener(this._toggleMode);
   },
   render: function ()
   {
@@ -33,19 +31,6 @@ var NotebookPanel = React.createClass({
     var date = SuspiciousStore.getDate().replace(/-/g, '');
     
     this.setState({date: date});
-  },
-  _toggleMode: function (panel)
-  {
-    if (panel!==this.props.title) return;
-    
-    if (!/showNinjaMode/.test(this.getDOMNode().contentWindow.location.hash))
-    {
-      this.getDOMNode().contentWindow.location.hash = 'showNinjaMode';
-    }
-    else
-    {
-      this.getDOMNode().contentWindow.location.hash = 'showEasyMode';
-    }
   }
 });
 
