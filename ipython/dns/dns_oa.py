@@ -97,7 +97,8 @@ def main():
 	updated_data = [append_hh_column(h,row) for row in updated_data]
 	info("Adding severety columns")
 	updated_data = [append_sev_columns(row) for row in updated_data]
-	#TODO: add call for IANA
+	infor("Adding iana labels")
+	updated_data = [add_iana_translation(row) for row in updated_data]
 	info("Saving data to local csv")
 	save_to_csv_file(updated_data, date)
 	info("Calculating DNS OA details")
@@ -106,7 +107,7 @@ def main():
 
 def save_to_csv_file(data, date):
     csv_file_location = "{0}/user/{1}/dns_scores.csv".format(script_path,date)
-    header = ["frame_time","frame_len","ip_dst","dns_qry_name","dns_qry_class","dns_qry_type","dns_qry_rcode",
+    header = ["frame_time","frame_len","ip_dst","dns_qry_name","dns_qry_class","dns_qry_class_name","dns_qry_type","dns_qry_type_name","dns_qry_rcode","dns_qry_rcode_name",
     "domain","subdomain","subdomain_length","query_length","num_periods","subdomain_entropy","top_domain","word","score","query_rep","hh","ip_sev","dns_sev"]
     data.insert(0,header)
     with open(csv_file_location, 'w+') as dns_scores_file:
@@ -151,11 +152,26 @@ def add_iana_translation(row):
     qry_type = row[7]
     qry_rcode = row[8]
     COL_RCODE = 'dns_qry_rcode'
-    COL_QTYPE = 'dns_qry_type'
+    COL_TYPE = 'dns_qry_type'
     COL_CLASS = 'dns_qry_class'
     qry_class_dst_index = 7
     qry_type_dst_index = 9
     qry_rcode_dst_index = 11
+    qry_class_name = ""
+    qry_type_name = ""
+    qry_rcode_name = ""
+    if os.path.isfile(iana_config_file):
+	iana_config = json.load(open(iana_config_file))
+	iana = iana_transform.IanaTransform(iana_config["IANA"])
+	qry_class_name = iana.get_name(qry_class, COL_CLASS)
+	qry_type_name = iana.get_name(qry_type, COL_TYPE)
+	qry_rcode_name = iana.get_name(qry_rcode, COL_RCODE)
+    row.insert(qry_class_dst_index, qry_class_name)
+    row.insert(qry_type_dst_index, qry_type_name)
+    row.insert(qry_rcode_dst_index, qry_rcode_name)
+    return row
+	
+ 
 
 def merge_rep_results(ds):
     z = {}
