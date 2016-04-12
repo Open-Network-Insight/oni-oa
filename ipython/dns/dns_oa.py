@@ -98,7 +98,12 @@ def main():
 	info("Adding severety columns")
 	updated_data = [append_sev_columns(row) for row in updated_data]
 	info("Adding iana labels")
-	updated_data = [add_iana_translation(row) for row in updated_data]
+	if os.path.isfile(iana_config_file):
+	    iana_config = json.load(open(iana_config_file))
+	    iana = iana_transform.IanaTransform(iana_config["IANA"])
+	    updated_data = [add_iana_translation(row,iana) for row in updated_data]
+	else:
+	    updated_data = [row + ["","",""] for row in updated_data]
 	info("Saving data to local csv")
 	save_to_csv_file(updated_data, date)
 	info("Calculating DNS OA details")
@@ -147,7 +152,7 @@ def append_sev_columns(row):
     row.append(0)
     return row
 
-def add_iana_translation(row):
+def add_iana_translation(row, iana):
     qry_class = row[4]
     qry_type = row[5]
     qry_rcode = row[6]
@@ -157,12 +162,9 @@ def add_iana_translation(row):
     qry_class_name = ""
     qry_type_name = ""
     qry_rcode_name = ""
-    if os.path.isfile(iana_config_file):
-	iana_config = json.load(open(iana_config_file))
-	iana = iana_transform.IanaTransform(iana_config["IANA"])
-	qry_class_name = iana.get_name(qry_class, COL_CLASS)
-	qry_type_name = iana.get_name(qry_type, COL_TYPE)
-	qry_rcode_name = iana.get_name(qry_rcode, COL_RCODE)
+    qry_class_name = iana.get_name(qry_class, COL_CLASS)
+    qry_type_name = iana.get_name(qry_type, COL_TYPE)
+    qry_rcode_name = iana.get_name(qry_rcode, COL_RCODE)
     row = row + [qry_class_name, qry_type_name, qry_rcode_name]
     return row
 	
