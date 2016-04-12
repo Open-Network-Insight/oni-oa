@@ -5,10 +5,12 @@ import csv
 import subprocess
 from inscreenlog import *
 from iana import iana_transform
+from nc import network_context
 
 script_path = os.path.dirname(os.path.abspath(__file__))
 gti_config_file = "{0}/gti/gti_config.json".format(script_path)
 iana_config_file = "{0}/iana/iana_config.json".format(script_path)
+nc_config_file = "{0}/nc/nc_config.json".format(script_path)
 rep_services = []
 
 def main():
@@ -104,6 +106,13 @@ def main():
 	    updated_data = [add_iana_translation(row,iana) for row in updated_data]
 	else:
 	    updated_data = [row + ["","",""] for row in updated_data]
+	info("Adding network context")
+	if os.path.isfile(nc_config_file):
+	    nc_config = json.load(open(nc_config_file))
+	    nc = network_context.NetworkContext(nc_config["NC"])
+	    updated_data = [row + [nc.get_nc(row[2])] for row in updated_data]
+	else: 
+	    updated_data = [row + [""] for row in updated_data]
 	info("Saving data to local csv")
 	save_to_csv_file(updated_data, date)
 	info("Calculating DNS OA details")
