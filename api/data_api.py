@@ -43,8 +43,10 @@ def get_dns_suspicious(date=None):
         if not yy or not mm or not dd:
             return "Unexpected date format", 400 
         else: 
-            qry = "SELECT susp.frame_time, susp.ip_dst, susp.dns_qry_name, susp.dns_qry_class, susp.dns_qry_type, susp.dns_qry_rcode, susp.score, susp.query_rep, susp.hh FROM " + dbname + ".dns_susp as susp "
-            qry = qry + " LEFT JOIN " + dbname + ".dns_scores as scores ON scores.dns_qry_name = susp.dns_qry_name WHERE scores.dns_qry_name IS NULL "
+            qry = "SELECT susp.frame_time, susp.ip_dst, susp.dns_qry_name, susp.dns_qry_class, susp.dns_qry_type, \
+                    susp.dns_qry_rcode, susp.score, susp.query_rep, susp.hh FROM " + dbname + ".dns_susp as susp "
+            qry = qry + " LEFT JOIN " + dbname + ".dns_scores as scores ON scores.dns_qry_name = susp.dns_qry_name \
+                    WHERE scores.dns_qry_name IS NULL "
             qry = qry + " AND susp.y=" + yy + " AND susp.m=" + mm + " AND susp.d=" + dd + " "
     if request.method == 'POST' and request.headers['Content-Type'] == CONTENT_TYPE:
         try:
@@ -75,7 +77,8 @@ def get_dns_details(date=None):
     except ValueError:        
         return "Unexpected date format", 400 
     else:
-        qry= "SELECT frame_time, frame_len, ip_dst, ip_src, dns_qry_name, dns_qry_class, dns_qry_type, dns_qry_rcode, dns_a FROM " + configData["DATABASE"] + ".dns WHERE y=" + yy + " AND m=" + mm + " AND d=" + dd + ""
+        qry= "SELECT frame_time, frame_len, ip_dst, ip_src, dns_qry_name, dns_qry_class, dns_qry_type, dns_qry_rcode, dns_a \
+                FROM " + configData["DATABASE"] + ".dns WHERE y=" + yy + " AND m=" + mm + " AND d=" + dd + ""
         if request.method == 'POST' and request.headers['Content-Type'] == 'application/json':
             try:
                 obj = json.loads(request.data)  
@@ -109,17 +112,23 @@ def get_dns_details_visual(date=None):
     except ValueError:        
         return "Unexpected date format", 400
     else:  
-        qry = "SELECT ip_dst, dns_qry_name, dns_a FROM (SELECT susp.ip_dst, susp.dns_qry_name, susp.dns_a FROM " + configData["DATABASE"] + ".dns as susp " 
-        qry = qry + " WHERE susp.y=" + yy + " AND susp.m=" + mm + " AND susp.d=" + dd + " "
+        # qry = "SELECT ip_dst, dns_qry_name, dns_a FROM (SELECT susp.ip_dst, susp.dns_qry_name, susp.dns_a FROM " + configData["DATABASE"] + ".dns as susp " 
+        # qry = qry + " WHERE susp.y=" + yy + " AND susp.m=" + mm + " AND susp.d=" + dd + " "
+        qry = "SELECT ip_dst, dns_qry_name, dns_a, score FROM (SELECT raw.ip_dst, raw.dns_qry_name, raw.dns_a, COALESCE(susp.score,100) as score\
+                FROM " + configData["DATABASE"] + ".dns as raw " 
+        qry = qry + "LEFT JOIN " + configData["DATABASE"] + ".dns_susp as susp on susp.dns_qry_name = raw.dns_qry_name WHERE raw.y=" + yy + " \
+                AND raw.m=" + mm + " AND raw.d=" + dd + "  "
 
         if request.method == 'POST' and request.headers['Content-Type'] == CONTENT_TYPE:
             try:
                 obj = json.loads(request.data)  
-                qry = qry + " AND susp.ip_dst='" + obj["ip_dst"]+ "' " if obj.has_key("ip_dst") else qry + ""    
+        #         qry = qry + " AND susp.ip_dst='" + obj["ip_dst"]+ "' " if obj.has_key("ip_dst") else qry + ""    
+                qry = qry + " AND raw.ip_dst='" + obj["ip_dst"]+ "' " if obj.has_key("ip_dst") else qry + ""    
             except Exception, e:
                 return "Bad request", 400 
             else:
-                qry=qry + ") AS tmp GROUP BY dns_qry_name, dns_a, ip_dst"   
+        #         qry=qry + ") AS tmp GROUP BY dns_qry_name, dns_a, ip_dst"   
+                qry=qry + ") AS tmp GROUP BY dns_qry_name, dns_a, ip_dst, score ORDER BY score ASC LIMIT 500 "
                 res = ExecuteReader(qry)   
                 if isinstance(res[1], (int, long)):
                     return res
@@ -128,7 +137,7 @@ def get_dns_details_visual(date=None):
                     return jsonify({'headers':res[0] , 'data':ian}) 
         else:
             return "Bad request", 400 
-  
+      
 
 @blueprint.route('/dns/edge/<date>', methods=['POST']) 
 def get_edge_investigation(date=None):  
@@ -147,11 +156,11 @@ def get_edge_investigation(date=None):
                obj = json.loads(request.data)    
                qry = "SELECT DISTINCT (susp."+ obj["filter"] +") FROM " + configData["DATABASE"] + ".dns_susp as susp "
                if obj["filter"]=="ip_dst":
-                    qry = qry + " LEFT JOIN " + configData["DATABASE"] + ".dns_scores as scores ON scores.ip_dst = susp.ip_dst"
-                    qry = qry + " WHERE scores.ip_dst IS NULL AND susp.y=" + yy + " AND susp.m=" + mm + " AND susp.d=" + dd + "  "    
+                    qry = qry + " LEFT JOIN " + configData["DATABASE"] + ".dns_scores as scores ON scores.ip_dst = susp.ip_dst \
+                                WHERE scores.ip_dst IS NULL AND susp.y=" + yy + " AND susp.m=" + mm + " AND susp.d=" + dd + "  "    
                elif obj["filter"]=="dns_qry_name":
-                    qry = qry + " LEFT JOIN " + configData["DATABASE"] + ".dns_scores as scores ON scores.dns_qry_name = susp.dns_qry_name "
-                    qry = qry + " WHERE scores.dns_qry_name IS NULL AND susp.y=" + yy + " AND susp.m=" + mm + " AND susp.d=" + dd + "  "   
+                    qry = qry + " LEFT JOIN " + configData["DATABASE"] + ".dns_scores as scores ON scores.dns_qry_name = susp.dns_qry_name \
+                                WHERE scores.dns_qry_name IS NULL AND susp.y=" + yy + " AND susp.m=" + mm + " AND susp.d=" + dd + "  "   
             except Exception, e:
                 return "Bad request", 400   
             else:
@@ -213,11 +222,20 @@ def get_threat_investigation_comments(date=None):
             engine = configData["DBENGINE"]
             if obj.has_key("data"):
                 document = obj["data"]
-                load_to_hadoop_script ="hive -e \"LOAD DATA LOCAL INPATH '{0}' INTO TABLE {1}.dns_comments;\"".format(document, configData["DATABASE"]) 
-                subprocess.call(load_to_hadoop_script,shell=True)    
                 if engine == "Impala": 
+                    clear_staging_files ="hadoop fs -rm -R -skipTrash '/user/duxbury/dns/comments/stage/*'"
+                    subprocess.call(clear_staging_files, shell=True)   
+                    move_to_hdfs ="hadoop fs -moveFromLocal '{0}' '/user/duxbury/dns/comments/stage/.'".format(document) 
+                    subprocess.call(move_to_hdfs, shell=True)     
+                    load_to_hadoop_script ="impala-shell -i 'cdh-sec3' -q \"LOAD DATA INPATH '/user/duxbury/dns/comments/stage/.' INTO TABLE {0}.dns_comments;\"".format(configData["DATABASE"]) 
+                    subprocess.call(load_to_hadoop_script,shell=True)    
                     invalidate_metadata()
-                return "No Content", 204
+                elif engine == "Hive"
+                    clear_staging_files ="hadoop fs -rm -R -skipTrash '/user/duxbury/dns/comments/stage/*'"
+                    subprocess.call(clear_staging_files, shell=True)   
+                    load_to_hadoop_script ="hive -e \"LOAD DATA LOCAL INPATH '{0}' INTO TABLE {1}.dns_comments;\"".format(document, configData["DATABASE"]) 
+                    subprocess.call(load_to_hadoop_script,shell=True)    
+                return "Success", 200
             else:
                 return "Bad request", 400
 
@@ -274,7 +292,7 @@ def insert_scores_file():
     configData = current_app.config["API"]   
     engine = configData["DBENGINE"]
     if obj.has_key("data") and obj.has_key("date"):
-        document = obj["data"]
+        document = obj["data"] 
     	year = obj["date"][0:4]
     	month = obj["date"][4:6]
     	day = obj["date"][6:8]
@@ -282,12 +300,20 @@ def insert_scores_file():
     try:
         clear_staging_files ="hadoop fs -rm -R -skipTrash '/user/duxbury/dns/scores/stage/*'"
         subprocess.call(clear_staging_files, shell=True)         
-        load_to_hadoop_script ="hive -e \"LOAD DATA LOCAL INPATH '{0}' INTO TABLE {1}.dns_scores_tmp;\"".format(document, configData["DATABASE"]) 
-        subprocess.call(load_to_hadoop_script, shell=True)	
-        load_to_avro = " hive -e \"INSERT INTO TABLE {3}.dns_scores PARTITION (y={0}, m={1}, d={2}) SELECT d.ip_dst, d.dns_qry_name, d.ip_sev, d.dns_sev, d.mod_date, d.mod_user FROM {3}.dns_scores_tmp d;\"".format(year,month,day, database)
-        subprocess.call(load_to_avro,shell=True)
         if engine == "Impala": 
+            move_to_hdfs ="hadoop fs -moveFromLocal '{0}' '/user/duxbury/dns/scores/stage/.'".format(document) 
+            subprocess.call(move_to_hdfs, shell=True)         
+            load_to_hadoop_script ="sudo impala-shell -i 'cdh-sec3' -q \"LOAD DATA INPATH '/user/duxbury/dns/scores/stage/.' INTO TABLE {0}.dns_scores_tmp;\"".format(configData["DATABASE"]) 
+            subprocess.call(load_to_hadoop_script, shell=True)  
+            load_to_avro = "impala-shell -i 'cdh-sec3' -q \"INSERT INTO TABLE {3}.dns_scores PARTITION (y={0}, m={1}, d={2}) SELECT d.ip_dst, d.dns_qry_name, d.ip_sev, d.dns_sev, d.mod_date, d.mod_user FROM {3}.dns_scores_tmp d;\"".format(year,month,day, database)
+            subprocess.call(load_to_avro,shell=True)
             invalidate_metadata()
+        elif engine == "Hive"
+            load_to_hadoop_script ="hive -e \"LOAD DATA LOCAL INPATH '{0}' INTO TABLE {1}.dns_scores_tmp;\"".format(document, configData["DATABASE"]) 
+            subprocess.call(load_to_hadoop_script, shell=True)  
+            load_to_avro = "hive -e \"INSERT INTO TABLE {3}.dns_scores PARTITION (y={0}, m={1}, d={2}) SELECT d.ip_dst, d.dns_qry_name, d.ip_sev, d.dns_sev, d.mod_date, d.mod_user FROM {3}.dns_scores_tmp d;\"".format(year,month,day, database)
+            subprocess.call(load_to_avro,shell=True)
+        
     except Exception, e:
         return "Internal server error", 500
     else:
