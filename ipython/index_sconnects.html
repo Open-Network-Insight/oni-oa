@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Security Analytics :: Suspicious Connects</title>
+    <title>Flows :: Suspicious Connects</title>
     <!--CDN for font awesome ICONS-->
     <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css">
     <!--Styles Sheet (Based on bootstrap)-->
@@ -107,7 +107,7 @@
 
         #collapse_box, #filters_box, #filters_box > div {
             height: auto;
-        }      
+        }
 
         .bg-default {
             background-color: #edeff0;
@@ -116,11 +116,7 @@
         .pd-top-btm5 {
             padding-top: 5px;
             padding-bottom: 5px;
-        }       
-
-        .container-fluid {
-            overflow-y: auto;
-        }       
+        }
     </style>
 </head>
 <body>
@@ -128,23 +124,39 @@
         <div class="container-fluid">
             <!-- App name and toggle get grouped for better mobile display -->
             <div class="navbar-header">
-                <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">
+                <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#main-menu">
                     <span class="sr-only">Toggle navigation</span>
                     <span class="icon-bar"></span>
                     <span class="icon-bar"></span>
                     <span class="icon-bar"></span>
                 </button>
-                <!--<img class="navbar-logo" src="images/intel-logo-white-100.png" alt="">-->
-                <a class="navbar-brand" href="#">Open Network Insight</a>
+                <span class="navbar-brand">Open Network Insight :: Flows :: Suspicious Connects</span>
             </div>
             <!-- Collect the nav links, forms, and other content for toggling -->
-            <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+            <div class="collapse navbar-collapse" id="main-menu">
                 <ul class="nav navbar-nav navbar-right">
-                    <li id="detect"><a href="" target="_blank">Threat Investigation</a></li>
-                    <li id="dnsIndex"><a href="index_dns_sconnects.html">DNS Suspicious Connects</a></li>
-                    <li id="stboard"><a href="" target="_blank">Storyboard</a></li>
-                    <!--<li id="program"><a href="javascript:navigate('response')">Threat Response</a></li>-->                    
-                    <li id="ntIngest"><a href="index_ingest.html">Netflow Ingest</a></li>                    
+                    <li class="dropdown">
+                        <a class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">
+                            Flows
+                            <span class="caret"></span>
+                        </a>
+                        <ul class="dropdown-menu" aria-labelledby="flowsMenu">
+                            <li id="detect"><a href="" target="_blank">Threat Investigation</a></li>
+                            <li id="stboard"><a href="" target="_blank">Storyboard</a></li>
+                            <li id="ntIngest"><a href="index_ingest.html">Netflow Ingest</a></li>
+                        </ul>
+                    </li>
+                    <li class="dropdown">
+                        <a class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">
+                            DNS
+                            <span class="caret"></span>
+                        </a>
+                        <ul class="dropdown-menu" aria-labelledby="dnsMenu">
+                            <li id="dnsIndex"><a href="dns/index_sdns.html">Suspicious DNS</a></li>
+                            <li id="dnsThreatInv"><a href="dns/threat_investigation.html">Threat Investigation</a></li>
+                            <li id="dnsStoryBrd"><a href="dns/story_board.html">Storyboard</a></li>
+                        </ul>
+                    </li>
                 </ul>
             </div>
             <div class="row bg-default text-right" id="collapse_box">
@@ -279,21 +291,25 @@
 
         // Document ready
         $(function () {
-
-
             var dataDate = getParam("dataDate");
 
             if (dataDate != undefined && dataDate != null) {
                 $("#date_picker").val(dataDate);
-                var tiNotebookPath = '/notebooks/user/' + dataDate.replace(/-/g, "") + "/Threat_Investigation_" + dataDate.replace(/-/g, "") + ".ipynb";
-                $("#detect > a").attr('href', tiNotebookPath);
+
+                // Flows
                 $("#stboard > a").attr('href', "storyboard_sconnect.html?dataDate=" + dataDate);
+                // DNS Links
+                $("#dnsIndex > a").attr('href', "dns/index_sdns.html#date=" + dataDate);
+                $("#dnsThreatInv > a").attr('href', "dns/threat_investigation.html#date=" + dataDate);
+                $("#dnsStoryBrd > a").attr('href', "dns/story_board.html#date=" + dataDate);
+
+                dataDate = dataDate.replace(/-/g, "");
+                // Flows
+                $("#detect > a").attr('href', '/notebooks/user/' + dataDate + "/Threat_Investigation_" + dataDate + ".ipynb");
             }
             else {
                 $("#date_picker").val("2015-04-17");
                 getParam({ dataDate: $("#date_picker").val() });
-                $("#detect > a").attr('href', "#");
-                $("#stboard > a").attr('href', "#");
             }
 
             $("#date_picker").datepicker({

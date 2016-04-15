@@ -1,6 +1,6 @@
 <html>
 <head>
-    <title>Security Analytics::Storyboard</title>
+    <title>Flows :: Storyboard</title>
     <!--CDN for font awesome ICONS-->
     <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css">
     <!-- Styles Sheet (Based on bootstrap)-->
@@ -96,10 +96,6 @@
             font-size:12px;
         }
 
-        .container-fluid {
-            overflow-y: auto;
-        }
-
         .header-title {
             float: left;
             font-size: 16px;
@@ -121,19 +117,39 @@
         <div class="container-fluid">
             <!-- App name and toggle get grouped for better mobile display -->
             <div class="navbar-header">
-                <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">
+                <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#main-menu">
                     <span class="sr-only">Toggle navigation</span>
                     <span class="icon-bar"></span>
                     <span class="icon-bar"></span>
                     <span class="icon-bar"></span>
-                </button>               
-                <a class="navbar-brand" href="#">Open Network Insight</a>
+                </button>
+                <span class="navbar-brand">Open Network Insight :: Flows :: Storyboard</span>
             </div>
             <!-- Collect the nav links, forms, and other content for toggling -->
-            <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-2">
+            <div class="collapse navbar-collapse" id="main-menu">
                 <ul class="nav navbar-nav navbar-right">
-                    <li id="detect"><a href="index_sconnects.html">Flow Suspicious Connects</a></li>
-                    <li id="ntIngest"><a href="index_ingest.html">Flow Ingest</a></li>                    
+                    <li class="dropdown">
+                        <a class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">
+                            Flows
+                            <span class="caret"></span>
+                        </a>
+                        <ul class="dropdown-menu" aria-labelledby="flowsMenu">
+                            <li id="flowsIndex"><a href="index_sconnects.html" target="_blank">Suspicious Connects</a></li>
+                            <li id="detect"><a href="" target="_blank">Threat Investigation</a></li>
+                            <li id="ntIngest"><a href="index_ingest.html">Netflow Ingest</a></li>
+                        </ul>
+                    </li>
+                    <li class="dropdown">
+                        <a class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">
+                            DNS
+                            <span class="caret"></span>
+                        </a>
+                        <ul class="dropdown-menu" aria-labelledby="dnsMenu">
+                            <li id="dnsIndex"><a href="dns/index_sdns.html">Suspicious DNS</a></li>
+                            <li id="dnsThreatInv"><a href="dns/threat_investigation.html">Threat Investigation</a></li>
+                            <li id="dnsStoryBrd"><a href="dns/story_board.html">Storyboard</a></li>
+                        </ul>
+                    </li>
                 </ul>
             </div>
             <div class="row bg-default text-right" id="collapse_box">
@@ -289,7 +305,17 @@
 
             if (dataDate != undefined && dataDate != null) {
                 $("#date_picker").val(dataDate);
-                $("#detect > a").attr('href', "index_sconnects.html?dataDate=" + dataDate.replace(/-/g, ""));
+
+                // Flows
+                $("#flowsIndex > a").attr('href', "index_sconnects.html?dataDate=" + dataDate);
+                // DNS Links
+                $("#dnsIndex > a").attr('href', "dns/index_sdns.html#date=" + dataDate);
+                $("#dnsThreatInv > a").attr('href', "dns/threat_investigation.html#date=" + dataDate);
+                $("#dnsStoryBrd > a").attr('href', "dns/story_board.html#date=" + dataDate);
+
+                // Flows
+                dataDate = dataDate.replace(/-/g, "");
+                $("#detect > a").attr('href', '/notebooks/user/' + dataDate + "/Threat_Investigation_" + dataDate + ".ipynb");
             }
             //else {
             //    $("#date_picker").val("2015-04-17");
