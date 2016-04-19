@@ -140,8 +140,8 @@
             <!-- Collect the nav links, forms, and other content for toggling -->
             <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
                 <ul class="nav navbar-nav navbar-right">
+                    <li id="dnsIndex"><a href="">Suspicious DNS</a></li>
                     <li id="detect"><a href="" target="_blank">Threat Investigation</a></li>
-                    <li id="dnsIndex"><a href="index_dns_sconnects.html">DNS Suspicious Connects</a></li>
                     <li id="stboard"><a href="" target="_blank">Storyboard</a></li>
                     <!--<li id="program"><a href="javascript:navigate('response')">Threat Response</a></li>-->                    
                     <li id="ntIngest"><a href="index_ingest.html">Netflow Ingest</a></li>                    
@@ -286,12 +286,14 @@
             if (dataDate != undefined && dataDate != null) {
                 $("#date_picker").val(dataDate);
                 var tiNotebookPath = '/notebooks/user/' + dataDate.replace(/-/g, "") + "/Threat_Investigation_" + dataDate.replace(/-/g, "") + ".ipynb";
+                $('#dnsIndex > a').attr('href', 'dns/index_sdns.html#date=' + dataDate);
                 $("#detect > a").attr('href', tiNotebookPath);
                 $("#stboard > a").attr('href', "storyboard_sconnect.html?dataDate=" + dataDate);
             }
             else {
                 $("#date_picker").val("2015-04-17");
                 getParam({ dataDate: $("#date_picker").val() });
+                $('#dnsIndex > a').attr('href', 'dns/index_sdns.html');
                 $("#detect > a").attr('href', "#");
                 $("#stboard > a").attr('href', "#");
             }
