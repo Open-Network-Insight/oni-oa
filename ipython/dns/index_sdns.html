@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Open Network Insight :: DNS :: Suspicious</title>
+    <title>DNS :: Suspicious</title>
 
     <meta charset="UTF-8">
 
@@ -40,20 +40,39 @@
             </div>
             <!-- Collect the nav links, forms, and other content for toggling -->
             <div class="collapse navbar-collapse" id="main-menu">
-              <ul class="nav navbar-nav navbar-right">
-                <li>
-                  <a href="../index_sconnects.html">Suspicious Connects</a>
-                </li>
-                <li>
-                  <a class="app_link" href="index_sdns.html">Suspicious DNS</a>
-                </li>
-                <li>
-                  <a class="app_link" href="threat_investigation.html">Threat Investigation</a>
-                </li>
-                <li>
-                  <a class="app_link" href="story_board.html">Story Board</a>
-                </li>
-              </ul>
+                <ul class="nav navbar-nav navbar-right">
+                    <li class="dropdown">
+                        <a class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">
+                            Flows
+                            <span class="caret"></span>
+                        </a>
+                        <ul class="dropdown-menu" aria-labelledby="flowsMenu">
+                            <li>
+                              <a class="oni-dated-link" data-href="../index_sconnects.html?dataDate=${date}">Suspicious Connects</a>
+                            </li>
+                            <li>
+                              <a class="oni-shrinked-dated-link" data-href="../../notebooks/user/${date}/Threat_Investigation_${date}.ipynb">Threat Investigation</a>
+                            </li>
+                            <li>
+                              <a class="oni-dated-link" data-href="../storyboard_sconnect.html?dataDate=${date}">Storyboard</a>
+                            </li>
+                        </ul>
+                    </li>
+                    <li class="dropdown">
+                        <a class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">
+                            DNS
+                            <span class="caret"></span>
+                        </a>
+                        <ul class="dropdown-menu" aria-labelledby="dnsMenu">
+                            <li>
+                              <a class="oni-dated-link" data-href="threat_investigation.html#date=${date}">Threat Investigation</a>
+                            </li>
+                            <li>
+                              <a class="oni-dated-link" data-href="story_board.html#date=${date}">Storyboard</a>
+                            </li>
+                        </ul>
+                    </li>
+                </ul>
             </div>
             <div class="row bg-default text-right" id="collapse_box">
                 <!--Tools Buttons-->
@@ -82,6 +101,5 @@
     <script type="application/javascript" src="../js/bootstrap.min.js"></script>
     <script type="application/javascript" src="../js/bootstrap-datepicker.min.js"></script>
     <script type="application/javascript" src="static/js/suspicious.bundle.min.js"></script>
-    <script type="application/javascript" src="static/js/keep_location_hash.js"></script>
 </body>
 </html>
