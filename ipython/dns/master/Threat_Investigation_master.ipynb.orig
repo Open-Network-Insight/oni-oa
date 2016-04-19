@@ -9,7 +9,7 @@
   },
   {
    "cell_type": "code",
-   "execution_count": null,
+   "execution_count": 12,
    "metadata": {
     "collapsed": false,
     "slideshow": {
@@ -50,7 +50,7 @@
   },
   {
    "cell_type": "code",
-   "execution_count": null,
+   "execution_count": 13,
    "metadata": {
     "collapsed": false,
     "scrolled": true
@@ -60,8 +60,12 @@
     "##Expanded search\n",
     "susp_box   =  widgets.HBox(width=500, height=150)    \n",
     "susp_h_box =  widgets.Box(width=500, height=200)    \n",
+<<<<<<< HEAD
     "susp_title =  widgets.HTML(value='<h4>Expanded search</h4>')\n",
     "susp_select = widgets.Select(width=300)\n",
+=======
+    "susp_title =  widgets.HTML(value='<h4>Expanded search</h4>') \n",
+>>>>>>> 1.0.1
     "\n",
     "##Search Results\n",
     "result_title = widgets.HTML(value='<h4>Search results</h4>')     \n",
@@ -72,7 +76,11 @@
     "#Threat Summary\n",
     "tc_box_main = widgets.Box(width=500, height=200)    \n",
     "threat_container = widgets.HBox(width=500, height=150)\n",
+<<<<<<< HEAD
     "tc_box_separator = widgets.Box(width=500, height=15)     \n",
+=======
+    "tc_box_separator = widgets.Box(width=500, height=15)      \n",
+>>>>>>> 1.0.1
     "\n",
     "yy = t_date[0:4]\n",
     "mm = t_date[4:6] \n",
@@ -94,7 +102,11 @@
     "            #subdomain_length, query_length, num_periods, subdomain_entropy, top_domain, word, score, query_rep, \n",
     "            #      9          ,      10    ,     11     ,    12            ,      13   ,  14 ,   15  ,   16    ,   \n",
     "            # hh, ip_sev, dns_sev, dns_qry_class_name, dns_qry_type_name, dns_qry_rcode_name, network_context\n",
+<<<<<<< HEAD
     "            # 17,   18  ,   19  ,      20            ,         21       ,           22      ,       23                \n",
+=======
+    "            # 17,   18  ,   19  ,      20            ,         21       ,           22      ,       23\n",
+>>>>>>> 1.0.1
     "            if row[2] not in ips_query and row[18] == '1': \n",
     "                    ips_query[row[2]]='i'\n",
     "            if row[3] not in ips_query and row[19] == '1':\n",
@@ -118,6 +130,10 @@
     "def display_controls(ip_list): \n",
     "    \n",
     "    susp_title =  widgets.HTML(value='<h4>Expanded search</h4>')\n",
+<<<<<<< HEAD
+=======
+    "    susp_select = widgets.Select(width=300)\n",
+>>>>>>> 1.0.1
     "    search_btn = widgets.Button(description='Search')\n",
     "    susp_box.children = [susp_select,search_btn]\n",
     "    susp_h_box.children = [susp_title,susp_box] \n",
@@ -130,7 +146,7 @@
     "  \n",
     "    def search_ip(b):  \n",
     "        global anchor \n",
-    "        global anchor_type\n",
+    "        global anchor_type  \n",
     "        anchor = ''\n",
     "        anchor_type = ''\n",
     "        anchor = susp_select.selected_label  \n",
@@ -141,11 +157,16 @@
     "        global ir_f\n",
     "        ir_f = spath + \"ir-\" + anchor.replace(\".\",\"_\") + \".tsv\"\n",
     "            \n",
+<<<<<<< HEAD
     "        table = \"<table border=1><th>IP</th><th>QUERY</th><th>TOTAL</th>\"\n",
+=======
+    "        table = \"<table><th>IP</th><th>QUERY</th><th>TOTAL</th>\"\n",
+>>>>>>> 1.0.1
     "        \n",
     "        if anchor_type == 'i':\n",
     "            hivestr = (\"\\\"set mapred.max.split.size=1073741824;set hive.exec.reducers.max=10;set hive.cli.print.header=true;\" +\n",
     "                   \" SELECT COUNT(dns_qry_name) as total, dns_qry_name, ip_dst, 0 as sev FROM duxbury.dns \" +\n",
+<<<<<<< HEAD
     "                   \" WHERE y=\"+ yy +\" AND m=\"+ mm +\" AND d=\"+ dd +\" AND ip_dst='\"+ anchor +\"' GROUP BY dns_qry_name, ip_dst\" +\n",
     "                   \" LIMIT 1000\\\" > \" + ir_f) \n",
     "        elif anchor_type == 'q':\n",
@@ -153,6 +174,13 @@
     "                   \" SELECT COUNT(ip_dst) as total, dns_qry_name, ip_dst, 0 as sev FROM duxbury.dns \" + \n",
     "                   \" WHERE y=\"+ yy +\" AND m=\"+ mm +\" AND d=\"+ dd +\" AND dns_qry_name='\"+ anchor +\"'\" +\n",
     "                   \" GROUP BY ip_dst, dns_qry_name LIMIT 1000\\\" > \" + ir_f)  \n",
+=======
+    "                   \" WHERE y=\"+ yy +\" AND m=\"+ mm +\" AND d=\"+ dd +\" AND ip_dst='\"+ anchor +\"' GROUP BY dns_qry_name, ip_dst LIMIT 1000\\\" > \" + ir_f) \n",
+    "        elif anchor_type == 'q':\n",
+    "            hivestr = (\"\\\"set mapred.max.split.size=1073741824;set hive.exec.reducers.max=10;set hive.cli.print.header=true;\" +\n",
+    "                   \" SELECT COUNT(ip_dst) as total, dns_qry_name, ip_dst, 0 as sev FROM duxbury.dns \" + \n",
+    "                   \" WHERE y=\"+ yy +\" AND m=\"+ mm +\" AND d=\"+ dd +\" AND dns_qry_name='\"+ anchor +\"' GROUP BY ip_dst, dns_qry_name LIMIT 1000\\\" > \" + ir_f)  \n",
+>>>>>>> 1.0.1
     "\n",
     "        !hive -S -e $hivestr           \n",
     "        height=25\n",
@@ -175,7 +203,11 @@
     "\n",
     "        \n",
     "def display_threat_box(ip):    \n",
+<<<<<<< HEAD
     "    tc_div_label = widgets.HTML(value='<h4>Threat summary for ' + anchor +'</h4>')\n",
+=======
+    "    tc_div_label.value='<h4>Threat summary for ' + anchor +'</h4>'\n",
+>>>>>>> 1.0.1
     "    \n",
     "    tc_txt_title = widgets.Text(value='',width=300, placeholder='Threat Title')\n",
     "    tc_txa_summary = widgets.Textarea(value='', width=300, height=100)\n",
@@ -201,13 +233,22 @@
     "                    comment.write('ip_dst|dns_qry_name|title|summary\\n')\n",
     "            \n",
     "            with open(threat_f, 'a') as comment:\n",
+<<<<<<< HEAD
     "                comment.write(anchor_ip + '|' + anchor_dns + '|' + tc_txt_title.value + '|' +\n",
     "                                  tc_txa_summary.value.replace('\\n', '\\\\n') + '\\n') \n",
+=======
+    "                comment.write(anchor_ip + '|' + anchor_dns + '|' + tc_txt_title.value + '|' + tc_txa_summary.value.replace('\\n', '\\\\n') + '\\n') \n",
+    "            \n",
+>>>>>>> 1.0.1
     "            \n",
     "            removeWidget(2)\n",
     "            removeWidget(1)  \n",
     "            generate_dendro(anchor)\n",
+<<<<<<< HEAD
     "            display(Javascript(\"$(\\\"option[data-value='\" + anchor  +\"']\\\").remove();\"))               \n",
+=======
+    "            display(Javascript(\"$(\\\"option[data-value='\" + anchor  +\"']\\\").remove();\"))  \n",
+>>>>>>> 1.0.1
     "            response = \"Successfully saved\"\n",
     "        else:\n",
     "            response = \"No data selected\"\n",
@@ -216,7 +257,11 @@
     "        save_box  = widgets.Box(width=500, height=150)\n",
     "        save_box.children = [save_html]  \n",
     "        susp_select.selected_label = susp_select.options[0][0]\n",
+<<<<<<< HEAD
     "        display(save_box)      \n",
+=======
+    "        display(save_box)     \n",
+>>>>>>> 1.0.1
     "        \n",
     "        \n",
     "    tc_btn_save.on_click(save_threat_summary)\n",
@@ -224,7 +269,11 @@
     "    \n",
     "    \n",
     "def generate_dendro(anchor):  \n",
+<<<<<<< HEAD
     "    dendro_fpath = spath + 'threat-dendro-' + anchor.replace('.','_') + \".json\" \n",
+=======
+    "    dendro_fpath = spath + 'dendro-' + anchor.replace('.','_') + \".json\" \n",
+>>>>>>> 1.0.1
     "    #       total, dns_qry_name, ip_dst, sev\n",
     "    obj = {\n",
     "          \"headers\": {\n",
@@ -271,12 +320,69 @@
   },
   {
    "cell_type": "code",
-   "execution_count": null,
+   "execution_count": 14,
    "metadata": {
     "collapsed": false,
     "scrolled": false
    },
-   "outputs": [],
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "ls: cannot access ./usr/bin/pyspark/lib/spark-assembly-*.jar: No such file or directory\r\n"
+     ]
+    },
+    {
+     "data": {
+      "application/javascript": [
+       "var widget_list = $('.widget-area').children('.widget-subarea').children('.widget-box'); \n",
+       "if(widget_list.length > 2 ) \n",
+       " widget_list[2].remove(); \n",
+       " "
+      ],
+      "text/plain": [
+       "<IPython.core.display.Javascript object>"
+      ]
+     },
+     "metadata": {},
+     "output_type": "display_data"
+    },
+    {
+     "data": {
+      "application/javascript": [
+       "var widget_list = $('.widget-area').children('.widget-subarea').children('.widget-box'); \n",
+       "if(widget_list.length > 1 ) \n",
+       " widget_list[1].remove(); \n",
+       " "
+      ],
+      "text/plain": [
+       "<IPython.core.display.Javascript object>"
+      ]
+     },
+     "metadata": {},
+     "output_type": "display_data"
+    },
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "Incident progression successfully created\n"
+     ]
+    },
+    {
+     "data": {
+      "application/javascript": [
+       "$(\"option[data-value='10.19.9.81']\").remove();"
+      ],
+      "text/plain": [
+       "<IPython.core.display.Javascript object>"
+      ]
+     },
+     "metadata": {},
+     "output_type": "display_data"
+    }
+   ],
    "source": [
     "start_investigation()"
    ]
