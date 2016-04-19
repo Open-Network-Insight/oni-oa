@@ -3,26 +3,6 @@ var assign = require('object-assign');
 
 var CHANGE_DATA_EVENT = 'change_data';
 
-function csv2json(csvData, useHeaders)
-{
-  var jsonData = {};
-
-  jsonData.data = [];
-  csvData.forEach(function (row, idx)
-  {
-    if (idx==0 && useHeaders)
-    {
-      jsonData.headers =  row;
-    }
-    else
-    {
-      jsondData.data.push(row);
-    }
-  });
-
-  return jsonData;
-}
-
 var RestStore = function (endpoint) {
   this.setEndpoint(endpoint);
   this._filters = {};
@@ -57,7 +37,7 @@ assign(RestStore.prototype, EventEmitter.prototype, {
   setData: function (data)
   {
     this._data = data;
-    
+
     this.emitChangeData();
   },
   getData: function ()
@@ -102,7 +82,7 @@ assign(RestStore.prototype, EventEmitter.prototype, {
         if (!this._skipHeaders)
         {
           headers = csv.shift();
-          
+
           csv = csv.map(function (row)
           {
             var obj = {};
