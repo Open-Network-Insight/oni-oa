@@ -1,0 +1,5 @@
+{
+    "NC" : {
+	"network_context_dns" : "<absolute_path_for_network_context_file"
+    }
+}

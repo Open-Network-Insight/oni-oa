@@ -317,10 +317,11 @@
                 dataDate = dataDate.replace(/-/g, "");
                 $("#detect > a").attr('href', '/notebooks/user/' + dataDate + "/Threat_Investigation_" + dataDate + ".ipynb");
             }
-            //else {
-            //    $("#date_picker").val("2015-04-17");
-            //    getParam({ dataDate: $("#date_picker").val() });
-            //}
+            else {
+                dataDate = new Date().toISOString().substr(0, 10);
+                $("#date_picker").val(dataDate);
+                getParam({ dataDate: $("#date_picker").val() });
+            }
 
             $("#date_picker").datepicker({
                 format: "yyyy-mm-dd",

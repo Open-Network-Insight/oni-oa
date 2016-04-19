@@ -308,7 +308,9 @@
                 $("#detect > a").attr('href', '/notebooks/user/' + dataDate + "/Threat_Investigation_" + dataDate + ".ipynb");
             }
             else {
-                $("#date_picker").val("2015-04-17");
+                // Default to current date
+                dataDate = new Date().toISOString().substr(0, 10);
+                $("#date_picker").val(dataDate);
                 getParam({ dataDate: $("#date_picker").val() });
             }
 
@@ -427,7 +429,12 @@
 
         function getNotebookPath() {
             var path = "/../../notebooks/user/"
-            var dataDate = getParam("dataDate") == undefined ? "20150417" : getParam("dataDate").replace(/-/g, "");
+            var dataDate;
+
+            // Default to current date
+            dataDate = new Date().toISOString().substr(0, 10);
+            dataDate = getParam("dataDate") == undefined ? dataDate : getParam("dataDate");
+            dataDate = dataDate.replace(/-/g, "");
 
             if (dataDate != undefined && dataDate != null) {
                 path = path + dataDate + "/Edge_Investigation_" + dataDate + ".ipynb"
