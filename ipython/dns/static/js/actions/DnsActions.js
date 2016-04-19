@@ -6,7 +6,24 @@ var filter = '';
 
 function updateLocationHash ()
 {
+  var localDate;
+
   location.hash = 'date=' + date +(filter!==''? '|filter=' + filter : '');
+
+  $('.oni-dated-link').each(function ()
+  {
+    var link = $(this);
+
+    link.attr('href', link.data('href').replace(/\$\{date\}/g, date));
+  });
+
+  localDate = date.replace(/-/g, '');
+  $('.oni-shrinked-dated-link').each(function ()
+  {
+    var link = $(this);
+
+    link.attr('href', link.data('href').replace(/\$\{date\}/g, localDate));
+  });
 }
 
 var DnsActions = {

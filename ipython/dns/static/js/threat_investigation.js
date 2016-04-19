@@ -1,5 +1,6 @@
 var React = require('react');
 
+var DnsActions = require('./actions/DnsActions');
 var DnsConstants = require('./constants/DnsConstants');
 var OniUtils = require('./OniUtils');
 
@@ -55,4 +56,5 @@ var date;
 
 date = OniUtils.getCurrentDate();
 
+DnsActions.setDate(date);
 reloadNotebook(date);
