@@ -67,14 +67,14 @@ var SuspiciousPanel = React.createClass({
       </i>
     );
   },
-  _render_dns_qry_name_cell: function (query, item)
+  _render_dns_qry_name_cell: function (query, item, idx)
   {
     var queryRep;
 
     queryRep = this._renderRepCell(item.query_rep);
 
     return (
-      <p className="dns_qry_name">
+      <p key={'dns_qry_name_' + idx} className="dns_qry_name">
         {query} {queryRep}
       </p>
     );
@@ -101,12 +101,35 @@ var SuspiciousPanel = React.createClass({
 
     return cellBody;
   },
+  _render_ip_dst_cell: function (ip_dst, item, idx)
+  {
+    var ip_dst_info, iconClass;
+
+    if (item.network_context)
+    {
+      ip_dst_info = (
+        <span className={'fa fa-lg fa-info-circle text-primary'}
+            data-container="body" data-toggle="popover" data-placement="right" data-content={item.network_context}>
+        </span>
+      );
+    }
+
+    return (
+      <p key={'ip_dst_' + idx}>
+        {ip_dst} {ip_dst_info}
+      </p>
+    );
+  },
   // Hidden cells
+  _render_dns_qry_class_cell: false,
+  _render_dns_qry_type_cell: false,
+  _render_dns_qry_rcode_cell: false,
   _render_dns_sev_cell: false,
   _render_domain_cell: false,
   _render_frame_len_cell: false,
   _render_hh_cell: false,
   _render_ip_sev_cell: false,
+  _render_network_context_cell: false,
   _render_num_periods_cell: false,
   _render_query_length_cell: false,
   _render_query_rep_cell: false,

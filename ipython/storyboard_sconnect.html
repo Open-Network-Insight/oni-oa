@@ -132,7 +132,8 @@
             <!-- Collect the nav links, forms, and other content for toggling -->
             <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-2">
                 <ul class="nav navbar-nav navbar-right">
-                    <li id="detect"><a href="index_sconnects.html">Flow Suspicious Connects</a></li>
+                    <li id="dnsIndex"><a href="dns/index_sdns.html">Suspicious DNS</a></li>
+                    <li id="detect"><a href="index_sconnects.html">Suspicious Connects</a></li>
                     <li id="ntIngest"><a href="index_ingest.html">Flow Ingest</a></li>                    
                 </ul>
             </div>
@@ -289,6 +290,7 @@
 
             if (dataDate != undefined && dataDate != null) {
                 $("#date_picker").val(dataDate);
+                $('#dnsIndex > a').attr('href', 'dns/index_sdns.html#date=' + dataDate);
                 $("#detect > a").attr('href', "index_sconnects.html?dataDate=" + dataDate.replace(/-/g, ""));
             }
             //else {
