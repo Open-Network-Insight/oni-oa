@@ -26,7 +26,7 @@ def main():
                 month=date[0]
                 day=date[1]
                 dns_qry_name=row[3]
-                hh=row[17]
+                hh=row[16]
                 get_details(dbase,dns_qry_name,year,month,day,storage_path,hh)
 
 def get_details(dbase,dns_qry_name,year,month,day,storage_path,hh):
