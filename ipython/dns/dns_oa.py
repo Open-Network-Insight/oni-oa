@@ -95,6 +95,8 @@ def main():
 
 	    info("Adding reputation column to dns_ml data")
 	    updated_data = [append_rep_column(query_ip_dict,row) for row in cur]
+	info("Transforming data removing unix_tstamp column")
+	updated_data = [remove_unix_tstamp_column(row) for row in updated_data]
 	info("Adding HH (hour) column to new data")
 	updated_data = [append_hh_column(h,row) for row in updated_data]
 	info("Adding severety columns")
@@ -122,7 +124,7 @@ def main():
 def save_to_csv_file(data, date):
     csv_file_location = "{0}/user/{1}/dns_scores.csv".format(script_path,date)
     header = ["frame_time","frame_len","ip_dst","dns_qry_name","dns_qry_class","dns_qry_type","dns_qry_rcode",
-    "domain","subdomain","subdomain_length","query_length","num_periods","subdomain_entropy","top_domain","word",
+    "domain","subdomain","subdomain_length","num_periods","subdomain_entropy","top_domain","word",
     "score","query_rep","hh","ip_sev","dns_sev","dns_qry_class_name","dns_qry_type_name","dns_qry_rcode_name","network_context"]
     data.insert(0,header)
     with open(csv_file_location, 'w+') as dns_scores_file:
@@ -176,9 +178,11 @@ def add_iana_translation(row, iana):
     qry_type_name = iana.get_name(qry_type, COL_TYPE)
     qry_rcode_name = iana.get_name(qry_rcode, COL_RCODE)
     row = row + [qry_class_name, qry_type_name, qry_rcode_name]
+    return row 
+
+def remove_unix_tstamp_column(row):
+    row.remove(row[1])
     return row
-	
- 
 
 def merge_rep_results(ds):
     z = {}
