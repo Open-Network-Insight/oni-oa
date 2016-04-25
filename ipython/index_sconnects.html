@@ -195,8 +195,12 @@
                                 <span class="header-title">Suspicious Connects</span>
                             </div>
                             <div class="col-lg-4 text-right padding2">
-                                <button id="btnReloadScores" data-target="#lda_scores" class="btn btn-default btn-xs">Reload</button>
-                                <button id="btnToggleLdaScores" data-target="#lda_scores" class="btn btn-default btn-xs">Expand</button>
+                                <button id="btnReloadScores" data-target="#lda_scores" class="btn btn-default btn-xs">
+                                    <span class="glyphicon glyphicon-refresh" aria-hidden="true"></span>
+                                </button>
+                                <button id="btnToggleLdaScores" data-target="#lda_scores" class="btn btn-default btn-xs">
+                                    <span class="glyphicon glyphicon-resize-full" aria-hidden="true"></span>
+                                </button>
                             </div>
                         </div>
                         <iframe name="ovrView" id="ovrView" class="ovrView" src="sconnects_scores.html"></iframe>
@@ -207,7 +211,9 @@
                                 <span class="header-title">Notebook</span>
                             </div>
                             <div class="col-lg-4 text-right padding2">
-                                <button id="btnToggleNotebook" data-target="#notebook" class="btn btn-default btn-xs">Expand</button>
+                                <button id="btnToggleNotebook" data-target="#notebook" class="btn btn-default btn-xs">
+                                    <span class="glyphicon glyphicon-resize-full" aria-hidden="true"></span>
+                                </button>
                             </div>
                         </div>
                         <iframe name="nbView" id="nbView" class="nbView" src="../../notebooks/user/20150418/Edge_Investigation_20150418.ipynb"></iframe>
@@ -223,8 +229,12 @@
                                 <span class="header-title">Network View :: Suspicious Connects</span>
                             </div>
                             <div class="col-lg-4 text-right padding2">
-                                <button id="btnReloadNetflowDiagram" data-target="#netflow_diagram" class="btn btn-default btn-xs">Reload</button>
-                                <button id="btnToggleNetflowDiagram" data-target="#netflow_diagram" class="btn btn-default btn-xs">Expand</button>
+                                <button id="btnReloadNetflowDiagram" data-target="#netflow_diagram" class="btn btn-default btn-xs">
+                                    <span class="glyphicon glyphicon-refresh" aria-hidden="true"></span>
+                                </button>
+                                <button id="btnToggleNetflowDiagram" data-target="#netflow_diagram" class="btn btn-default btn-xs">
+                                    <span class="glyphicon glyphicon-resize-full" aria-hidden="true"></span>
+                                </button>
                             </div>
                         </div>
                         <iframe name="vizView" id="vizView" class="vizView" src="sconnects_netflow.html"></iframe>
@@ -235,7 +245,9 @@
                                 <span class="header-title">Detail View :: Suspicious Connects</span>
                             </div>
                             <div class="col-lg-4 text-right padding2">
-                                <button id="btnToggleDetails" data-target="#details" class="btn btn-default btn-xs">Expand</button>
+                                <button id="btnToggleDetails" data-target="#details" class="btn btn-default btn-xs">
+                                    <span class="glyphicon glyphicon-resize-full" aria-hidden="true"></span>
+                                </button>
                             </div>
                         </div>
                         <iframe name="detailView" id="detailView" class="detailView" src="sconnects_details.html"></iframe>
@@ -395,7 +407,7 @@
             var target = $(this).data("target");
 
             if (target != undefined && target != null) {
-                if ($(this).text().toLowerCase() == 'expand') {
+                if ($('span', this).hasClass('glyphicon-resize-full')) {
                     $(target).parent().addClass('col-lg-12');
                     $(target).parent().removeClass('col-lg-6');
                     $(target).css("height", "95%");
@@ -405,9 +417,9 @@
 
                     $(".section").parent().not($(target).parent()).toggleClass("hidden");
 
-                    $(this).text("Restore");
+                    $('span', this).toggleClass("glyphicon-resize-full").toggleClass('glyphicon-resize-small');
                 }
-                else if ($(this).text().toLowerCase() == 'restore') {
+                else if ($('span', this).hasClass('glyphicon-resize-small')) {
                     $(target).parent().addClass('col-lg-6');
                     $(target).parent().removeClass('col-lg-12');
                     $(target).css("height", "");
@@ -415,7 +427,8 @@
                     $("html").css("height", "");
                     $(".section:not(" + target + ")").toggleClass("hidden");
                     $(".section").parent().not($(target).parent()).toggleClass("hidden");
-                    $(this).text("Expand");
+
+                    $('span', this).toggleClass("glyphicon-resize-full").toggleClass('glyphicon-resize-small');
                 }
             }
         }
