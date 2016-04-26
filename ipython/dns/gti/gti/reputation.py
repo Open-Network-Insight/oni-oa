@@ -16,31 +16,60 @@ class Reputation(object):
     def check(self,ips=None, urls=None):
 	print "GTI reputation check starts..."
 	reputation_dict = {}
+	op = ""
 	command = "{0} -s {1} -q \'{2}\' -i {3} -p \'{4}\' -t".format(self._gti_rest_client_path, self._gti_server, self._gti_ci, self._gti_user, self._gti_password)
 	if ips is not None:
 	    values = ips
-	    command = command.replace('###OPTION###','ip')
+	    op = "ip"
 	elif urls is not None:
 	    values = urls
-	    command = command.replace('###OPTION###','url')
+	    op = "url"
 	else:
 	    print "Need either an ip or an url to check reputation."
 	    return reputation_dict
 	
+	i = 0
+        queries = []
+        responses = []
 	for val in values:
-	    cmd_temp = command
-	    command = command.replace('###IP#URL###',val)
-	    try:
-		response_json = check_output(command, shell=True)
-		result_dict = json.loads(response_json[0:len(response_json) - 1])
-		reputation = result_dict['a'][0]['rep']
-		reputation = int(reputation)
-		reputation_dict[val] = self._get_reputation_label(reputation)			
-	    except:
-		reputation_dict[val] = self._get_reputation_label(16)
-	    
-	    command = cmd_temp
-	return reputation_dict
+	    queries.append("{\"op\":\"" + op + "\", \""+ op +"\":\""+ val +"\"}")
+            i += 1
+            if i == 10:
+                cmd_temp = command
+                query = ",".join(queries)
+                command = command.replace('###QUERY###', query)
+                responses += self._call_gti(command)
+                command = cmd_temp
+                i = 0
+                query = ""
+                queries = []
+
+        if len(queries) > 0:
+            query = ",".join(queries)
+            command = command.replace('###QUERY###', query)
+            responses += self._call_gti(command)
+            command = cmd_temp
+
+        ip_counter = 0
+        for query_resp in responses:
+            if "aflag" in query_resp or "rep" not in query_resp:
+                reputation_dict[values[ip_counter]] = self._get_reputation_label(16)
+            else:
+		reputation = query_resp['rep']
+                reputation = int(reputation)
+                reputation_dict[values[ip_counter]] = self._get_reputation_label(reputation)
+            ip_counter += 1
+        return reputation_dict
+
+    def _call_gti(self, command):
+        try:
+            response_json = check_output(command, shell=True)
+            result_dict = json.loads(response_json[0:len(response_json) - 1])
+            responses = result_dict['a']
+            return responses
+        except:
+            error_resp = [{'rep': 16}, {'rep': 16}, {'rep': 16}, {'rep': 16}, {'rep': 16}, {'rep': 16}, {'rep': 16}, {'rep': 16}, {'rep': 16}, {'rep': 16}]
+            return  error_resp
 
     def _get_reputation_label(self,reputation):
 	if reputation < 15:

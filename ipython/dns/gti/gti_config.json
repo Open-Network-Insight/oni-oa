@@ -4,7 +4,7 @@
             "server" : "<server>",
             "user" : "<user>",
             "password" : "<password>",
-            "ci" : "{\"ci\":{\"cliid\":\"<cliid>\", \"prn\":\"<prn>\", \"sdkv\":\"1.0\", \"pv\":\"1.0.0\", \"pev\":1, \"rid\":1, \"affid\":\"0\"},\"q\":[{\"op\":\"###OPTION###\",\"###OPTION###\":\"###IP#URL###\"}]}",
+            "ci" : "{\"ci\":{\"cliid\":\"<cliid>\", \"prn\":\"<prn>\", \"sdkv\":\"1.0\", \"pv\":\"1.0.0\", \"pev\":1, \"rid\":1, \"affid\":\"0\"},\"q\":[###QUERY###]}",
             "refclient" : "<refclient location>"
         },
     "fb":{
