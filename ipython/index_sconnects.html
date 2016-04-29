@@ -166,15 +166,14 @@
                         <div class="form-group">                           
                             <label for="ip_filter" class="control-label">IP Address:</label>
                             <div class="input-group">
+                                <input type="text" id="ip_filter" class="form-control form-control-xs" placeholder="0.0.0.0">
                                 <span class="input-group-btn">
                                     <button class="btn btn-primary btn-xs tip" type="button" id="btn_searchIp" title="Enter an IP Address and click the search button to filter the results."><i class="fa fa-search"></i></button>
                                 </span>
-                                <input type="text" id="ip_filter" class="form-control form-control-xs" placeholder="0.0.0.0">
                             </div><!-- /input-group -->
-                            <button class=" btn btn-default btn-xs tip" title="Reset IP filter" id="reset_ip_filter"><i class="fa fa-undo"></i></button>
                             <label for="date_picker" class="control-label">Data Date:</label>
                             <input placeholder="Data date" type="text" id="date_picker" class="form-control form-control-xs" />
-                            <a href="#"><i class="fa fa-refresh"></i></a>
+                            <button class=" btn btn-default btn-xs tip" title="Reset IP filter" id="reset_ip_filter"><i class="fa fa-undo"></i></button>
                         </div><!--/form-group-->
                     </div>
                 </div>
@@ -355,20 +354,25 @@
                     $("#ipAddrFrmGroup").removeClass("has-error");
             });
 
-            $("#reset_ip_filter").click(function () {
-                $("#ip_filter").val("");
-                document.getElementById("ovrView").contentWindow.filterDataByIpAndDrawTable($("#ip_filter").val());
-                //document.getElementById("vizView").contentWindow.filterDataByIpAndDrawTable($("#ip_filter").val());
-                document.getElementById("vizView").contentDocument.location.reload(true);
-            });
-
-            $("#btn_searchIp").click(function () {
+           function resetFilter() {
                 if (isIpv4Valid($("#ip_filter").val())) {
                     document.getElementById("ovrView").contentWindow.filterDataByIpAndDrawTable($("#ip_filter").val());
                     //document.getElementById("vizView").contentWindow.filterDataByIpAndDrawTable($("#ip_filter").val());
                     document.getElementById("vizView").contentDocument.location.reload(true);
                 }
+            };
 
+            $("#ip_filter").keyup(function (event) {
+                if (event.which==13) resetFilter();
+            });
+
+            $("#btn_searchIp").click(resetFilter);
+
+            $("#reset_ip_filter").click(function () {
+                $("#ip_filter").val("");
+                document.getElementById("ovrView").contentWindow.filterDataByIpAndDrawTable($("#ip_filter").val());
+                //document.getElementById("vizView").contentWindow.filterDataByIpAndDrawTable($("#ip_filter").val());
+                document.getElementById("vizView").contentDocument.location.reload(true);
             });
 
             $(".tip").tooltip({
