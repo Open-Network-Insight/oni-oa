@@ -44,7 +44,7 @@ class Reputation(object):
                 cmd_temp = command
                 query = ",".join(queries)
                 command = command.replace(self.QUERY_PLACEHOLDER, query)
-                responses += self._call_gti(command)
+                responses += self._call_gti(command, self.BATCH_SIZE)
                 command = cmd_temp
                 i = 0
                 query = ""
@@ -53,7 +53,7 @@ class Reputation(object):
         if len(queries) > 0:
             query = ",".join(queries)
             command = command.replace(self.QUERY_PLACEHOLDER, query)
-            responses += self._call_gti(command)
+            responses += self._call_gti(command, len(queries))
             command = cmd_temp
 
         ip_counter = 0
@@ -67,14 +67,14 @@ class Reputation(object):
             ip_counter += 1
         return reputation_dict
 
-    def _call_gti(self, command):
+    def _call_gti(self, command, num_values):
         try:
             response_json = check_output(command, shell=True)
             result_dict = json.loads(response_json[0:len(response_json) - 1])
             responses = result_dict['a']
             return responses
         except:
-            error_resp = [{self.REP_KEY: self.DEFAULT_REP}] * 10
+            error_resp = [{self.REP_KEY: self.DEFAULT_REP}] * num_values
             return  error_resp
 
     def _get_reputation_label(self,reputation):
