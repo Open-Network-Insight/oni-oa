@@ -31,7 +31,10 @@ def get_gti_rep(ip,gti_command=''):
     try:
         response_json = subprocess.check_output(gti_command.replace('###IP###', ip), shell=True)
         result_dict = json.loads(response_json[0:len(response_json) - 1])
-        reputation = result_dict['a'][0]['rep']
+        if 'aflag' in result_dict['a'][0] or 'rep' not in result_dict['a'][0]:
+	    reputation = -1
+	    return str(reputation)
+	reputation = result_dict['a'][0]['rep']
         reputation = int(reputation)
         '''if int(reputation) < 29:
             reputation = 0
