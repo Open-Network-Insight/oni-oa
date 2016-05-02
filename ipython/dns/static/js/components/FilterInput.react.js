@@ -31,8 +31,12 @@ var FilterInput = React.createClass({
     }
     
     return (
-      <input type="text" className={cssClasses} placeholder="0.0.0.0" autoFocus={true} onChange={this._onChange} value={this.state.filter} />
+      <input type="text" className={cssClasses} placeholder="0.0.0.0" autoFocus={true} onChange={this._onChange} value={this.state.filter} onKeyUp={this._onKeyUp} />
     );
+  },
+  _onKeyUp: function (e)
+  {
+    if (e.which==13) DnsActions.reloadSuspicious();
   },
   _onChange: function (e)
   {

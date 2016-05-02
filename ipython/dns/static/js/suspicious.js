@@ -20,18 +20,18 @@ React.render(
       <label htmlFor="ip_filter" className="control-label">IP/Dns:</label>
 
       <div className="input-group">
+        <FilterInput />
         <span className="input-group-btn">
           <button className="btn btn-primary btn-xs tip" type="button" id="btn_searchIp" title="Enter an IP Address or Domain and click the search button to filter the results." onClick={DnsActions.reloadSuspicious}>
             <i className="fa fa-search"></i>
           </button>
         </span>
-        <FilterInput />
       </div>
+      <label htmlFor="dataDatePicker" className="control-label">Data Date:</label>
+      <DateInput id="dataDatePicker" onChange={resetFilterAndReload} />
       <button className=" btn btn-default btn-xs tip" title="Reset filter" id="reset_ip_filter" onClick={resetFilterAndReload}>
         <i className="fa fa-undo"></i>
       </button>
-      <label htmlFor="dataDatePicker" className="control-label">Data Date:</label>
-      <DateInput id="dataDatePicker" onChange={resetFilterAndReload} />
     </div>
   ),
   document.getElementById('nav_form')
