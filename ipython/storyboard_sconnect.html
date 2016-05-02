@@ -110,6 +110,10 @@
         .ptop4{
             padding-top:4px;
         }
+
+        .toggle-section {
+            height: 22px;
+        }
     </style>
 </head>
 <body>
@@ -180,8 +184,10 @@
                             <div class="col-lg-8">
                                 <span class="header-title">Executive Threat Briefing</span>
                             </div>
-                            <div class="col-lg-4 text-right ptop4">
-                                <button class="btn btn-default btn-xs toggle-section" data-target="#exec_threat_brf">Full screen</button>
+                            <div class="col-lg-4 text-right padding2">
+                                <button class="btn btn-default btn-xs toggle-section" data-target="#exec_threat_brf">
+                                    <span class="glyphicon glyphicon-resize-full" aria-hidden="true"></span>
+                                </button>
                             </div>
                         </div>
                         <iframe name="threatNav" id="threatNav" class="detail" src="dashnav.html"></iframe>
@@ -192,8 +198,10 @@
                             <div class="col-lg-8">
                                 <span class="header-title">Impact Analysis</span>
                             </div>
-                            <div class="col-lg-4 text-right ptop4">
-                                <button class="btn btn-default btn-xs toggle-section" data-target="#bars_view">Full screen</button>
+                            <div class="col-lg-4 text-right padding2">
+                                <button class="btn btn-default btn-xs toggle-section" data-target="#bars_view">
+                                    <span class="glyphicon glyphicon-resize-full" aria-hidden="true"></span>
+                                </button>
                             </div>
                         </div>
                         <!--<header class="intel-header-section intel-border-pale-blue" style="margin-bottom:0;">
@@ -211,8 +219,10 @@
                             <div class="col-lg-8">
                                 <span class="header-title">Incident Progression</span>
                             </div>
-                            <div class="col-lg-4 text-right ptop4">
-                                <button class="btn btn-default btn-xs toggle-section" data-target="#incident_prog">Full screen</button>
+                            <div class="col-lg-4 text-right padding2">
+                                <button class="btn btn-default btn-xs toggle-section" data-target="#incident_prog">
+                                    <span class="glyphicon glyphicon-resize-full" aria-hidden="true"></span>
+                                </button>
                             </div>
                         </div>
                         <!--<header class="intel-header-section intel-border-pale-blue" style="margin-bottom:0;">
@@ -226,8 +236,10 @@
                             <div class="col-lg-8">
                                 <span class="header-title">Map View | Globe</span>
                             </div>
-                            <div class="col-lg-4 text-right ptop4">
-                                <button class="btn btn-default btn-xs toggle-section" data-target="#globe">Full screen</button>
+                            <div class="col-lg-4 text-right padding2">
+                                <button class="btn btn-default btn-xs toggle-section" data-target="#globe">
+                                    <span class="glyphicon glyphicon-resize-full" aria-hidden="true"></span>
+                                </button>
                             </div>
                         </div>
                         <!--<header class="intel-header-section intel-border-pale-blue" style="margin-bottom:0;">
@@ -242,8 +254,10 @@
                             <div class="col-lg-8">
                                 <span class="header-title">Timeline</span>
                             </div>
-                            <div class="col-lg-4 text-right ptop4">
-                                <button class="btn btn-default btn-xs toggle-section" data-target="#timeline">Full screen</button>
+                            <div class="col-lg-4 text-right padding2">
+                                <button class="btn btn-default btn-xs toggle-section" data-target="#timeline">
+                                    <span class="glyphicon glyphicon-resize-full" aria-hidden="true"></span>
+                                </button>
                             </div>
                         </div>
                         <!--<header class="intel-header-section intel-border-pale-blue" style="margin-bottom:0;">
@@ -339,7 +353,7 @@
             var target = $(this).data("target");
 
             if (target != undefined && target != null) {
-                if ($(this).text().toLowerCase() == 'full screen') {
+                if ($('span', this).hasClass('glyphicon-resize-full')) {
                     $(target).parent().addClass('col-lg-12');
                     $(target).parent().removeClass('col-lg-8');
                     $(target).parent().removeClass('col-lg-4');
@@ -357,9 +371,10 @@
 
                     $(".section4:not(" + target + ")").toggleClass("hidden");
                     $(".section8:not(" + target + ")").toggleClass("hidden");
-                    $(this).text("Restore");
+
+                    $('span', this).toggleClass("glyphicon-resize-full").toggleClass('glyphicon-resize-small');
                 }
-                else if ($(this).text().toLowerCase() == 'restore') {
+                else if ($('span', this).hasClass('glyphicon-resize-small')) {
                     $(target).parent().removeClass('col-lg-12');
                     if ($(target).hasClass('section8'))
                         $(target).parent().addClass('col-lg-8');
@@ -382,7 +397,8 @@
 
                     $(".section4:not(" + target + ")").toggleClass("hidden");
                     $(".section8:not(" + target + ")").toggleClass("hidden");
-                    $(this).text("Full Screen");
+
+                    $('span', this).toggleClass("glyphicon-resize-full").toggleClass('glyphicon-resize-small');
                 }
             }
         }
