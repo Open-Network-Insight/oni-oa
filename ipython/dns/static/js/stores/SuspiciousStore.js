@@ -12,6 +12,7 @@ var CHANGE_DATE_EVENT = 'change_date';
 var HIGHLIGHT_THREAT_EVENT = 'hightlight_thread';
 var UNHIGHLIGHT_THREAT_EVENT = 'unhightlight_thread';
 var SELECT_THREAT_EVENT = 'select_treath';
+var MAX_ROWS = 250;
 
 var filter = '';
 var filterName = '';
@@ -26,18 +27,33 @@ var SuspiciousStore = assign(new RestStore(DnsConstants.API_SUSPICIOUS), {
   },
   getData: function ()
   {
-    if (!filter || !unfilteredData) return this._data;
+    var state;
 
-    return assign(
-                  {},
-                  unfilteredData,
-                  {
-                    data: unfilteredData.data.filter(function (item)
-                    {
-                      return item[filterName]==filter;
-                    })
-                  }
-    );
+    if (!filter || !unfilteredData)
+    {
+        state = this._data;
+    }
+    else
+    {
+        state = assign(
+            {},
+            unfilteredData,
+            {
+                data: unfilteredData.data.filter(function (item)
+                {
+                    return item[filterName]==filter;
+                })
+            }
+        );
+    }
+
+    state.data = state.data.filter(function (item) {
+        return item.dns_sev=="0";
+    });
+
+    if (state.data.length>MAX_ROWS) state.data = state.data.slice(0, MAX_ROWS);
+
+    return state;
   },
   setData: function (data)
   {

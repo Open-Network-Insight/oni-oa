@@ -206,7 +206,7 @@
 
             // create a row for each object in the data
             var rows = tbody.selectAll("tr")
-                .data(data.filter(function (d, i) { if (i >= minSconnects && i < maxSconnects) return d }))
+                .data(data.filter(function (d) { return d.sev==0; }).filter(function (d, i) { if (i >= minSconnects && i < maxSconnects) return d }))
                 .enter()
                 .append("tr")
                     .on("mouseover", highlightEdge)
