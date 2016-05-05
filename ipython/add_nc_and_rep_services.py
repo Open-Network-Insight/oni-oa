@@ -174,9 +174,9 @@ def main():
         lda_bu += 'dns_scores_bu.csv'
         lda_temp += 'dns_scores_temp.csv'
 
-    gti_command = ('pushd /{0}/refclient && '.format(userDir) + 'rest_client_path + ' -s '+ gti_server 
+    gti_command = ('pushd /{0}/refclient && '.format(userDir) + rest_client_path + ' -s '+ gti_server 
                   + ' -q \'{"ci":{"cliid":"87d8d1082c2f2f821f438b2359b7a5b4", "prn":"Duxbury", "sdkv":"1.0", "pv":"1.0.0", "pev":1, "rid":1, "affid":"0"},"q":[{"op":"ip","ip":"###IP###"}]}\''
-                  + ' -i '+ gti_user + ' -p \'' + gti_password + '\' -t && popd')`
+                  + ' -i '+ gti_user + ' -p \'' + gti_password + '\' -t && popd')
 
     ip_ranges = []
 
