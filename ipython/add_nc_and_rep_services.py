@@ -8,6 +8,7 @@ import sys
 import linecache, bisect
 import getopt
 import shutil
+import csv
 
 def ip_to_int(ip):
     o = map(int, ip.split('.'))
@@ -23,7 +24,9 @@ def check_if_ip_is_internal(ip, ranges):
 def get_geo_ip(ip,iploc, iplist):
     result = ''
     if ip.strip() != "" and ip != None:
-        result = linecache.getline(iploc, bisect.bisect(iplist,ip_to_int(ip))).replace('\n','')
+	result = linecache.getline(iploc, bisect.bisect(iplist,ip_to_int(ip))).replace('\n','')
+	reader = csv.reader([result])
+	result = reader.next()
     return result
 
 def get_gti_rep(ip,gti_command=''):
@@ -278,12 +281,14 @@ def main():
                     line_parts = line.split(',')
                     src_ip = line_parts[src_ip_index]
                     dst_ip = line_parts[dst_ip_index]
+		    
+		    src_geo_row = get_geo_ip(src_ip,iploc, iplist)
+                    src_geo = ";".join(src_geo_row[4:6]) + " " + ";".join(src_geo_row[8:9])
+		    dst_geo_row = get_geo_ip(dst_ip, iploc, iplist)
+                    dst_geo = ";".join(dst_geo_row[4:6]) + " " + ";".join(dst_geo_row[8:9])
 
-                    src_geo = ";".join(get_geo_ip(src_ip,iploc, iplist).replace('"','').split(',')[4:6])+ " " + ";".join(get_geo_ip(src_ip, iploc, iplist).replace('"','').split(',')[8:9])
-                    dst_geo = ";".join(get_geo_ip(dst_ip, iploc, iplist).replace('"','').split(',')[4:6]) + " " + ";".join(get_geo_ip(dst_ip, iploc, iplist).replace('"','').split(',')[8:9])
-
-                    src_domain = get_geo_ip(src_ip, iploc, iplist).replace('"','').split(',')[9:10][0]
-                    dst_domain = get_geo_ip(dst_ip, iploc, iplist).replace('"','').split(',')[9:10][0]
+                    src_domain = src_geo_row[9:10][0]
+                    dst_domain = dst_geo_row[9:10][0]
 
                     ip_dict[src_ip]['geo'] = src_geo
                     ip_dict[src_ip]['domain'] = src_domain
@@ -308,8 +313,8 @@ def main():
                     dns_a_domain = ''
 
                     if dns_a_ip.strip() != '':
-                        dns_a_geo = ";".join(get_geo_ip(dns_a_ip, iploc, iplist).replace('"','').split(',')[4:6])+ " " + ";".join(get_geo_ip(dns_a_ip, iploc, iplist).replace('"','').split(',')[8:9])                    
-                        dns_a_domain = get_geo_ip(dns_a_ip, iploc, iplist).replace('"','').split(',')[9:10][0]
+                        dns_a_geo = ";".join(get_geo_ip(dns_a_ip, iploc, iplist)[4:6])+ " " + ";".join(get_geo_ip(dns_a_ip, iploc, iplist)[8:9])                    
+                        dns_a_domain = get_geo_ip(dns_a_ip, iploc, iplist)[9:10][0]
                     
                     ip_dict[dns_a_ip]['geo'] = dns_a_geo
                     ip_dict[dns_a_ip]['domain'] = dns_a_domain                
