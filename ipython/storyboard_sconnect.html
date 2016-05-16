@@ -140,7 +140,7 @@
                         <ul class="dropdown-menu" aria-labelledby="flowsMenu">
                             <li id="flowsIndex"><a href="index_sconnects.html" target="_blank">Suspicious Connects</a></li>
                             <li id="detect"><a href="" target="_blank">Threat Investigation</a></li>
-                            <li id="ntIngest"><a href="index_ingest.html">Netflow Ingest</a></li>
+                            <li id="ntIngest"><a href="index_ingest.html">Ingest Summary</a></li>
                         </ul>
                     </li>
                     <li class="dropdown">
@@ -322,6 +322,7 @@
 
                 // Flows
                 $("#flowsIndex > a").attr('href', "index_sconnects.html?dataDate=" + dataDate);
+                $("#ntIngest > a").attr('href', "index_ingest.html?startDate=" + dataDate + "&endDate=" + dataDate);
                 // DNS Links
                 $("#dnsIndex > a").attr('href', "dns/index_sdns.html#date=" + dataDate);
                 $("#dnsThreatInv > a").attr('href', "dns/threat_investigation.html#date=" + dataDate);
