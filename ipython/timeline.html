@@ -138,7 +138,7 @@
                 "shortMonths": ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"]
             });
 
-            var width = $("#container").width();
+            var width = $("#container").width()-5; // 5 is the magic number to avoid having horizontal scroll bar
 
 
             var graph = d3.chart.eventDrops()
