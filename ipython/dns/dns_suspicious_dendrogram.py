@@ -5,6 +5,7 @@ import subprocess
 import time
 import os
 import csv
+import datetime
 
 def main():
 
@@ -25,10 +26,10 @@ def main():
         for row in rows:
 
             # get data to query
-            date=row[0].split(" ")[0].split("/")
-            if len(date) == 3:
+            date=row[0].split(" ")
+            if len(date) == 5:
                 year=date[2]
-                month=date[0]
+                month=datetime.datetime.strptime(date[0], '%b').strftime('%m')
                 day=date[1]
                 ip_dst=row[2]
                 get_dendro(dbase,ip_dst,year,month,day,storage_path)
