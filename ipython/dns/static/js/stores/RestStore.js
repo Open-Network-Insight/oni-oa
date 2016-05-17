@@ -13,6 +13,7 @@ var RestStore = function (endpoint) {
 assign(RestStore.prototype, EventEmitter.prototype, {
   defaultErrorMessage: 'Oops, something went wrong!!',
   errorMessages: {},
+  headers: {},
   setRestFilter: function (name, value)
   {
     this._filters[name] = value;
@@ -99,8 +100,8 @@ assign(RestStore.prototype, EventEmitter.prototype, {
           headers = {};
           tmp.forEach(function (name)
           {
-            headers[name] = name;
-          });
+            headers[name] = this.headers[name] || name;
+          }.bind(this));
         }
 
         this.setData({

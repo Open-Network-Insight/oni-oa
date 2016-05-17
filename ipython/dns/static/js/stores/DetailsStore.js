@@ -10,6 +10,17 @@ var DetailsStore = assign(new RestStore(DnsConstants.API_DETAILS), {
   errorMessages: {
     404: 'No details available'
   },
+  headers: {
+    frame_time: 'Timestamp',
+    frame_len: 'Length',
+    ip_dst: 'Client IP',
+    ip_src: 'Server IP',
+    dns_qry_name: 'Query',
+    dns_qry_class_name: 'Query Class',
+    dns_qry_type_name: 'Query Type',
+    dns_qry_rcode_name: 'Response Code',
+    dns_a: 'Answer'
+  },
   setDate: function (date)
   {
     this.setEndpoint(DnsConstants.API_DETAILS.replace('${date}', date.replace(/-/g, '')));
