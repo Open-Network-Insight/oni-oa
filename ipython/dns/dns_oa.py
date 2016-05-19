@@ -107,14 +107,14 @@ def main():
 	    iana = iana_transform.IanaTransform(iana_config["IANA"])
 	    updated_data = [add_iana_translation(row,iana) for row in updated_data]
 	else:
-	    updated_data = [row + ["","",""] for row in updated_data]
+	    updated_data = [row[:-1] + ["","",""] + [row[-1]] for row in updated_data]
 	info("Adding network context")
 	if os.path.isfile(nc_config_file):
 	    nc_config = json.load(open(nc_config_file))
 	    nc = network_context.NetworkContext(nc_config["NC"])
-	    updated_data = [row + [nc.get_nc(row[2])] for row in updated_data]
+	    updated_data = [row[:-1] + [nc.get_nc(row[2])] + [row[-1]]  for row in updated_data]
 	else: 
-	    updated_data = [row + [""] for row in updated_data]
+	    updated_data = [row[:-1] + [""] + [row[-1]] for row in updated_data]
 	info("Saving data to local csv")
 	save_to_csv_file(updated_data, date)
 	info("Calculating DNS OA details")
@@ -156,12 +156,16 @@ def append_rep_column(query_ip_dict,row):
 
 def append_hh_column(h, row):
     column = h
-    row.append(column)
+    temp_row = row[:-1]
+    temp_row.append(column)
+    row = temp_row + [row[-1]]
     return row
 
 def append_sev_columns(row):
-    row.append(0)
-    row.append(0)
+    temp_row = row[:-1]
+    temp_row.append(0)
+    temp_row.append(0)
+    row = temp_row + [row[-1]]
     return row
 
 def add_iana_translation(row, iana):
@@ -177,11 +181,14 @@ def add_iana_translation(row, iana):
     qry_class_name = iana.get_name(qry_class, COL_CLASS)
     qry_type_name = iana.get_name(qry_type, COL_TYPE)
     qry_rcode_name = iana.get_name(qry_rcode, COL_RCODE)
-    row = row + [qry_class_name, qry_type_name, qry_rcode_name]
+    temp_row = row[:-1]
+    row = temp_row + [qry_class_name, qry_type_name, qry_rcode_name] + [row[-1]]
     return row 
 
 def remove_unix_tstamp_column(row):
+    unixtstamp = row[1]
     row.remove(row[1])
+    row = row + [unixtstamp]
     return row
 
 def merge_rep_results(ds):
