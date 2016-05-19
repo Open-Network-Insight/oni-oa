@@ -36,7 +36,7 @@ def get_details(dbase,dns_qry_name,year,month,day,storage_path,hh):
 
     if not os.path.isfile("{0}edge-{1}_{2}_00.csv".format(storage_path,dns_qry_name,hh)):
 
-        dns_details_qry = "hive -S -e \" set hive.cli.print.header=true; SELECT dns_a,dns_qry_class,dns_qry_name,dns_qry_rcode,dns_qry_type,frame_len,frame_time,ip_dst,ip_src  FROM {0}.dns WHERE y={1} AND m={2} AND d={3} AND dns_qry_name LIKE '%{4}%' AND h={7} LIMIT {5};\" | sed 's/[\\t]/,/g' > {6}edge-{4}_{7}_00.csv".format(dbase,year,month,day,dns_qry_name,limit,storage_path,hh)
+        dns_details_qry = "hive -S -e \" set hive.cli.print.header=true; SELECT frame_time, frame_len, ip_dst,  ip_src, dns_qry_name, dns_qry_class, dns_qry_type, dns_qry_rcode , dns_a FROM {0}.dns WHERE y={1} AND m={2} AND d={3} AND dns_qry_name LIKE '%{4}%' AND h={7} LIMIT {5};\" | sed 's/[\\t]/,/g' > {6}edge-{4}_{7}_00.csv".format(dbase,year,month,day,dns_qry_name,limit,storage_path,hh)
 
         print dns_details_qry
         subprocess.call(dns_details_qry,shell=True)
