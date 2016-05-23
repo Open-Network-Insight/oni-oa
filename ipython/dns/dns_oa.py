@@ -16,11 +16,11 @@ rep_services = []
 def main():
     query_ip_dict = {}
     limit = 0
-    usage = 'usage: python dns-oa.py -d <date yyyymmdd> -o <hour hh> -ipython <dns ipython location> -limit <limit number>'
+    usage = 'usage: python dns_oa.py -d <date yyyymmdd> -ipython <dns ipython location> -limit <limit number>'
 
     info("DNS OA starts...")
     try:
-        opts, args = getopt.getopt(sys.argv[1:], 'hd:o:i:l:',["help","date=", "hour=" ,"ipython=","limit="])
+        opts, args = getopt.getopt(sys.argv[1:], 'hd:i:l:',["help","date=", "ipython=","limit="])
     except getopt.GetoptError as err:
         print usage
         sys.exit(2)
@@ -33,14 +33,6 @@ def main():
             if len(date) != 8:
                 error("Wrong date format, please verify. Excepected format is YYYYMMDD")
                 sys.exit()
-        elif opt in ("-o", "-hour"):
-            h = arg
-            if len(h) != 2:
-                error("Wrong hour format, please verify Expected format is HH.")
-		sys.exit()
-	    elif int(h) > 0 and int(h)< 23:
-		error("Invalid hour, please provide a valid hour with format HH.")
-		sys.exit()
         elif opt in ("-i","-ipython"):
            dns_ipython_location = arg
 	elif opt in ("-l", "-limit"):
@@ -98,7 +90,7 @@ def main():
 	info("Transforming data removing unix_tstamp column")
 	updated_data = [remove_unix_tstamp_column(row) for row in updated_data]
 	info("Adding HH (hour) column to new data")
-	updated_data = [append_hh_column(h,row) for row in updated_data]
+	updated_data = [append_hh_column(row) for row in updated_data]
 	info("Adding severety columns")
 	updated_data = [append_sev_columns(row) for row in updated_data]
 	info("Adding iana labels")
@@ -154,9 +146,11 @@ def append_rep_column(query_ip_dict,row):
     row.append(column)
     return row
 
-def append_hh_column(h, row):
-    column = h
-    row.append(column)
+def append_hh_column(row):
+    date_time = row[0].split(" ")
+    time = date_time[3].split(":")
+    hh = time[0]
+    row.append(hh)
     return row
 
 def append_sev_columns(row):
