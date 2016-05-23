@@ -125,7 +125,7 @@ def save_to_csv_file(data, date):
     csv_file_location = "{0}/user/{1}/dns_scores.csv".format(script_path,date)
     header = ["frame_time","frame_len","ip_dst","dns_qry_name","dns_qry_class","dns_qry_type","dns_qry_rcode",
     "domain","subdomain","subdomain_length","num_periods","subdomain_entropy","top_domain","word",
-    "score","query_rep","hh","ip_sev","dns_sev","dns_qry_class_name","dns_qry_type_name","dns_qry_rcode_name","network_context"]
+    "score","query_rep","hh","ip_sev","dns_sev","dns_qry_class_name","dns_qry_type_name","dns_qry_rcode_name","network_context","unix_tstamp"]
     data.insert(0,header)
     with open(csv_file_location, 'w+') as dns_scores_file:
 	writer = csv.writer(dns_scores_file)
