@@ -150,11 +150,8 @@ def append_hh_column(row):
     date_time = row[0].split(" ")
     time = date_time[3].split(":")
     hh = time[0]
-    row.append(hh)
-def append_hh_column(h, row):
-    column = h
     temp_row = row[:-1]
-    temp_row.append(column)
+    temp_row.append(hh)
     row = temp_row + [row[-1]]
     return row
 
