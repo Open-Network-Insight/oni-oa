@@ -57,16 +57,18 @@ def main():
         sys.exit()
     else: 
 	with open(dns_results_file_path, 'rb') as dns_results_file:
+	    
+	    cur = [row.rstrip("\r\n").split(",") for row in dns_results_file]            
 	    if len(cur) == 0 or len(cur) == 1:
                 info("There is no data in file dns_results.csv for the date and hour provided, please try a different one.")
                 info("DNS OA completed but no data was found.")
                 sys.exit(1)
 
             if (int(limit)+1) >= len(cur):
-                cur = [row.rstrip("\r\n").split(",") for row in dns_results_file][1:]
+                cur = cur[1:]
             else:
-                cur = [row.rstrip("\r\n").split(",") for row in dns_results_file][1:int(limit)+1] 
- 
+                cur = cur[1:int(limit)+1] 
+
 	    if os.path.isfile(gti_config_file):
 		gti_config = json.load(open(gti_config_file))
 		init_rep_services(gti_config)
