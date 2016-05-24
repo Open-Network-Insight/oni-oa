@@ -16,11 +16,11 @@ rep_services = []
 def main():
     query_ip_dict = {}
     limit = 0
-    usage = 'usage: python dns-oa.py -d <date yyyymmdd> -o <hour hh> -ipython <dns ipython location> -limit <limit number>'
+    usage = 'usage: python dns_oa.py -d <date yyyymmdd> -ipython <dns ipython location> -limit <limit number>'
 
     info("DNS OA starts...")
     try:
-        opts, args = getopt.getopt(sys.argv[1:], 'hd:o:i:l:',["help","date=", "hour=" ,"ipython=","limit="])
+        opts, args = getopt.getopt(sys.argv[1:], 'hd:i:l:',["help","date=", "ipython=","limit="])
     except getopt.GetoptError as err:
         print usage
         sys.exit(2)
@@ -33,14 +33,6 @@ def main():
             if len(date) != 8:
                 error("Wrong date format, please verify. Excepected format is YYYYMMDD")
                 sys.exit()
-        elif opt in ("-o", "-hour"):
-            h = arg
-            if len(h) != 2:
-                error("Wrong hour format, please verify Expected format is HH.")
-		sys.exit()
-	    elif int(h) > 0 and int(h)< 23:
-		error("Invalid hour, please provide a valid hour with format HH.")
-		sys.exit()
         elif opt in ("-i","-ipython"):
            dns_ipython_location = arg
 	elif opt in ("-l", "-limit"):
@@ -65,13 +57,18 @@ def main():
         sys.exit()
     else: 
 	with open(dns_results_file_path, 'rb') as dns_results_file:
- 
-	    cur = [row.rstrip("\r\n").split(",") for row in dns_results_file][1:int(limit)+1]
-	    if len(cur) == 0:
-		info("There is no data in file dns_results.csv for the date and hour provided, please try a different one.")
-		info("DNS OA completed but no data was found.")
-		sys.exit(1)
- 
+	    
+	    cur = [row.rstrip("\r\n").split(",") for row in dns_results_file]            
+	    if len(cur) == 0 or len(cur) == 1:
+                info("There is no data in file dns_results.csv for the date and hour provided, please try a different one.")
+                info("DNS OA completed but no data was found.")
+                sys.exit(1)
+
+            if (int(limit)+1) >= len(cur):
+                cur = cur[1:]
+            else:
+                cur = cur[1:int(limit)+1] 
+
 	    if os.path.isfile(gti_config_file):
 		gti_config = json.load(open(gti_config_file))
 		init_rep_services(gti_config)
@@ -98,7 +95,7 @@ def main():
 	info("Transforming data removing unix_tstamp column")
 	updated_data = [remove_unix_tstamp_column(row) for row in updated_data]
 	info("Adding HH (hour) column to new data")
-	updated_data = [append_hh_column(h,row) for row in updated_data]
+	updated_data = [append_hh_column(row) for row in updated_data]
 	info("Adding severety columns")
 	updated_data = [append_sev_columns(row) for row in updated_data]
 	info("Adding iana labels")
@@ -107,14 +104,14 @@ def main():
 	    iana = iana_transform.IanaTransform(iana_config["IANA"])
 	    updated_data = [add_iana_translation(row,iana) for row in updated_data]
 	else:
-	    updated_data = [row + ["","",""] for row in updated_data]
+	    updated_data = [row[:-1] + ["","",""] + [row[-1]] for row in updated_data]
 	info("Adding network context")
 	if os.path.isfile(nc_config_file):
 	    nc_config = json.load(open(nc_config_file))
 	    nc = network_context.NetworkContext(nc_config["NC"])
-	    updated_data = [row + [nc.get_nc(row[2])] for row in updated_data]
+	    updated_data = [row[:-1] + [nc.get_nc(row[2])] + [row[-1]]  for row in updated_data]
 	else: 
-	    updated_data = [row + [""] for row in updated_data]
+	    updated_data = [row[:-1] + [""] + [row[-1]] for row in updated_data]
 	info("Saving data to local csv")
 	save_to_csv_file(updated_data, date)
 	info("Calculating DNS OA details")
@@ -125,7 +122,7 @@ def save_to_csv_file(data, date):
     csv_file_location = "{0}/user/{1}/dns_scores.csv".format(script_path,date)
     header = ["frame_time","frame_len","ip_dst","dns_qry_name","dns_qry_class","dns_qry_type","dns_qry_rcode",
     "domain","subdomain","subdomain_length","num_periods","subdomain_entropy","top_domain","word",
-    "score","query_rep","hh","ip_sev","dns_sev","dns_qry_class_name","dns_qry_type_name","dns_qry_rcode_name","network_context"]
+    "score","query_rep","hh","ip_sev","dns_sev","dns_qry_class_name","dns_qry_type_name","dns_qry_rcode_name","network_context","unix_tstamp"]
     data.insert(0,header)
     with open(csv_file_location, 'w+') as dns_scores_file:
 	writer = csv.writer(dns_scores_file)
@@ -154,14 +151,20 @@ def append_rep_column(query_ip_dict,row):
     row.append(column)
     return row
 
-def append_hh_column(h, row):
-    column = h
-    row.append(column)
+def append_hh_column(row):
+    date_time = row[0].split(" ")
+    time = date_time[3].split(":")
+    hh = time[0]
+    temp_row = row[:-1]
+    temp_row.append(hh)
+    row = temp_row + [row[-1]]
     return row
 
 def append_sev_columns(row):
-    row.append(0)
-    row.append(0)
+    temp_row = row[:-1]
+    temp_row.append(0)
+    temp_row.append(0)
+    row = temp_row + [row[-1]]
     return row
 
 def add_iana_translation(row, iana):
@@ -177,11 +180,14 @@ def add_iana_translation(row, iana):
     qry_class_name = iana.get_name(qry_class, COL_CLASS)
     qry_type_name = iana.get_name(qry_type, COL_TYPE)
     qry_rcode_name = iana.get_name(qry_rcode, COL_RCODE)
-    row = row + [qry_class_name, qry_type_name, qry_rcode_name]
+    temp_row = row[:-1]
+    row = temp_row + [qry_class_name, qry_type_name, qry_rcode_name] + [row[-1]]
     return row 
 
 def remove_unix_tstamp_column(row):
+    unixtstamp = row[1]
     row.remove(row[1])
+    row = row + [unixtstamp]
     return row
 
 def merge_rep_results(ds):

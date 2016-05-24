@@ -54,7 +54,6 @@ class Reputation(object):
             query = ",".join(queries)
             command = command.replace(self.QUERY_PLACEHOLDER, query)
             responses += self._call_gti(command, len(queries))
-            command = cmd_temp
 
         ip_counter = 0
         for query_resp in responses:
