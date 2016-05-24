@@ -25,6 +25,14 @@ var SuspiciousStore = assign(new RestStore(DnsConstants.API_SUSPICIOUS), {
   errorMessages: {
     404: 'Please choose a different date, no data has been found'
   },
+  headers: {
+    frame_time: 'Timestamp',
+    ip_dst: 'Client IP',
+    dns_qry_name: 'Query',
+    dns_qry_class_name: 'Query Class',
+    dns_qry_type_name: 'Query Type',
+    dns_qry_rcode_name: 'Response Code'
+  },
   getData: function ()
   {
     var state;
@@ -58,13 +66,13 @@ var SuspiciousStore = assign(new RestStore(DnsConstants.API_SUSPICIOUS), {
   setData: function (data)
   {
     this._data = unfilteredData = data;
-    
+
     this.emitChangeData();
   },
   setFilter: function (newFilter)
   {
     filter = newFilter;
-    
+
     if (filter==='')
     {
       filterName = '';
@@ -83,7 +91,7 @@ var SuspiciousStore = assign(new RestStore(DnsConstants.API_SUSPICIOUS), {
       this.setRestFilter(DNS_FILTER, filter);
       filterName = DNS_FILTER;
     }
-    
+
     this.emitChangeFilter();
   },
   getFilter: function (){
@@ -101,9 +109,9 @@ var SuspiciousStore = assign(new RestStore(DnsConstants.API_SUSPICIOUS), {
   setDate: function (newDate)
   {
     date = newDate;
-    
+
     this.emitChangeDate();
-    
+
     this.setEndpoint(DnsConstants.API_SUSPICIOUS.replace('${date}', date.replace(/-/g, '')));
   },
   getDate: function ()

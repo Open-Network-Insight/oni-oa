@@ -134,6 +134,7 @@ var SuspiciousPanel = React.createClass({
   _render_query_length_cell: false,
   _render_query_rep_cell: false,
   _render_resp_h_cell: false,
+  _render_score_cell: false,
   _render_subdomain_cell: false,
   _render_subdomain_entropy_cell: false,
   _render_subdomain_length_cell: false,
