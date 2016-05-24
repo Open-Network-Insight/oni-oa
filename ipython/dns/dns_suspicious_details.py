@@ -6,7 +6,11 @@ import time
 import os
 import csv
 import datetime
+import json
+from iana import iana_transform
 
+script_path = os.path.dirname(os.path.abspath(__file__))
+iana_config_file = "{0}/iana/iana_config.json".format(script_path)
 def main():
 
     print sys.argv
@@ -33,13 +37,55 @@ def main():
 def get_details(dbase,dns_qry_name,year,month,day,storage_path,hh):
 
     limit = 250
+    edge_file ="{0}edge-{1}_{2}_00.csv".format(storage_path,dns_qry_name,hh)
+    edge_tmp  ="{0}edge-{1}_{2}_00.tmp".format(storage_path,dns_qry_name,hh)
 
-    if not os.path.isfile("{0}edge-{1}_{2}_00.csv".format(storage_path,dns_qry_name,hh)):
+    if not os.path.isfile(edge_file):
 
-        dns_details_qry = "hive -S -e \" set hive.cli.print.header=true; SELECT frame_time, frame_len, ip_dst,  ip_src, dns_qry_name, dns_qry_class, dns_qry_type, dns_qry_rcode , dns_a FROM {0}.dns WHERE y={1} AND m={2} AND d={3} AND dns_qry_name LIKE '%{4}%' AND h={7} LIMIT {5};\" | sed 's/[\\t]/,/g' > {6}edge-{4}_{7}_00.csv".format(dbase,year,month,day,dns_qry_name,limit,storage_path,hh)
+        dns_details_qry = "hive -S -e \" set hive.cli.print.header=true; SELECT frame_time, frame_len, ip_dst,  ip_src, dns_qry_name, dns_qry_class, dns_qry_type, dns_qry_rcode , dns_a FROM {0}.dns WHERE y={1} AND m={2} AND d={3} AND dns_qry_name LIKE '%{4}%' AND h={7} LIMIT {5};\" | sed 's/[\\t]/,/g' > {6}".format(dbase,year,month,day,dns_qry_name,limit,edge_tmp,hh)
 
         print dns_details_qry
         subprocess.call(dns_details_qry,shell=True)
+
+        print "Adding IANA code....."
+        iana_config = json.load(open(iana_config_file))
+        iana = iana_transform.IanaTransform(iana_config["IANA"])
+
+        with open(edge_tmp) as dns_details_csv:
+            rows = csv.reader(dns_details_csv, delimiter=',', quotechar='|')
+            next(dns_details_csv)
+            update_rows = [add_iana_code(row,iana) for row in rows]
+            update_rows = filter(None, update_rows)
+            header = [ "frame_time", "frame_len", "ip_dst","ip_src","dns_qry_name","dns_qry_class","dns_qry_type","dns_qry_rcode","dns_a" ]
+            update_rows.insert(0,header)
+            print update_rows
+
+        with open(edge_file,'wb') as dns_details_edge:
+            writer = csv.writer(dns_details_edge, quoting=csv.QUOTE_ALL)
+            print update_rows
+            writer.writerows(update_rows)
+        try:
+            os.remove(edge_tmp)
+        except OSError:
+            pass
+
+
+def add_iana_code(row,iana):
+
+    if len(row) == 9:
+        qry_class = row[5]
+        qry_type = row[6]
+        qry_rcode = row[7]
+        COL_RCODE = 'dns_qry_rcode'
+        COL_TYPE = 'dns_qry_type'
+        COL_CLASS = 'dns_qry_class'
+        qry_class_name = iana.get_name(qry_class, COL_CLASS)
+        qry_type_name = iana.get_name(qry_type, COL_TYPE)
+        qry_rcode_name = iana.get_name(qry_rcode, COL_RCODE)
+        row[5] = qry_class_name
+        row[6] = qry_type_name
+        row[7] = qry_rcode_name
+        return row
 
 def validate_parameters(params):
 
