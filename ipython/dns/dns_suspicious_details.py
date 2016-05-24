@@ -56,6 +56,8 @@ def get_details(dbase,dns_qry_name,year,month,day,storage_path,hh):
             next(dns_details_csv)
             update_rows = [add_iana_code(row,iana) for row in rows]
             update_rows = filter(None, update_rows)
+            header = [ "frame_time", "frame_len", "ip_dst","ip_src","dns_qry_name","dns_qry_class","dns_qry_type","dns_qry_rcode","dns_a" ]
+            update_rows.insert(0,header)
             print update_rows
 
         with open(edge_file,'wb') as dns_details_edge:
