@@ -2,13 +2,13 @@
 
 dir=$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )
 
-LIM=3000
 ndate=$1
+LIM=$2
 TYPE=$3
 
 source /etc/duxbay.conf
 export DBNAME
-#export DSOURCES
+export DSOURCES
 export LUSER
 #export LIM
 
