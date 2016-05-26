@@ -10,6 +10,9 @@ def main():
     sdate = ''
     spath = '{0}/ipython/user/{1}/'
     scores_f = os.environ['DSOURCES']+"_scores.csv"
+    db = os.environ['DBNAME']
+    table = os.environ['DSOURCES']
+    impala_node = os.environ['IMPALA_DEM']
     userDir = ''
     topct = 500
     try:
@@ -27,11 +30,11 @@ def main():
             userDir = arg
     spath = spath.format(userDir, sdate)
     scores_full_path = spath + scores_f
-    
+
     print "Creating Edge Files..."
     conns_list = []
     with open(scores_full_path, 'rb') as f:
-        reader = csv.reader(f,delimiter=',') 
+        reader = csv.reader(f,delimiter=',')
         reader.next();
         rowct = 1
         for row in reader:
@@ -40,16 +43,16 @@ def main():
                 sip = row[2]
                 dip = row[3]
                 # get hour and date 2014-07-08 10:10:40
-                
+
                 hr = row[1].split(' ')[1].split(':')[0]
-                dy = row[1].split(' ')[0].split('-')[2] 
-                mh = row[1].split(' ')[0].split('-')[1] 
+                dy = row[1].split(' ')[0].split('-')[2]
+                mh = row[1].split(' ')[0].split('-')[1]
                 mm = row[1].split(' ')[1].split(':')[1]
                 #TODO: using netflow_avro table, this query should change - no more minute(), hour()
-                # also, there are more columns to return           
+                # also, there are more columns to return
                 conn = (sip,dip,dy,hr,mm)
                 if conn not in conns_list:
-                    conns_list.append(conn)                    
+                    conns_list.append(conn)
                 if rowct == topct:
                     break
                 rowct = rowct + 1
@@ -59,20 +62,31 @@ def main():
         dy = conn[2]
         hr = conn[3]
         mm = conn[4]
-    
-        hivestr = (" \"set hive.cli.print.header=true; SELECT treceived as tstart,sip as srcip," +
-        "dip as dstip,sport as sport,dport as dport,proto as proto,flag as flags,stos as TOS," +
-        "ibyt as bytes, ipkt as pkts,input as input, output as output, rip as rip " +
-         " from " + os.environ['DBNAME'] + "." + os.environ['DSOURCES']  +  
-        " WHERE ( (sip=\'" + sip + "\' AND dip=\'" + dip + "\') OR " +
-        "(sip=\'" + dip + "\' AND dip=\'" + sip + "\') ) AND m="+mh+" AND d="+dy+" AND h="+hr +
-        " AND trminute="+mm +" SORT BY tstart LIMIT 100; \"  > " + spath+ "edge-" + sip.replace(".","_") + "-" + 
-        dip.replace(".","_") + "-" + hr + "-" + mm + ".tsv")
-        
+
+        impala_query = ("SELECT treceived as tstart,
+                sip as srcip,
+                dip as dstip,
+                sport as sport,
+                dport as dport,
+                proto as proto,
+                flag as flags,
+                stos as TOS,
+                ibyt as bytes,
+                ipkt as pkts,
+                input as input,
+                output as output,
+                rip as rip
+                from {0}.{1}
+                where ((sip=\"{2}\" AND dip=\"{3}\") or (sip=\"{3}\" AND dip=\"{2}"\") )
+                AND m={4} AND d={5} AND h={6} AND trminute={7}
+                order by tstart limit 100").format(db,table,sip,dip,mh,dy,hr,mm)
+
+        edge_file = "{0}edge-{1}-{2}-{3}-{4}.tsv".format(spath,sip.replace(".","_"),dip.replace(".","_"),hr,mm)
+        impala_cmd = "impala-shell -i {0} --print_header -B --output_delimiter='\\t' -q '{1}' -o {2}".format(impala_node,impala_query,edge_file)
+
         print 'processing line ',rowct
-        print hivestr
-        #call(["hive","-S","-e", hivestr])
-        check_output("hive -S -e " + hivestr, shell=True)
+        print impala_cmd
+        check_output(impala_cmd, shell=True)
 
     print "Done Creating Edge Files..."
 
@@ -80,7 +94,7 @@ def main():
     srcdict = {}
     rowct = 1
     with open(scores_full_path, 'rb') as f:
-        reader = csv.reader(f,delimiter=',') 
+        reader = csv.reader(f,delimiter=',')
         reader.next();
         rowct = 1
         for row in reader:
@@ -115,16 +129,27 @@ def main():
 
             if len(dstdict.keys()) > 1:
                 dstip = "'%s',"*len(dstdict.keys()) % tuple(dstdict.keys())
-                hivestr = (" \"set hive.cli.print.header=true; SELECT sip as srcip," +
-                "dip as dstip, MAX(ibyt) as maxbyte, AVG(ibyt) as avgbyte,  MAX(ipkt) as maxpkt, AVG(ipkt) as avgpkt " +
-                " from " + os.environ['DBNAME'] + "." + os.environ['DSOURCES']  +  
-                " WHERE m="+mh+" AND d="+dy+" AND ( (sip=\'" + ip + "\' AND dip IN("+ dstip[:-1] + ")" +
-                " OR sip IN(" + dstip[:-1] + ") AND dip=\'" + ip + "\') ) " +
-                " GROUP BY sip,dip \"  > " + spath + "chord-" + ip.replace(".","_") + ".tsv")                
+                chord_file = "{0}chord-{1}.tsv".format(spath,ip.replace(".","_"))
+                dstip_list = dstip[:-1]
+                impala_query = ("SELECT
+                        sip as srcip,
+                        dip as dstip,
+                        MAX(ibyt) as maxbyte,
+                        AVG(ibyt) as avgbyte,
+                        MAX(ipkt) as maxpkt,
+                        AVG(ipkt) as avgpkt
+                        from {0}.{1}
+                        where m={2} and d={3}
+                        and ( (sip=\"{4}\" and dip IN(\"{5}\"))
+                        or (sip IN(\"{5}\") and dip=\"{4}\") )
+                        group by sip,dip").format(db,table,mh,dy,ip,dstip_list)
+
+                impala_cmd = "impala-shell -i {0} --print_header -B --output_delimiter='\\t' -q '{1}' -o {2}".format(impala_node,impala_query,chord_file)
                 print 'processing line ',ipct
-                print hivestr
-                #call(["hive", "-S", "-e", hivestr])
-                check_output("hive -S -e " + hivestr, shell=True)
+                print impala_cmd
+
+                check_output(impala_cmd,shell=True)
+
         if ipct == topct:
             break
         ipct += 1
