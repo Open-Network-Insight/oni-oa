@@ -139,6 +139,7 @@ var SuspiciousPanel = React.createClass({
   _render_subdomain_entropy_cell: false,
   _render_subdomain_length_cell: false,
   _render_top_domain_cell: false,
+  _render_unix_tstamp_cell: false,
   _render_word_cell: false,
   _onChange: function ()
   {
