@@ -55,7 +55,7 @@ def get_details(dbase,dns_qry_name,year,month,day,storage_path,hh,impala_node):
         iana = iana_transform.IanaTransform(iana_config["IANA"])
 
         with open(edge_tmp) as dns_details_csv:
-            rows = csv.reader(dns_details_csv, delimiter=',', quotechar='|')
+            rows = csv.reader(dns_details_csv, delimiter='\t', quotechar='|')
             next(dns_details_csv)
             update_rows = [add_iana_code(row,iana) for row in rows]
             update_rows = filter(None, update_rows)
