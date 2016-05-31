@@ -16,6 +16,7 @@ def main():
     dns_scores = sys.argv[1]
     dbase = sys.argv[2]
     storage_path = sys.argv[3]
+    impala_node = sys.argv[4]
 
     with open(dns_scores,'rb') as dns_csv:
         rows = csv.reader(dns_csv, delimiter=',', quotechar='|')

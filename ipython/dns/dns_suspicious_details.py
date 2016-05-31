@@ -14,10 +14,12 @@ iana_config_file = "{0}/iana/iana_config.json".format(script_path)
 def main():
 
     print sys.argv
+    
     # get parameters.
     dns_scores = sys.argv[1]
     dbase = sys.argv[2]
     storage_path = sys.argv[3]
+    impala_node = sys.argv[4]
 
     with open(dns_scores,'rb') as dns_csv:
         rows = csv.reader(dns_csv, delimiter=',', quotechar='|')
@@ -41,8 +43,6 @@ def get_details(dbase,dns_qry_name,year,month,day,storage_path,hh):
     edge_tmp  ="{0}edge-{1}_{2}_00.tmp".format(storage_path,dns_qry_name,hh)
 
     if not os.path.isfile(edge_file):
-
-
         
         dns_details_qry = ("SELECT 
         frame_time,
