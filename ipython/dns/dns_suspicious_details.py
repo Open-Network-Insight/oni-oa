@@ -46,7 +46,7 @@ def get_details(dbase,dns_qry_name,year,month,day,storage_path,hh,impala_node):
         
         dns_details_qry = ("SELECT frame_time,frame_len,ip_dst,ip_src,dns_qry_name,dns_qry_class,dns_qry_type,dns_qry_rcode,dns_a FROM {0}.dns WHERE y={1} AND m={2} AND d={3} AND dns_qry_name LIKE \"%{4}%\" AND h={6} LIMIT {5};").format(dbase,year,month,day,dns_qry_name,limit,hh)        
         
-        impala_cmd = "impala-shell -i {0} --print_header -B --output_delimiter='\\t' -q '{1}' -o {2}".format(impala_node,dns_details_qry,edge_tmp)
+        impala_cmd = "impala-shell -i {0} --print_header -B --output_delimiter=',' -q '{1}' -o {2}".format(impala_node,dns_details_qry,edge_tmp)
         print impala_cmd
         subprocess.call(impala_cmd,shell=True)
 
@@ -55,7 +55,7 @@ def get_details(dbase,dns_qry_name,year,month,day,storage_path,hh,impala_node):
         iana = iana_transform.IanaTransform(iana_config["IANA"])
 
         with open(edge_tmp) as dns_details_csv:
-            rows = csv.reader(dns_details_csv, delimiter='\t', quotechar='|')
+            rows = csv.reader(dns_details_csv, delimiter=',', quotechar='|')
             next(dns_details_csv)
             update_rows = [add_iana_code(row,iana) for row in rows]
             update_rows = filter(None, update_rows)
