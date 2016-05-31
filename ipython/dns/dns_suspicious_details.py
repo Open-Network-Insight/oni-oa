@@ -34,9 +34,9 @@ def main():
                 day=date[1]
                 dns_qry_name=row[3]
                 hh=row[16]
-                get_details(dbase,dns_qry_name,year,month,day,storage_path,hh)
+                get_details(dbase,dns_qry_name,year,month,day,storage_path,hh,impala_node)
 
-def get_details(dbase,dns_qry_name,year,month,day,storage_path,hh):
+def get_details(dbase,dns_qry_name,year,month,day,storage_path,hh,impala_node):
 
     limit = 250
     edge_file ="{0}edge-{1}_{2}_00.csv".format(storage_path,dns_qry_name,hh)
@@ -44,18 +44,7 @@ def get_details(dbase,dns_qry_name,year,month,day,storage_path,hh):
 
     if not os.path.isfile(edge_file):
         
-        dns_details_qry = ("SELECT 
-        frame_time,
-        frame_len,
-        ip_dst,
-        ip_src,
-        dns_qry_name,
-        dns_qry_class,
-        dns_qry_type,
-        dns_qry_rcode,
-        dns_a 
-        FROM {0}.dns 
-        WHERE y={1} AND m={2} AND d={3} AND dns_qry_name LIKE '%{4}%' AND h={6} LIMIT {5};").format(dbase,year,month,day,dns_qry_name,limit,hh)         
+        dns_details_qry = ("SELECT frame_time,frame_len,ip_dst,ip_src,dns_qry_name,dns_qry_class,dns_qry_type,dns_qry_rcode,dns_a FROM {0}.dns WHERE y={1} AND m={2} AND d={3} AND dns_qry_name LIKE '%{4}%' AND h={6} LIMIT {5};").format(dbase,year,month,day,dns_qry_name,limit,hh)        
         
         impala_cmd = "impala-shell -i {0} --print_header -B --output_delimiter='\\t' -q '{1}' -o {2}".format(impala_node,dns_details_qry,edge_tmp)
         print impala_cmd
