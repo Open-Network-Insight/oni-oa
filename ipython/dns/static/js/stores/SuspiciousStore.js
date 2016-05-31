@@ -35,7 +35,7 @@ var SuspiciousStore = assign(new RestStore(DnsConstants.API_SUSPICIOUS), {
   },
   getData: function ()
   {
-    var state;
+    var state, regex;
 
     if (!filter || !unfilteredData)
     {
@@ -49,7 +49,7 @@ var SuspiciousStore = assign(new RestStore(DnsConstants.API_SUSPICIOUS), {
             {
                 data: unfilteredData.data.filter(function (item)
                 {
-                    return item[filterName]==filter;
+                    return filterName===IP_FILTER ? item[filterName]==filter : item[filterName].indexOf(filter)>=0;
                 })
             }
         );
