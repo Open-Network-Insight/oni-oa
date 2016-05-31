@@ -32,10 +32,10 @@ def generate_details_dendro(dns_scores,storage_path):
         print "Mising configuration, please validate DBNAME and IMPALA_DEM"
         sys.exit(1)
         
-    impala_cmd = "impala-shell -i {0} -q INVALIDATE METADATA {1}.dns".format(impala_node,dbase)
+    impala_cmd = "impala-shell -i {0} -q 'INVALIDATE METADATA {1}.dns'".format(impala_node,dbase)
     subprocess.call(impala_cmd,shell=True)
     
-    impala_cmd = "impala-shell -i {0} -q REFRESH dns"
+    impala_cmd = "impala-shell -i {0} -q 'REFRESH {1}dns'".format(impala_node,dbase)
     subprocess.call(impala_cmd,shell=True)
         
     p1 = Process(target=generate_details, args=(dns_scores,dbase,storage_path,))
