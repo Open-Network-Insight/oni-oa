@@ -117,8 +117,8 @@ def main():
 	save_to_csv_file(updated_data, date)
 	info("Calculating DNS OA details")
 	create_dns_details(date)
-    info("Creating dns scores backup")
-    create_dns_backup()
+	info("Creating dns scores backup")
+	create_dns_backup()
 	info("DNS OA successfully completed")
 
 def create_dns_backup():
