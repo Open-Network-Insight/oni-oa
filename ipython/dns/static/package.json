@@ -1,7 +1,7 @@
 {
   "name": "oni_dns",
   "version": "0.0.1",
-  "description": "Open Network Insight :: Threat Intelligence :: DNS",
+  "description": "Open Network Insight :: DNS",
   "dependencies": {
     "flux": "^2.0.0",
     "react": "^0.13.3",
@@ -27,7 +27,7 @@
   "author": "Intel Corporation",
   "browserify": {
     "transform": [
-      "reactify"
+      ["reactify", {"es6": true}]
     ]
   }
 }
