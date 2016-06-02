@@ -6,6 +6,7 @@ import subprocess
 from inscreenlog import *
 from iana import iana_transform
 from nc import network_context
+import shutil
 
 script_path = os.path.dirname(os.path.abspath(__file__))
 gti_config_file = "{0}/gti/gti_config.json".format(script_path)
@@ -42,23 +43,23 @@ def main():
 	error("You need to pass a value for limit")
 	print usage
 	sys.exit()
-    
+
     y = date[:4]
     m = date[4:6]
     d = date[6:]
-    
+
     dns_results_file_path = "../user/{0}/dns_results.csv".format(date)
-    updated_data = [] 
+    updated_data = []
     info("Creating ipython notebooks and execution date folder")
     create_ipython_notebooks(date,dns_ipython_location)
 
     if not os.path.isfile(dns_results_file_path):
         error("dns_results.csv file not found at ipython/user/{0}, please make sure the file exists and try again".format(date))
         sys.exit()
-    else: 
+    else:
 	with open(dns_results_file_path, 'rb') as dns_results_file:
-	    
-	    cur = [row.rstrip("\r\n").split(",") for row in dns_results_file]            
+
+	    cur = [row.rstrip("\r\n").split(",") for row in dns_results_file]
 	    if len(cur) == 0 or len(cur) == 1:
                 info("There is no data in file dns_results.csv for the date and hour provided, please try a different one.")
                 info("DNS OA completed but no data was found.")
@@ -67,12 +68,12 @@ def main():
             if (int(limit)+1) >= len(cur):
                 cur = cur[1:]
             else:
-                cur = cur[1:int(limit)+1] 
+                cur = cur[1:int(limit)+1]
 
 	    if os.path.isfile(gti_config_file):
 		gti_config = json.load(open(gti_config_file))
 		init_rep_services(gti_config)
-		
+
 		indexes = gti_config["target_columns"]
 		cols = []
 		rep_services_results = []
@@ -86,7 +87,7 @@ def main():
 		    try:
 			query_ip_dict[val]['rep'] = all_rep_results[val]
 		    except:
-			query_ip_dict[val]['rep'] = "UNKNOWN" 	      
+			query_ip_dict[val]['rep'] = "UNKNOWN"
 	    else:
 		info("gti_config.json not present, will send data without reputation information")
 
@@ -110,13 +111,20 @@ def main():
 	    nc_config = json.load(open(nc_config_file))
 	    nc = network_context.NetworkContext(nc_config["NC"])
 	    updated_data = [row[:-1] + [nc.get_nc(row[2])] + [row[-1]]  for row in updated_data]
-	else: 
+	else:
 	    updated_data = [row[:-1] + [""] + [row[-1]] for row in updated_data]
 	info("Saving data to local csv")
 	save_to_csv_file(updated_data, date)
 	info("Calculating DNS OA details")
 	create_dns_details(date)
+	info("Creating dns scores backup")
+	create_dns_backup()
 	info("DNS OA successfully completed")
+
+def create_dns_backup():
+    src = "{0}/user/{1}/dns_scores.csv".format(script_path,date)
+    dst = "{0}/user/{1}/dns_scores_bu.csv".format(script_path,date)
+    shutil.copy(src,dst)
 
 def save_to_csv_file(data, date):
     csv_file_location = "{0}/user/{1}/dns_scores.csv".format(script_path,date)
@@ -130,17 +138,17 @@ def save_to_csv_file(data, date):
 
 def move_dns_results(dns_results_file_path, date):
     origin = dns_results_file_path
-    destination = "{0}/user/{1}/".format(script_path,date) 
+    destination = "{0}/user/{1}/".format(script_path,date)
     subprocess.check_output("mv {0} {1}".format(origin, destination))
     subprocess.check_output("rm {0}".format(origin))
-    
+
 def extract_column(cur,index):
     return list(map(None,*cur)[index])
 
 def init_rep_services(gti_config):
     for service in gti_config:
 	if service != "target_columns":
-	    config = gti_config[service]	    
+	    config = gti_config[service]
 	    module = __import__("gti.{0}.reputation".format(service),fromlist=['Reputation'])
 	    rep_services.append(module.Reputation(config))
 
@@ -182,7 +190,7 @@ def add_iana_translation(row, iana):
     qry_rcode_name = iana.get_name(qry_rcode, COL_RCODE)
     temp_row = row[:-1]
     row = temp_row + [qry_class_name, qry_type_name, qry_rcode_name] + [row[-1]]
-    return row 
+    return row
 
 def remove_unix_tstamp_column(row):
     unixtstamp = row[1]
@@ -199,13 +207,13 @@ def merge_rep_results(ds):
 def create_ipython_notebooks(date,dns_ipython_location):
     ipython_notebooks_script = "{0}/set_ipython_notebooks.sh".format(script_path)
     command = "{0} {1} {2}".format(ipython_notebooks_script,dns_ipython_location,date)
-    subprocess.check_output(command, shell=True)    
+    subprocess.check_output(command, shell=True)
 
 def create_dns_details(date):
     dns_scores = "{0}/user/{1}/dns_scores.csv".format(script_path,date)
     destination = "{0}/user/{1}/".format(script_path, date)
     dns_details_cmd = "python dns_oa_details_dendro.py {0} {1}".format(dns_scores, destination)
     subprocess.call(dns_details_cmd,shell=True)
-    
+
 main()
 
