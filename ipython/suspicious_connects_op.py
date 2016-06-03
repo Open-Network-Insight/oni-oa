@@ -63,23 +63,7 @@ def main():
         hr = conn[3]
         mm = conn[4]
 
-        impala_query = ("SELECT treceived as tstart,
-                sip as srcip,
-                dip as dstip,
-                sport as sport,
-                dport as dport,
-                proto as proto,
-                flag as flags,
-                stos as TOS,
-                ibyt as bytes,
-                ipkt as pkts,
-                input as input,
-                output as output,
-                rip as rip
-                from {0}.{1}
-                where ((sip=\"{2}\" AND dip=\"{3}\") or (sip=\"{3}\" AND dip=\"{2}"\") )
-                AND m={4} AND d={5} AND h={6} AND trminute={7}
-                order by tstart limit 100").format(db,table,sip,dip,mh,dy,hr,mm)
+        impala_query = ("SELECT treceived as tstart,sip as srcip,dip as dstip,sport as sport,dport as dport,proto as proto,flag as flags,stos as TOS,ibyt as bytes,ipkt as pkts,input as input, output as output,rip as rip  from {0}.{1} where ((sip=\"{2}\" AND dip=\"{3}\") or (sip=\"{3}\" AND dip=\"{2}\")) AND m={4} AND d={5} AND h={6} AND trminute={7} order by tstart limit 100").format(db,table,sip,dip,mh,dy,hr,mm)
 
         edge_file = "{0}edge-{1}-{2}-{3}-{4}.tsv".format(spath,sip.replace(".","_"),dip.replace(".","_"),hr,mm)
         impala_cmd = "impala-shell -i {0} --print_header -B --output_delimiter='\\t' -q '{1}' -o {2}".format(impala_node,impala_query,edge_file)
@@ -131,18 +115,8 @@ def main():
                 dstip = "'%s',"*len(dstdict.keys()) % tuple(dstdict.keys())
                 chord_file = "{0}chord-{1}.tsv".format(spath,ip.replace(".","_"))
                 dstip_list = dstip[:-1]
-                impala_query = ("SELECT
-                        sip as srcip,
-                        dip as dstip,
-                        MAX(ibyt) as maxbyte,
-                        AVG(ibyt) as avgbyte,
-                        MAX(ipkt) as maxpkt,
-                        AVG(ipkt) as avgpkt
-                        from {0}.{1}
-                        where m={2} and d={3}
-                        and ( (sip=\"{4}\" and dip IN(\"{5}\"))
-                        or (sip IN(\"{5}\") and dip=\"{4}\") )
-                        group by sip,dip").format(db,table,mh,dy,ip,dstip_list)
+                
+                impala_query = ("SELECT sip as srcip, dip as dstip, MAX(ibyt) as maxbyte, AVG(ibyt) as avgbyte, MAX(ipkt) as maxpkt, AVG(ipkt) as avgpkt from {0}.{1} where m={2} and d={3} and ( (sip=\"{4}\" and dip IN(\"{5}\")) or (sip IN(\"{5}\") and dip=\"{4}\") ) group by sip,dip").format(db,table,mh,dy,ip,dstip_list)
 
                 impala_cmd = "impala-shell -i {0} --print_header -B --output_delimiter='\\t' -q '{1}' -o {2}".format(impala_node,impala_query,chord_file)
                 print 'processing line ',ipct
