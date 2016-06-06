@@ -115,13 +115,13 @@ def main():
 	    updated_data = [row[:-1] + [""] + [row[-1]] for row in updated_data]
 	info("Saving data to local csv")
 	save_to_csv_file(updated_data, date)
+    	info("Creating dns scores backup")
+    	create_dns_backup(date)
 	info("Calculating DNS OA details")
 	create_dns_details(date)
-	info("Creating dns scores backup")
-	create_dns_backup()
 	info("DNS OA successfully completed")
 
-def create_dns_backup():
+def create_dns_backup(date):
     src = "{0}/user/{1}/dns_scores.csv".format(script_path,date)
     dst = "{0}/user/{1}/dns_scores_bu.csv".format(script_path,date)
     shutil.copy(src,dst)
