@@ -122,9 +122,9 @@ def main():
                 chord_file = "{0}chord-{1}.tsv".format(spath,ip.replace(".","_"))
                 dstip_list = dstip[:-1]
                 
-                impala_query = ("SELECT sip as srcip, dip as dstip, MAX(ibyt) as maxbyte, AVG(ibyt) as avgbyte, MAX(ipkt) as maxpkt, AVG(ipkt) as avgpkt from {0}.{1} where m={2} and d={3} and ( (sip=\"{4}\" and dip IN(\"{5}\")) or (sip IN(\"{5}\") and dip=\"{4}\") ) group by sip,dip").format(db,table,mh,dy,ip,dstip_list)
+                impala_query = ("SELECT sip as srcip, dip as dstip, MAX(ibyt) as maxbyte, AVG(ibyt) as avgbyte, MAX(ipkt) as maxpkt, AVG(ipkt) as avgpkt from {0}.{1} where m={2} and d={3} and ( (sip='{4}' and dip IN({5})) or (sip IN({5}) and dip='{4}') ) group by sip,dip").format(db,table,mh,dy,ip,dstip_list)
 
-                impala_cmd = "impala-shell -i {0} --print_header -B --output_delimiter='\\t' -q '{1}' -o {2}".format(impala_node,impala_query,chord_file)
+                impala_cmd = "impala-shell -i {0} --print_header -B --output_delimiter='\\t' -q \"{1}\" -o {2}".format(impala_node,impala_query,chord_file)
                 print 'processing line ',ipct
                 print impala_cmd
 
