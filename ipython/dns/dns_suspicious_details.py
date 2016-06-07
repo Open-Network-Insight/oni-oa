@@ -39,8 +39,8 @@ def main():
 def get_details(dbase,dns_qry_name,year,month,day,storage_path,hh,impala_node):
 
     limit = 250
-    edge_file ="{0}edge-{1}_{2}_00.csv".format(storage_path,dns_qry_name,hh)
-    edge_tmp  ="{0}edge-{1}_{2}_00.tmp".format(storage_path,dns_qry_name,hh)
+    edge_file ="{0}edge-{1}_{2}_00.csv".format(storage_path,dns_qry_name.replace("/","-"),hh)
+    edge_tmp  ="{0}edge-{1}_{2}_00.tmp".format(storage_path,dns_qry_name.replace("/","-"),hh)
 
     if not os.path.isfile(edge_file):
         
