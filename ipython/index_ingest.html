@@ -255,41 +255,39 @@
                 var dayFilte,
                     parse = d3.time.format("%Y-%m-%d %H:%M").parse; // Date formatting parser
 
-                if (!data)
+                if (data)
                 {
-                    return;
+                  if (date.getFullYear()==startDate.getFullYear() && date.getMonth()==startDate.getMonth())
+                  {
+                      dayFilter = startDate.getDate();
+                      data = data.filter(function (row)
+                      {
+                          return parseDate(row.date, true).getDate()>=dayFilter
+                      });
+                  }
+
+                  if (date.getFullYear()==endDate.getFullYear() && date.getMonth()==endDate.getMonth())
+                  {
+                      dayFilter = endDate.getDate();
+                      data = data.filter(function (row)
+                      {
+                          return parseDate(row.date, true).getDate()<=dayFilter
+                      });
+                  }
+
+                  // Parse dates and numbers.
+                  data.forEach(function (d) {
+                      d.date = parse(d.date);
+                      d.flows = +d.flows;
+                  });
+
+                  // Sort the data by date ASC 
+                  data.sort(function (a, b) {
+                      return a.date - b.date;
+                  });
+
+                  ingestData.push(data);
                 }
-
-                if (date.getFullYear()==startDate.getFullYear() && date.getMonth()==startDate.getMonth())
-                {
-                    dayFilter = startDate.getDate();
-                    data = data.filter(function (row)
-                    {
-                        return parseDate(row.date, true).getDate()>=dayFilter
-                    });
-                }
-
-                if (date.getFullYear()==endDate.getFullYear() && date.getMonth()==endDate.getMonth())
-                {
-                    dayFilter = endDate.getDate();
-                    data = data.filter(function (row)
-                    {
-                        return parseDate(row.date, true).getDate()<=dayFilter
-                    });
-                }
-
-                // Parse dates and numbers.
-                data.forEach(function (d) {
-                    d.date = parse(d.date);
-                    d.flows = +d.flows;
-                });
-
-                // Sort the data by date ASC 
-                data.sort(function (a, b) {
-                    return a.date - b.date;
-                });
-
-                ingestData.push(data);
 
                 if (requestQueue.length==0)
                 {
