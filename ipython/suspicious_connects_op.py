@@ -31,6 +31,12 @@ def main():
     spath = spath.format(userDir, sdate)
     scores_full_path = spath + scores_f
 
+    impala_cmd = "impala-shell -i {0} -q 'INVALIDATE METADATA {1}.flow'".format(impala_node,db)
+    check_output(impala_cmd,shell=True)
+    
+    impala_cmd = "impala-shell -i {0} -q 'REFRESH {1}.flow'".format(impala_node,db)
+    check_output(impala_cmd,shell=True)
+
     print "Creating Edge Files..."
     conns_list = []
     with open(scores_full_path, 'rb') as f:
