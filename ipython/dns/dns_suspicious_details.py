@@ -14,10 +14,12 @@ iana_config_file = "{0}/iana/iana_config.json".format(script_path)
 def main():
 
     print sys.argv
+    
     # get parameters.
     dns_scores = sys.argv[1]
     dbase = sys.argv[2]
     storage_path = sys.argv[3]
+    impala_node = sys.argv[4]
 
     with open(dns_scores,'rb') as dns_csv:
         rows = csv.reader(dns_csv, delimiter=',', quotechar='|')
@@ -32,20 +34,21 @@ def main():
                 day=date[1]
                 dns_qry_name=row[3]
                 hh=row[16]
-                get_details(dbase,dns_qry_name,year,month,day,storage_path,hh)
+                get_details(dbase,dns_qry_name,year,month,day,storage_path,hh,impala_node)
 
-def get_details(dbase,dns_qry_name,year,month,day,storage_path,hh):
+def get_details(dbase,dns_qry_name,year,month,day,storage_path,hh,impala_node):
 
     limit = 250
     edge_file ="{0}edge-{1}_{2}_00.csv".format(storage_path,dns_qry_name,hh)
     edge_tmp  ="{0}edge-{1}_{2}_00.tmp".format(storage_path,dns_qry_name,hh)
 
     if not os.path.isfile(edge_file):
-
-        dns_details_qry = "hive -S -e \" set hive.cli.print.header=true; SELECT frame_time, frame_len, ip_dst,  ip_src, dns_qry_name, dns_qry_class, dns_qry_type, dns_qry_rcode , dns_a FROM {0}.dns WHERE y={1} AND m={2} AND d={3} AND dns_qry_name LIKE '%{4}%' AND h={7} LIMIT {5};\" | sed 's/[\\t]/,/g' > {6}".format(dbase,year,month,day,dns_qry_name,limit,edge_tmp,hh)
-
-        print dns_details_qry
-        subprocess.call(dns_details_qry,shell=True)
+        
+        dns_details_qry = ("SELECT frame_time,frame_len,ip_dst,ip_src,dns_qry_name,dns_qry_class,dns_qry_type,dns_qry_rcode,dns_a FROM {0}.dns WHERE y={1} AND m={2} AND d={3} AND dns_qry_name LIKE \"%{4}%\" AND h={6} LIMIT {5};").format(dbase,year,month,day,dns_qry_name,limit,hh)        
+        
+        impala_cmd = "impala-shell -i {0} --print_header -B --output_delimiter=',' -q '{1}' -o {2}".format(impala_node,dns_details_qry,edge_tmp)
+        print impala_cmd
+        subprocess.call(impala_cmd,shell=True)
 
         print "Adding IANA code....."
         iana_config = json.load(open(iana_config_file))

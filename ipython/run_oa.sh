@@ -10,7 +10,7 @@ source /etc/duxbay.conf
 export DBNAME
 export DSOURCES
 export LUSER
-#export LIM
+export IMPALA_DEM
 
 echo "executing ops for date: $ndate"
 
