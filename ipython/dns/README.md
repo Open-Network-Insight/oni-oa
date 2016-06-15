@@ -41,13 +41,21 @@ Dns oni-oa main script.
 
 This script contains the logic to extract and transform data from oni-ml and output results files for UI.
 It executes the following steps:
+
 1. Reads a given number of rows from ipython/\<date>/dns_results.csv (Dns oni-ml ML results).
+ 
 2. Checks reputation of destination IP for each conneciton.
+ 
 3. Add Hour, Severity and Unix Timestamp columns.
+ 
 4. Add Iana codes labels.
+ 
 5. Add Network Context.
+ 
 6. Saves results file.
+ 
 7. Creates a backup of results file.
+
 8. Creates DNS data details.
 
 
@@ -172,7 +180,7 @@ If you are not planning to use McAfee GTI you can simply remove the entire "gti"
  It's possible to add new reputation services by implementing a new sub-module, to do that developers should follow
  these steps:
 
- 1. Map the responses of the new reputation service with Dns reputation table.
+1. Map the responses of the new reputation service with Dns reputation table.
 
     |   |   |
     |---|---|
