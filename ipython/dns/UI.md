@@ -72,7 +72,7 @@ There are two architectural approaches when it comes to the UI:
 
 ### Flows: Inline JavaScript
 
-For more information please go [here](../UI.md#flows-inline-javascript)
+For more information please go [here](../flow/UI.md#flows-inline-javascript)
 
 ### DNS: ReactJS + Flux
 
