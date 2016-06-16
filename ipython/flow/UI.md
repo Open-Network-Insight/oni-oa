@@ -229,4 +229,4 @@ UI Events:
 
 ### DNS: ReactJS + Flux
 
-For more information please go [here](dns/UI.md#dns-reactjs--flux)
+For more information please go [here](../dns/UI.md#dns-reactjs--flux)
