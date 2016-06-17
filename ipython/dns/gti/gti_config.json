@@ -1,5 +1,5 @@
 {
-    "target_columns":[3],
+    "target_columns":[4],
     "gti":{
             "server" : "<server>",
             "user" : "<user>",
