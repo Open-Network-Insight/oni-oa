@@ -119,17 +119,19 @@ def main():
         create_dns_details(date)
         info("DNS OA successfully completed")
 
+
 def extract_limit_records(dns_results_file_path, limit):
     dns_rows = []
     with open(dns_results_file_path, 'rb') as dns_results_file:
         dns_csv_reader = csv.reader(dns_results_file)
-        for i in range(1,int(limit)):
+        for i in range(1, int(limit)):
             try:
                 row = dns_csv_reader.next()
             except StopIteration:
                 return dns_rows
             dns_rows.append(row)
     return dns_rows
+
 
 def create_dns_backup(date):
     src = "{0}/user/{1}/dns_scores.csv".format(script_path, date)
