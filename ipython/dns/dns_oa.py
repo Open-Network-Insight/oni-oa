@@ -44,8 +44,8 @@ def main():
 
     if limit == 0:
         error("You need to pass a value for limit")
-    print usage
-    sys.exit()
+        print usage
+        sys.exit()
 
     y = date[:4]
     m = date[4:6]
@@ -73,25 +73,24 @@ def main():
 
     if os.path.isfile(gti_config_file):
         gti_config = json.load(open(gti_config_file))
-    init_rep_services(gti_config)
+        init_rep_services(gti_config)
 
-    indexes = gti_config["target_columns"]
-    cols = []
-    rep_services_results = []
-    for index in indexes:
-        cols += extract_column(dns_rows, index)
-    query_ip_dict = dict([(x, {}) for x in set(cols)])
-    info("Getting reputation for each service in config")
-    rep_services_results = [rep_service.check(None, query_ip_dict.keys()) for rep_service in rep_services]
-    all_rep_results = merge_rep_results(rep_services_results)
-    for val in query_ip_dict:
-        try:
-            query_ip_dict[val]['rep'] = all_rep_results[val]
-        except:
-            query_ip_dict[val]['rep'] = "UNKNOWN"
+        indexes = gti_config["target_columns"]
+        cols = []
+        rep_services_results = []
+        for index in indexes:
+            cols += extract_column(dns_rows, index)
+            query_ip_dict = dict([(x, {}) for x in set(cols)])
+            info("Getting reputation for each service in config")
+            rep_services_results = [rep_service.check(None, query_ip_dict.keys()) for rep_service in rep_services]
+            all_rep_results = merge_rep_results(rep_services_results)
+            for val in query_ip_dict:
+                try:
+                    query_ip_dict[val]['rep'] = all_rep_results[val]
+                except:
+                    query_ip_dict[val]['rep'] = "UNKNOWN"
     else:
         info("gti_config.json not present, will send data without reputation information")
-
     info("Adding reputation column to dns_ml data")
     updated_data = [append_rep_column(query_ip_dict, row) for row in dns_rows]
     info("Transforming data removing unix_tstamp column")
