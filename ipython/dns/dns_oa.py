@@ -1,12 +1,14 @@
-import os
-import json
-import sys, getopt
 import csv
-import subprocess
-from inscreenlog import *
-from iana import iana_transform
-from nc import network_context
+import getopt
+import json
+import os
 import shutil
+import subprocess
+import sys
+
+from iana import iana_transform
+from inscreenlog import *
+from nc import network_context
 
 script_path = os.path.dirname(os.path.abspath(__file__))
 gti_config_file = "{0}/gti/gti_config.json".format(script_path)
@@ -60,70 +62,77 @@ def main():
                 date))
         sys.exit()
     else:
-        with open(dns_results_file_path, 'rb') as dns_results_file:
+        info("Reading  - dns_results.csv - source data")
+        dns_rows = extract_limit_records(dns_results_file_path, limit)
+        if len(dns_rows) == 0 or len(dns_rows) == 1:
+            info(
+                "There is no data in file dns_results.csv for the "
+                "date and hour provided, please try a different one.")
+            info("DNS OA completed but no data was found.")
+            sys.exit(1)
 
-            cur = [row.rstrip("\r\n").split(",") for row in dns_results_file]
-            if len(cur) == 0 or len(cur) == 1:
-                info(
-                    "There is no data in file dns_results.csv for the date and hour provided, please try a different one.")
-                info("DNS OA completed but no data was found.")
-                sys.exit(1)
+    if os.path.isfile(gti_config_file):
+        gti_config = json.load(open(gti_config_file))
+        init_rep_services(gti_config)
 
-            if (int(limit) + 1) >= len(cur):
-                cur = cur[1:]
-            else:
-                cur = cur[1:int(limit) + 1]
+        indexes = gti_config["target_columns"]
+        cols = []
+        rep_services_results = []
+        for index in indexes:
+            cols += extract_column(dns_rows, index)
+            query_ip_dict = dict([(x, {}) for x in set(cols)])
+            info("Getting reputation for each service in config")
+            rep_services_results = [rep_service.check(None, query_ip_dict.keys()) for rep_service in rep_services]
+            all_rep_results = merge_rep_results(rep_services_results)
+            for val in query_ip_dict:
+                try:
+                    query_ip_dict[val]['rep'] = all_rep_results[val]
+                except:
+                    query_ip_dict[val]['rep'] = "UNKNOWN"
+    else:
+        info("gti_config.json not present, will send data without reputation information")
+    info("Adding reputation column to dns_ml data")
+    updated_data = [append_rep_column(query_ip_dict, row) for row in dns_rows]
+    info("Transforming data removing unix_tstamp column")
+    updated_data = [remove_unix_tstamp_column(row) for row in updated_data]
+    info("Adding HH (hour) column to new data")
+    updated_data = [append_hh_column(row) for row in updated_data]
+    info("Adding severity columns")
+    updated_data = [append_sev_columns(row) for row in updated_data]
+    info("Adding iana labels")
+    if os.path.isfile(iana_config_file):
+        iana_config = json.load(open(iana_config_file))
+        iana = iana_transform.IanaTransform(iana_config["IANA"])
+        updated_data = [add_iana_translation(row, iana) for row in updated_data]
+    else:
+        updated_data = [row[:-1] + ["", "", ""] + [row[-1]] for row in updated_data]
+    info("Adding network context")
+    if os.path.isfile(nc_config_file):
+        nc_config = json.load(open(nc_config_file))
+        nc = network_context.NetworkContext(nc_config["NC"])
+        updated_data = [row[:-1] + [nc.get_nc(row[2])] + [row[-1]] for row in updated_data]
+    else:
+        updated_data = [row[:-1] + [""] + [row[-1]] for row in updated_data]
+    info("Saving data to local csv")
+    save_to_csv_file(updated_data, date)
+    info("Creating dns scores backup")
+    create_dns_backup(date)
+    info("Calculating DNS OA details")
+    create_dns_details(date)
+    info("DNS OA successfully completed")
 
-            if os.path.isfile(gti_config_file):
-                gti_config = json.load(open(gti_config_file))
-                init_rep_services(gti_config)
 
-                indexes = gti_config["target_columns"]
-                cols = []
-                rep_services_results = []
-                for index in indexes:
-                    cols += extract_column(cur, index)
-                query_ip_dict = dict([(x, {}) for x in set(cols)])
-                info("Getting reputation for each service in config")
-                rep_services_results = [rep_service.check(None, query_ip_dict.keys()) for rep_service in rep_services]
-                all_rep_results = merge_rep_results(rep_services_results)
-                for val in query_ip_dict:
-                    try:
-                        query_ip_dict[val]['rep'] = all_rep_results[val]
-                    except:
-                        query_ip_dict[val]['rep'] = "UNKNOWN"
-            else:
-                info("gti_config.json not present, will send data without reputation information")
-
-            info("Adding reputation column to dns_ml data")
-            updated_data = [append_rep_column(query_ip_dict, row) for row in cur]
-        info("Transforming data removing unix_tstamp column")
-        updated_data = [remove_unix_tstamp_column(row) for row in updated_data]
-        info("Adding HH (hour) column to new data")
-        updated_data = [append_hh_column(row) for row in updated_data]
-        info("Adding severety columns")
-        updated_data = [append_sev_columns(row) for row in updated_data]
-        info("Adding iana labels")
-        if os.path.isfile(iana_config_file):
-            iana_config = json.load(open(iana_config_file))
-            iana = iana_transform.IanaTransform(iana_config["IANA"])
-            updated_data = [add_iana_translation(row, iana) for row in updated_data]
-        else:
-            updated_data = [row[:-1] + ["", "", ""] + [row[-1]] for row in updated_data]
-        info("Adding network context")
-        if os.path.isfile(nc_config_file):
-            nc_config = json.load(open(nc_config_file))
-            nc = network_context.NetworkContext(nc_config["NC"])
-            updated_data = [row[:-1] + [nc.get_nc(row[2])] + [row[-1]] for row in updated_data]
-        else:
-            updated_data = [row[:-1] + [""] + [row[-1]] for row in updated_data]
-        info("Saving data to local csv")
-        save_to_csv_file(updated_data, date)
-        info("Creating dns scores backup")
-        create_dns_backup(date)
-        info("Calculating DNS OA details")
-        create_dns_details(date)
-        info("DNS OA successfully completed")
+def extract_limit_records(dns_results_file_path, limit):
+    dns_rows = []
+    with open(dns_results_file_path, 'rb') as dns_results_file:
+        dns_csv_reader = csv.reader(dns_results_file)
+        for i in range(1, int(limit)):
+            try:
+                row = dns_csv_reader.next()
+            except StopIteration:
+                return dns_rows
+            dns_rows.append(row)
+    return dns_rows
 
 
 def create_dns_backup(date):
