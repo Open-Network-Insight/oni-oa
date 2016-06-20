@@ -1,13 +1,13 @@
 # **Open Network Insight Ipython/Jupyter Front-End**
 
-The visualization repository contains all the front-end code and files related to the Duxbury Bay visuals, such as styles, pages, data files, etc.
+The visualization repository contains all the front-end code and files related to the Open Network Insight visuals, such as styles, pages, data files, etc.
 Some of the technologies used are:
 
  - [Jupyter Ipython](http://jupyter.org/)
  - [D3js](http://d3js.org/)
  - [JQuery](https://jquery.com/)
  - [Boostrap](http://getbootstrap.com/)
-
+ - [ReactJS](https://facebook.github.io/react/)
 
 ----------
 
@@ -32,6 +32,18 @@ It contains the pages, scripts, notebooks and data files related to the vast/tra
 
 ----------
 
+## **Operational Analitycs**
+* [DNS](dns/README.md)
+* [FLOW](flow/README.md)
+
+## **IPython NoteBooks**
+* Flow
+ * [EdgeNotebook](flow/EdgeNotebook.md) 
+ * [ThreatInvestigation](flow/ThreatInvestigation.md)
+* DNS
+ * [EdgeNotebook](dns/EdgeNotebook.md) 
+ * [ThreatInvestigation](dns/ThreatInvestigation.md)
+
 ##**Views**
 
 ###Analyst View (index_sconnects.html)
@@ -42,12 +54,3 @@ Interactive histogram dashboard that shows the amount of data captured in a cert
 
 ###**Story Board (storyboard_sconnect.html)**
 Executive Briefing dashboard
-
-##**Op/ (notebooks)**
-
-###IngestSummary.ipynb and IngestSummaryHive.ipynb
-These notebooks contain the necessary scripts to create the Ingest summary data file needed to display the histogram:
-**IngestSummary.ipynb** uses HDFS commands to read the summary line from the CSV files and from there create the data.
-**IngestSummaryHive.ipynb** makes a hive query to the netflow_sum table to get the ingest summary data based on a date range.
-
-
