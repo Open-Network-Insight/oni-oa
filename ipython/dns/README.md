@@ -32,7 +32,10 @@ into csv files for presentation layer.
         story_board.html                -> *
         threat_investigation.html       -> *
 
-**for UI components read [UI.md](https://github.com/Open-Network-Insight/oni-oa/blob/1.0.1/ipython/dns/UI.md).*
+**for UI components read [UI.md](https://github.com/Open-Network-Insight/oni-oa/blob/1.0.1/ipython/dns/UI.md).*  
+**for further reference on how to work with the notebooks, please refer to:  
+ [Edge Notebook.ipyb](https://github.com/Open-Network-Insight/oni-oa/blob/1.0.1/ipython/dns/EdgeNotebook.md)  
+ [Threat_Investigation.ipyb](https://github.com/Open-Network-Insight/oni-oa/blob/1.0.1/ipython/dns/ThreatInvestigation.md)  *
 ## DNS Components
 
 ###dns_oa.py
@@ -136,7 +139,7 @@ connection between DNS and source IP.
 		
 		8.dns_a: string
 
-- Threat_Investigation.ipyb: One Ipython notebook template for Threat Investigation.
+- Threat Investigation: One Ipython notebook template for Threat Investigation. 
 - dns_scores.csv: One result file with the given number of rows. Also known as suspicious connects.
  
 		Schema with zero-indexed columns: 
