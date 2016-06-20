@@ -24,6 +24,9 @@ Flow OA is divided into three main functionalities:
 ### **IPython Nootebooks**
 Templates of notebooks are stored in the **master** folder.
 If a new functionality is required for the ipython notebook, the templates need to be modified to include the functionality for new executions.
+For further reference on how to work with these notebooks, you can read:
+- [Edge Notebook] (https://github.com/Open-Network-Insight/oni-oa/blob/Flow_OA_Doc/ipython/flow/EdgeNotebook.md)
+- [Threat Investigation Notebook] (https://github.com/Open-Network-Insight/oni-oa/blob/Flow_OA_Doc/ipython/flow/ThreatInvestigation.md)
 
 ### **STEP 2: Network Context and Reputation Services**
 
@@ -57,7 +60,8 @@ Add restclient to the user path: _/home/solution-user/refclient/restclient_
 
 **Network context**
 
-To add network context Flow OA uses IP_renges.csv file located in ipython/iploc/IP_ranges.csv.
+To diferentitate between internal and external IPs, Flow OA uses IP_ranges.csv file located in ipython/iploc/IP_ranges.csv.
+To add aditional context to the network, the Edge Notebook uses networkcontext_1.csv file located in ipython/iploc/networkcontext_1.csv.
 
 **GEO Localization**
 
