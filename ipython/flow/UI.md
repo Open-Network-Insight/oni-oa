@@ -2,10 +2,10 @@
 
 Provides tools for interactive visualization, noise filters, white listing, and attack heuristics.
 
-## Table of Content
+## Table of Contents
 
 - [Open Network Insight - Operational Analytics User Interface](#open-network-insight---operational-analytics-user-interface)
-  * [Table of Content](#table-of-content)
+  * [Table of Contents](#table-of-contents)
   * [Intended Audience](#intended-audience)
   * [Getting Started](#getting-started)
   * [Technical Documentation](#technical-documentation)
@@ -46,7 +46,9 @@ There are two architectural approaches when it comes to the UI:
 2. [DNS: ReactJS + Flux](#dns-reactjs--flux)
 
 ### Flows: Inline JavaScript
-Back in the days, when ONI was on its early days, flows followed a traditional approach to build its UI, inline JavaScript :( . This will change on next release, but for now, just keep in mind that every JavaScript code is right in between lines of each HTML file.
+Flows follow a traditional approach to build its UI, inline JavaScript :( . This will change in the future, but for now, just keep in mind that every JavaScript code is right in between lines of each HTML file.
+
+For every path found on this document "ONI/" refers to the path where ONI is intalled.
 
 Flows has the following sections:
 
@@ -213,7 +215,7 @@ UI Events:
 - Primary mouse click event
 - D3's Zoom event
 
-#### Injest Summary
+#### Ingest Summary
 
 *ONI/ipython/index\_ingest.html*
 

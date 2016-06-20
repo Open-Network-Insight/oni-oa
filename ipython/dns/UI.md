@@ -2,15 +2,18 @@
 
 Provides tools for interactive visualization, noise filters, white listing, and attack heuristics.
 
-## Table of Content
+## Table of Contents
 
 - [Open Network Insight - Operational Analytics User Interface](#open-network-insight---operational-analytics-user-interface)
-  * [Table of Content](#table-of-content)
+  * [Table of Contents](#table-of-contents)
   * [Intended Audience](#intended-audience)
   * [Getting Started](#getting-started)
   * [Technical Documentation](#technical-documentation)
     + [Flows: Inline JavaScript](#flows-inline-javascript)
     + [DNS: ReactJS + Flux](#dns-reactjs--flux)
+      - [Dev Requirements](#dev-requirements)
+      - [Development/Debugging process](#developmentdebugging-process)
+      - [Building modules](#building-modules)
       - [Dashboard](#dashboard)
       - [Threat Investigation](#threat-investigation)
       - [Storyboard](#storyboard)
@@ -44,9 +47,6 @@ Provides tools for interactive visualization, noise filters, white listing, and 
           + [IncidentProgressionStore.js](#incidentprogressionstorejs)
           + [RestStore.js](#reststorejs)
           + [SuspiciousStore.js](#suspiciousstorejs)
-      - [Dev Requirements](#dev-requirements)
-      - [Development/Debugging process](#developmentdebugging-process)
-      - [Building modules](#building-modules)
 
 ## Intended Audience
 
@@ -56,7 +56,7 @@ This document is intended for front end developers who want to contribute to our
 - CSS
 - JavaScript
 	- D3 library
-	- ReactJS+Flux arquitecture
+	- ReactJS+Flux architecture
 	- NPM package manager
 
 ## Getting Started
@@ -87,6 +87,46 @@ For more information about ReactJS and Flux, please go to:
 
 From now on we assume you are familiar with ReactJS+Flux applications.
 
+For every path found on this document "ONI/" refers to the path where ONI is intalled.
+
+#### Dev Requirements
+
+- NPM - Node Package Manager
+
+#### Development/Debugging process
+
+1. Install npm dependencies
+	1. $ cd *ONI/ipython/dns/static/*
+	2. \# npm install -g watchify
+	3. \# npm install -g browserify
+	4. \# npm install -g uglify
+	5. $ npm install
+2. Start ipython server
+	1. $ cd ONI/ipython/
+	2. $ ./runIpython.sh
+3. Start watching for code changes
+	1. $ cd ONI/ipython/dns/static/
+	2. Watch one of the following modules
+  		1. $ npm run watch-suspicious
+  		2. $ npm run watch-threat_investigation
+  		3. $ npm run watch-story_board
+4. Start making code changes, if there is any
+
+#### Building modules
+
+At ONI/ipython/dns/static/ you can:
+
+- Build all modules: `npm run build-all`
+- Build suspicious module: `npm run build-suspicious`
+- Build threat investigation module: `npm run build-threat_investigation`
+- Build storyboard module: `npm run build-story_board`
+
+The build process will create the following files:
+
+- ONI/ipython/dns/static/js/suspicious.bundle.min.js
+- ONI/ipython/dns/static/js/threat_investigation.bundle.min.js
+- ONI/ipython/dns/static/js/story_board.bundle.min.js
+
 DNS has the following sections:
 
 1. [Dashboard](#dashboard)
@@ -94,17 +134,39 @@ DNS has the following sections:
 3. [Storyboard](#storyboard)
 
 #### Dashboard
+
+Shows Suspicious DNS data, reads the output file from OA.
+
+HTML file:
+
 - *ONI/dns/index\_sdns.html*
+
+JavaScript file:
+
 - *ONI/dns/static/js/suspicious.js*
 
 #### Threat Investigation
+
+Tools to manage high risk threats. More information [here](#threat-investigation)
+
+HTML file:
+
 - *ONI/dns/threat\_investigation.html*
+
+JavaScript file:
+
 - *ONI/dns/js/threat\_investigation.js*
 
-More information [here](#threat-investigation)
-
 #### Storyboard
+
+Displays extra information for hight risk threats.
+
+HTML file:
+
 - *ONI/dns/story\_board.html*
+
+JavaScript file:
+
 - *ONI/dns/js/story\_board.js*
 
 #### Pipeline structure
@@ -191,13 +253,13 @@ Defines actions that belong to storyboard sections
 
 ###### DateInput.react.js
 
-A pipiline level component that allows user to  select a date. After selecting the date this component will start an `UPDATE_DATE` action from [DnsActions](#dnsactions-js).
+A pipeline level component that allows user to  select a date. After selecting the date this component will start an `UPDATE_DATE` action from [DnsActions](#dnsactions-js).
 
 ###### DendrogramMixin.react.js
 
 This mixin takes care of the creation of dendrogram charts, more specific components should be created in order to gather data to feed this mixing.
 
-While executing render function, this component will look for `this.state.root` which should be an object like:
+While executing the render function, this component will look for `this.state.root` which should be an object like:
 ```javascript
 {
   name: 'Node Label',
@@ -235,7 +297,7 @@ A component that allows user to filter suspicious data. As soon as the filter ch
 
 A helper component which renders a table. It allows for customization on final components.
 
-While executing render function, this components looks for:
+While executing the render function, this components looks for:
 
 > - `this.state.data`
 >
@@ -552,41 +614,3 @@ This store extends [RestStore](#RestStore.js) and listens for suspicious related
   	> - SELECT_THREAT
   	> 
   	> 	Listens for select threat evetns and keeps record of the selected threat.
-
-#### Dev Requirements
-
-- NPM - Node Package Manager
-
-#### Development/Debugging process
-
-1. Install npm dependencies
-	1. $ cd *ONI/ipython/dns/static/*
-	2. \# npm install -g watchify
-	3. \# npm install -g browserify
-	4. \# npm install -g uglify
-	5. $ npm install
-2. Start ipython server
-	1. $ cd ONI/ipython/
-	2. $ ./runIpython.sh
-3. Start watching for code changes
-	1. $ cd ONI/ipython/dns/static/
-	2. Watch one of the following modules
-  		1. $ npm run watch-suspicious
-  		2. $ npm run watch-threat_investigation
-  		3. $ npm run watch-story_board
-4. Start making code changes, if there is any
-
-#### Building modules
-
-At ONI/ipython/dns/static/ you can:
-
-- Build all modules: `npm run build-all`
-- Build suspicious module: `npm run build-suspicious`
-- Build threat investigation module: `npm run build-threat_investigation`
-- Build storyboard module: `npm run build-story_board`
-
-The build process will create the following files:
-
-- ONI/ipython/dns/static/js/suspicious.bundle.min.js
-- ONI/ipython/dns/static/js/threat_investigation.bundle.min.js
-- ONI/ipython/dns/static/js/story_board.bundle.min.js
