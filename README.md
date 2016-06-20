@@ -33,8 +33,8 @@ It contains the pages, scripts, notebooks and data files related to the vast/tra
 ----------
 
 ## **Operational Analitycs**
-* [DNS](dns/README.md)
-* [FLOW](flow/README.md)
+* [DNS](ipython/dns/README.md)
+* [FLOW](ipython/flow/README.md)
 
 ## **IPython NoteBooks**
 * Flow
