@@ -75,9 +75,9 @@ It executes the following steps:
 
 **Pre-requisites**
 
-- Configure GIT services ADD LINK TO HOW TO CONFIGURE DNS OA
-- Configure IANA service ADD LINK TO HOW TO CONFIGURE DNS OA
-- Configure Network Context service ADD LINK TO HOW TO CONFIGURE DNS OA
+- [Configure](https://github.com/Open-Network-Insight/open-network-insight/wiki/Install%20OA%20Solution) GIT services
+- [Configure](https://github.com/Open-Network-Insight/open-network-insight/wiki/Install%20OA%20Solution) IANA service
+- [Configure](https://github.com/Open-Network-Insight/open-network-insight/wiki/Install%20OA%20Solution) Network Context service
 - Generate ML results for DNS
 
 **Usage**
@@ -192,7 +192,7 @@ connection between DNS and source IP.
 - dns_scores_bu.csv: One backup file of suspicious connects in case user want to roll back any changes made during
 analysis. Schema is same as dns_scores.csv.
 
-More information about how to execute DNS OA in ADD LINK
+More information about how to execute DNS [here](https://github.com/Open-Network-Insight/open-network-insight/wiki/Install%20OA%20Solution)
 
 ###GTI (gti)
 DNS Global Threat Intelligence module.
