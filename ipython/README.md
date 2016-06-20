@@ -7,7 +7,7 @@ Some of the technologies used are:
  - [D3js](http://d3js.org/)
  - [JQuery](https://jquery.com/)
  - [Boostrap](http://getbootstrap.com/)
-
+ - [ReactJS](https://facebook.github.io/react/)
 
 ----------
 
@@ -46,12 +46,3 @@ Interactive histogram dashboard that shows the amount of data captured in a cert
 
 ###**Story Board (storyboard_sconnect.html)**
 Executive Briefing dashboard
-
-##**Op/ (notebooks)**
-
-###IngestSummary.ipynb and IngestSummaryHive.ipynb
-These notebooks contain the necessary scripts to create the Ingest summary data file needed to display the histogram:
-**IngestSummary.ipynb** uses HDFS commands to read the summary line from the CSV files and from there create the data.
-**IngestSummaryHive.ipynb** makes a hive query to the netflow_sum table to get the ingest summary data based on a date range.
-
-
