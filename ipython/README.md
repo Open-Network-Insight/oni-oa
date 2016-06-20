@@ -36,6 +36,14 @@ It contains the pages, scripts, notebooks and data files related to the vast/tra
 * [DNS](dns/README.md)
 * [FLOW](flow/README.md)
 
+## **IPython NoteBooks**
+* Flow
+ * [EdgeNotebook](flow/EdgeNotebook.md) 
+ * [ThreatInvestigation](flow/ThreatInvestigation.md)
+* DNS
+ * [EdgeNotebook](dns/EdgeNotebook.md) 
+ * [ThreatInvestigation](dns/ThreatInvestigation.md)
+
 ##**Views**
 
 ###Analyst View (index_sconnects.html)
