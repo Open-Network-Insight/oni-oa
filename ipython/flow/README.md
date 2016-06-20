@@ -1,7 +1,7 @@
 # **OA for Flow**
 
-OA Flow uses the ranked data from ML output, OA Flow process includes reputation and data transformation to human redable format (csv). 
-The output data will be used by the presentation layer (suspicious connects, network view, suspicous details).
+OA Flow uses the ranked data from ML output, OA Flow process includes reputation and data transformation to human readable format (csv). 
+The output data will be used by the presentation layer (suspicious connects, network view, suspicious details).
 
 Flow OA is divided into three main functionalities:
 
