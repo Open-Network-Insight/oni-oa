@@ -1,6 +1,6 @@
 # **Open Network Insight Ipython/Jupyter Front-End**
 
-The visualization repository contains all the front-end code and files related to the Duxbury Bay visuals, such as styles, pages, data files, etc.
+The visualization repository contains all the front-end code and files related to the Open Network Insight visuals, such as styles, pages, data files, etc.
 Some of the technologies used are:
 
  - [Jupyter Ipython](http://jupyter.org/)
@@ -31,6 +31,10 @@ This is the ipython notebook server root folder, below are more details about ch
 It contains the pages, scripts, notebooks and data files related to the vast/training data. It is basically a copy of the main root folder but with slightly code differences to fit the needs of the training data.
 
 ----------
+
+## **Operational Analitycs**
+* [DNS](dns/README.md)
+* [FLOW](flow/README.md)
 
 ##**Views**
 
