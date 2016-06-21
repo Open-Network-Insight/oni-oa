@@ -59,8 +59,8 @@ While _name_ is a short description of the context.
 **_iploc.csv_**  
 This is a comma separated geolocation database file, containing all (or most) known public IP ranges and the details of its location.  
 The following columns are expected:  
-- IP Range start (int)
-- IP Range end (int)
+- IP Range start (double)
+- IP Range end (double)
 - Country code (string)
 - Country (String)
 - State (string)
