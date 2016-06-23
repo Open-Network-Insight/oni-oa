@@ -68,31 +68,7 @@ def validate_parameters_values(args,logger):
     if not is_limit_ok: logger.error("limit parameter is not correct, please select a valid limit")
 
     if not is_date_ok or not is_type_ok or not is_limit_ok: sys.exit(1)
-    
-
-
-		# create logger for prd_ci
-		log = logging.getLogger('OA')
-		log.setLevel(level=logging.DEBUG)
-
-		# create formatter and add it to the handlers
-		formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
-
-		# create file handler for logger.
-		#fh = logging.FileHandler('oa.log')
-		#fh.setLevel(level=logging.DEBUG)
-		#fh.setFormatter(formatter)
-
-		# reate console handler for logger.
-		ch = logging.StreamHandler()
-		ch.setLevel(level=logging.DEBUG)
-		ch.setFormatter(formatter)
-
-		# add handlers to logger.
-		#log.addHandler(fh)
-		log.addHandler(ch)	
-
-		return  log
+   
 
 if __name__=='__main__':
     main()
