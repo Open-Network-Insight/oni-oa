@@ -22,26 +22,25 @@ def main():
     start_oa(args)
 
 def start_oa(args):
-
+    
     # setup the main logger for all the OA process.    
     logger = Util.create_logger('OA',create_file=False)
 
-    logger.info("Validating parameter values...")
-    validate_parameters_values(args,logger)
-
-    logger.info("Creating folder structure for OA data...")
-    create_folder_structure(args.type,args.date) 
+    logger.info("--------- STARTING OA -----------")   
+    validate_parameters_values(args,logger)    
+    create_folder_structure(args.type,args.date,logger)
 
     # create data type instance.
     module = __import__("{0}.{0}_oa".format(args.type),fromlist=['OA'])
    
-    # start OA.
-    oa_process = module.OA()
+    # start OA.   
+    oa_process = module.OA(args.date,args.limit,logger)
     oa_process.start()
 
-def create_folder_structure(type,date):
+def create_folder_structure(type,date,logger):
 
-    # create date folder if it does not exist.
+    # create date folder structure if it does not exist.
+    logger.info("Creating folder structure for OA data")    
     data_type_folder = "../data/{0}/{1}"    
     if not os.path.isdir(data_type_folder.format(type,date)): os.makedirs(data_type_folder.format(type,date))
     if not os.path.isdir(data_type_folder.format(type,"ingest_summary")): os.makedirs(data_type_folder.format(type,"ingest_summary"))
@@ -49,6 +48,8 @@ def create_folder_structure(type,date):
    
 def validate_parameters_values(args,logger):
     
+    logger.info("Validating input parameter values")
+
     #date.
     is_date_ok = True if len(args.date) == 8 else False    
 

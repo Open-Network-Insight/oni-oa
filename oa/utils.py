@@ -6,7 +6,7 @@ class Util(object):
     def create_logger(cls,looger_name,create_file=False):
 
         # create logger for prd_ci
-		log = logging.getLogger('OA')
+		log = logging.getLogger(looger_name)
 		log.setLevel(level=logging.DEBUG)
 
 		# create formatter and add it to the handlers
