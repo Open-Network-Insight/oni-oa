@@ -1,6 +1,6 @@
 var React = require('react');
 
-var GridPanelMixin = require('./GridPanelMixin.react');
+var GridPanelMixin = require('../../../js/components/GridPanelMixin.react');
 var DetailsStore = require('../stores/DetailsStore');
 
 var DetailsTablePanel = React.createClass({
@@ -21,10 +21,10 @@ var DetailsTablePanel = React.createClass({
   _render_dns_a_cell: function (answers)
   {
     answers = (answers || "").split('|');
-    answers = answers.map(function (answer)
+    answers = answers.map(function (answer, idx)
     {
         return (
-            <div>
+            <div key={'answer_'+idx}>
                 {answer}
             </div>
         );
@@ -38,8 +38,6 @@ var DetailsTablePanel = React.createClass({
   _onChange: function ()
   {
     this.setState(DetailsStore.getData());
-    // After first load, set an empty message
-    this.emptySetMessage = 'There is no information available';
   }
 });
 

@@ -25,20 +25,18 @@ var DetailsPanel = React.createClass({
   },
   render: function ()
   {
-    var content;
-
     if (this.state.mode === OniConstants.VISUAL_DETAILS_MODE)
     {
       return (
-          <DetailsChordsPanel />
+        <DetailsChordsPanel />
       );
     }
     else
     {
       return (
-          <div className="inner-container-box">
-            <DetailsTablePanel />
-          </div>
+        <div className="inner-container-box">
+          <DetailsTablePanel />
+        </div>
       );
     }
   },

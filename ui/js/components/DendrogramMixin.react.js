@@ -1,7 +1,5 @@
 var React = require('react');
 
-var DendrogramStore = require('../stores/DendrogramStore');
-
 function setChildrenIds(root)
 {
     root.children.forEach(function (child, i)
@@ -138,7 +136,7 @@ function buildDendrogram (root, ipsrc)
 var DendrogramMixin = {
   getInitialState: function ()
   {
-    return {loading: false};
+    return {loading: false, root: {}};
   },
   render:function()
   {
@@ -162,8 +160,12 @@ var DendrogramMixin = {
     }
 
     return (
-      <div className="col-md-12 padding0 dendrogram">{content}</div>
+      <div className="dendrogram">{content}</div>
     )
+  },
+  shouldComponentUpdate: function ()
+  {
+    return this.state.root.children!==undefined;
   },
   componentDidUpdate: function ()
   {

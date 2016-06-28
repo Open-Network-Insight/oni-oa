@@ -18,7 +18,6 @@
     "build-flow": "cd flow/ && npm run build-all && cd ../",
     "build-dns": "cd dns/ && npm run build-all && cd ../"
   },
-  "author": "Intel Corporation",
   "browserify": {
     "transform": [
       ["reactify", {"es6": true}]

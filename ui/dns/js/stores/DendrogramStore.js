@@ -1,6 +1,7 @@
-var DnsDispatcher = require('../dispatchers/DnsDispatcher');
+var OniDispatcher = require('../../../js/dispatchers/OniDispatcher');
+var OniConstants = require('../../../js/constants/OniConstants');
 var DnsConstants = require('../constants/DnsConstants');
-var RestStore = require('./RestStore');
+var RestStore = require('../../../js/stores/RestStore');
 var assign = require('object-assign');
 
 var SRC_IP_FILTER = 'ip_dst';
@@ -23,24 +24,24 @@ var DendrogramStore = assign(new RestStore(DnsConstants.API_VISUAL_DETAILS), {
   {
     this._data = data;
     this._data.data = this._data.data.slice(0, DATA_ROWS_LIMIT);
-    
+
     this.emitChangeData();
   }
 });
 
-DnsDispatcher.register(function (action) {
+OniDispatcher.register(function (action) {
   switch (action.actionType) {
-    case DnsConstants.UPDATE_DATE:
+    case OniConstants.UPDATE_DATE:
       DendrogramStore.setDate(action.date);
       break;
-    case DnsConstants.SELECT_SRC_IP:
-      DendrogramStore.setSrcIp(action.srcIp);
+    case OniConstants.SELECT_IP:
+      DendrogramStore.setSrcIp(action.ip);
       break;
-    case DnsConstants.RELOAD_SUSPICIOUS:
+    case OniConstants.RELOAD_SUSPICIOUS:
       DendrogramStore.setSrcIp('');
       DendrogramStore.resetData();
       break;
-    case DnsConstants.RELOAD_DETAILS_VISUAL:
+    case OniConstants.RELOAD_DETAILS_VISUAL:
       DendrogramStore.reload();
       break;
   }

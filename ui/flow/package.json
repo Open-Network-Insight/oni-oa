@@ -11,12 +11,11 @@
     "watch-suspicious": "watchify js/suspicious.js -o js/suspicious.bundle.min.js -v -d",
     "watch-threat_investigation": "watchify js/threat_investigation.js -o js/threat_investigation.bundle.min.js -v -d",
     "watch-story_board": "watchify js/story_board.js -o js/story_board.bundle.min.js -v -d",
-    "build-all": "npm run build-suspicious && npm run build-threat_investigation && npm run build-story_board",
+    "build-all": "npm run build-suspicious",
     "build-suspicious": "browserify js/suspicious.js | uglifyjs -cm > js/suspicious.bundle.min.js",
     "build-threat_investigation": "browserify js/threat_investigation.js | uglifyjs -cm > js/threat_investigation.bundle.min.js",
     "build-story_board": "browserify js/story_board.js | uglifyjs -cm > js/story_board.bundle.min.js"
   },
-  "author": "Intel Corporation",
   "browserify": {
     "transform": [
       ["reactify", {"es6": true}]

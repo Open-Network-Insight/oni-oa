@@ -1,6 +1,6 @@
 var React = require('react');
 
-var DendrogramMixin = require('./DendrogramMixin.react');
+var DendrogramMixin = require('../../../js/components/DendrogramMixin.react');
 var DendrogramStore = require('../stores/DendrogramStore');
 
 var DetailsDendrogramPanel = React.createClass({

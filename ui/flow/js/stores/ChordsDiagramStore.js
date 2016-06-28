@@ -3,12 +3,13 @@ var assign = require('object-assign');
 
 var OniDispatcher = require('../../../js/dispatchers/OniDispatcher');
 var OniConstants = require('../../../js/constants/OniConstants');
+var NetflowConstants = require('../constants/NetflowConstants');
 var RestStore = require('../../../js/stores/RestStore');
 
 var DATE_FILTER = 'date';
 var IP_FILTER = 'ip';
 
-var ChordsDiagramStore = assign(new RestStore(OniConstants.API_VISUAL_DETAILS), {
+var ChordsDiagramStore = assign(new RestStore(NetflowConstants.API_VISUAL_DETAILS), {
   _parser: d3.dsv('\t', 'text/plain'),
   errorMessages: {
     404: 'No details available'

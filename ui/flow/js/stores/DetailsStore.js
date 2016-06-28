@@ -3,6 +3,7 @@ var assign = require('object-assign');
 
 var OniDispatcher = require('../../../js/dispatchers/OniDispatcher');
 var OniConstants = require('../../../js/constants/OniConstants');
+var NetflowConstants = require('../constants/NetflowConstants');
 var RestStore = require('../../../js/stores/RestStore');
 
 var DATE_FILTER = 'date';
@@ -10,7 +11,7 @@ var SRC_IP_FILTER = 'src_ip';
 var DST_IP_FILTER = 'dst_ip';
 var TIME_FILTER = 'time';
 
-var DetailsStore = assign(new RestStore(OniConstants.API_DETAILS), {
+var DetailsStore = assign(new RestStore(NetflowConstants.API_DETAILS), {
   _parser: d3.dsv('\t', 'text/plain'),
   errorMessages: {
     404: 'No details available'

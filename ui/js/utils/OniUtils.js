@@ -36,19 +36,20 @@ var OniUtils = {
     return null;
   },
   setUrlParam: function (name, value) {
-    var regex, hash, replacement;
+    var regex, hash, replacement, matches;
 
-    regex = new RegExp('(#|\\|)' + name + '=[^|]+');
+    regex = new RegExp('((?:#|\\|)' + name + '=)[^|]+');
     hash = window.location.hash;
 
-    replacement = value ? (name+'='+value) : '';
+    matches = regex.exec(hash);
 
-    if (regex.test(hash)) {
+    if (matches) {
+      replacement = value ? (matches[1]  + value) : '';
       hash = hash.replace(regex, replacement);
     }
     else if (value)
     {
-      hash = hash + (hash.length>1?'|':'') + replacement;
+      hash = hash + (hash.length>1?'|':'') + name + '=' + value;
     }
 
     window.location.hash = hash;

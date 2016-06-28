@@ -1,6 +1,7 @@
-var DnsDispatcher = require('../dispatchers/DnsDispatcher');
+var OniDispatcher = require('../../../js/dispatchers/OniDispatcher');
+var OniConstants = require('../../../js/constants/OniConstants');
 var DnsConstants = require('../constants/DnsConstants');
-var RestStore = require('./RestStore');
+var RestStore = require('../../../js/stores/RestStore');
 var assign = require('object-assign');
 
 var DNS_SERVER_FILTER = 'dns_qry_name';
@@ -35,19 +36,19 @@ var DetailsStore = assign(new RestStore(DnsConstants.API_DETAILS), {
   }
 });
 
-DnsDispatcher.register(function (action) {
+OniDispatcher.register(function (action) {
   switch (action.actionType) {
-    case DnsConstants.UPDATE_DATE:
+    case OniConstants.UPDATE_DATE:
       DetailsStore.setDate(action.date);
       break;
-    case DnsConstants.SELECT_THREAT:
+    case OniConstants.SELECT_THREAT:
       DetailsStore.setDnsServer(action.threat.dns_qry_name);
       DetailsStore.setTime(action.threat.hh+':00');
       break;
-    case DnsConstants.RELOAD_SUSPICIOUS:
+    case OniConstants.RELOAD_SUSPICIOUS:
       DetailsStore.resetData();
       break;
-    case DnsConstants.RELOAD_DETAILS:
+    case OniConstants.RELOAD_DETAILS:
       DetailsStore.reload();
       break;
   }

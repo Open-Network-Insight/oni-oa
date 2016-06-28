@@ -184,7 +184,7 @@ function draw(selectedEdgeId, sourceIpNodeId, targetIpNodeId, data) {
   force.start();
 
   // if the function params are not null then that means we have a selected edge and nodes and we need to add the blink animation to them
-  if (this.state.selectedEdgeId != null && this.state.selectedSrcNodeId != null & this.state.selectedDstNodeId != null) {
+  if (this.state.selectedEdgeId && this.state.selectedSrcNodeId && this.state.selectedDstNodeId) {
     var selectedEdge = d3.select("#" + this.state.selectedEdgeId)
                .style("stroke", "#FDB813")
                .style("stroke-opacity", "1")

@@ -1,4 +1,5 @@
 var OniDispatcher = require('../dispatchers/OniDispatcher');
+var OniActions = require('./OniActions');
 var OniConstants = require('../constants/OniConstants');
 var OniUtils = require('../utils/OniUtils');
 
@@ -13,6 +14,7 @@ var EdInActions = {
     });
   },
   reloadSuspicious: function () {
+    OniActions.toggleMode(OniConstants.DETAILS_PANEL, OniConstants.DETAILS_MODE);
     OniDispatcher.dispatch({
       actionType: OniConstants.RELOAD_SUSPICIOUS
     });

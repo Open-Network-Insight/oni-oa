@@ -11,10 +11,12 @@ var FilterInput = React.createClass({
   {
     return {filter: ''};
   },
-  componentDidMount: function () {
+  componentDidMount: function ()
+  {
     SuspiciousStore.addChangeFilterListener(this._onFilterChange);
   },
-  componentWillUnmount: function () {
+  componentWillUnmount: function ()
+  {
     SuspiciousStore.removeChangeFilterListener(this._onFilterChange);
   },
   render: function ()

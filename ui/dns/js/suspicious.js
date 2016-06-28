@@ -19,11 +19,11 @@ React.render(
   (
     <form className="form-inline">
       <div className="form-group">
-        <label htmlFor="ip_filter" className="control-label">IP:</label>
+        <label htmlFor="ip_filter" className="control-label">IP/DNS:</label>
         <div className="input-group input-group-xs">
           <FilterInput id="ip_filter" />
           <div className="input-group-btn">
-            <button className="btn btn-primary" type="button" id="btn_searchIp" title="Enter an IP Address and click the search button to filter the results." onClick={EdInActions.reloadSuspicious}>
+            <button className="btn btn-primary" type="button" id="btn_searchIp" title="Enter an IP Address or Domain and click the search button to filter the results." onClick={EdInActions.reloadSuspicious}>
               <span className="glyphicon glyphicon-search" aria-hidden="true"></span>
             </button>
           </div>
@@ -66,7 +66,7 @@ React.render(
     </PanelRow>
     <PanelRow>
       <Panel title={OniConstants.NOTEBOOK_PANEL} container expandable>
-        <IPythonNotebookPanel date={OniUtils.getCurrentDate()} ipynb="flow/${date}/Edge_Investigation.ipynb" />
+        <IPythonNotebookPanel date={OniUtils.getCurrentDate()} ipynb="dns/${date}/Edge_Investigation.ipynb" />
       </Panel>
       <Panel title={OniConstants.DETAILS_PANEL} container expandable>
         <DetailsPanel title={OniConstants.DETAILS_PANEL} />

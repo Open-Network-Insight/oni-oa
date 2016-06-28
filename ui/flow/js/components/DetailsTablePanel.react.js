@@ -5,7 +5,7 @@ var DetailsStore = require('../stores/DetailsStore');
 
 var DetailsTablePanel = React.createClass({
   mixins: [GridPanelMixin],
-  emptySetMessage: 'Please select one row from Suspicious DNS',
+  emptySetMessage: 'Please select one row from Suspicious Connects',
   getInitialState: function ()
   {
     return DetailsStore.getData();
@@ -24,8 +24,6 @@ var DetailsTablePanel = React.createClass({
   _onChange: function ()
   {
     this.setState(DetailsStore.getData());
-    // After first load, set an empty message
-    this.emptySetMessage = 'There is no information available';
   }
 });
 

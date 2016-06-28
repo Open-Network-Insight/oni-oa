@@ -1,9 +1,10 @@
 var React = require('react');
-var DnsActions = require('../actions/DnsActions');
-var DnsConstants = require('../constants/DnsConstants');
+
+var OniActions = require('../../../js/actions/OniActions');
+var EdInActions = require('../../../js/actions/EdInActions');
+var OniConstants = require('../../../js/constants/OniConstants');
 var SuspiciousStore = require('../stores/SuspiciousStore');
-var DnsAppStore = require('../stores/DnsAppStore');
-var OniUtils = require('../OniUtils')
+var OniUtils = require('../../../js/utils/OniUtils')
 
 var topLevelDomains;
 
@@ -36,8 +37,9 @@ function encodeNodeId(id)
   return encodeURIComponent(id).replace(/\.|%/g, "_");
 }
 
-function filterDataAndBuildGraph(selectedEdgeId, sourceIpNodeId, targetIpNodeId, data)
+function filterDataAndBuildGraph()
 {
+  var data = this.state.data;
   //Get the nodes from the data
   var nodes = data.map(function (d)
                        {
@@ -124,12 +126,12 @@ function filterDataAndBuildGraph(selectedEdgeId, sourceIpNodeId, targetIpNodeId,
 
   //Main SVG container
   var svg = d3.select(this.getDOMNode()).select('svg');
-  
+
   if (svg.length>0) svg.remove();
-  
+
   // Graph dimensions
-  var w = $(this.getDOMNode().parentNode).width(),
-      h = $(this.getDOMNode().parentNode).height() - 5,
+  var w = $(this.getDOMNode()).width(),
+      h = $(this.getDOMNode()).height(),
       size = [w, h],
       r = Math.round(w * 0.005); // 0.005 magic number for nodes styling purposes when expanding graph, radious is 0.5% of the #grap div
 
@@ -162,7 +164,7 @@ function filterDataAndBuildGraph(selectedEdgeId, sourceIpNodeId, targetIpNodeId,
   var edge = svg.selectAll('.edge');
 
   //Tooltip generator
-  var tooltip = d3.select("body")
+  var tooltip = d3.select(this.getDOMNode())
                             .append("div")
                             .classed('node-label', true);
 
@@ -225,15 +227,17 @@ function filterDataAndBuildGraph(selectedEdgeId, sourceIpNodeId, targetIpNodeId,
                                     })
                                     .on('mousemove', function ()
                                     {
-                                      if (($('body').width() - d3.event.pageX) < 130)
+                                      tooltip.style('top', d3.event.layerY + 'px');
+
+                                      if ((w*.5) > d3.event.layerX)
                                       {
-                                        tooltip.style('top', (d3.event.pageY - 10) + 'px')
-                                                .style('left', (d3.event.pageX - 140) + 'px');
+                                        // Show tooltip to the right
+                                        tooltip.style('left', (d3.event.layerX + 20) + 'px');
                                       }
                                       else
                                       {
-                                        tooltip.style('top', (d3.event.pageY - 10) + 'px')
-                                                .style('left', (d3.event.pageX + 10) + 'px');
+                                        // Show tooltip to the left
+                                        tooltip.style('left', (d3.event.layerX - 250) + 'px');
                                       }
                                     })
                                     .on("contextmenu", function (d, i)
@@ -294,24 +298,24 @@ function filterDataAndBuildGraph(selectedEdgeId, sourceIpNodeId, targetIpNodeId,
   force.start();
 
   // if the function params are not null then that means we have a selected edge and nodes and we need to add the blink animation to them
-  if (selectedEdgeId != null && sourceIpNodeId != null & targetIpNodeId != null)
+  if (this.state.selectedEdgeId && this.state.sourceIpNodeId & this.state.targetIpNodeId)
   {
-    var selectedEdge = svg.select("#" + selectedEdgeId)
+    var selectedEdge = svg.select("#" + this.state.selectedEdgeId)
                                                      .style("stroke", "#FDB813")
                                                      .style("stroke-opacity", "1")
                                                      .classed("blink_me", true)
                                                      .classed("active", true);
-    
+
     var parent = $(".force #" + selectedEdge.attr("id")).parent();
 
     selectedEdge.remove();
 
     parent.append(selectedEdge[0]);
 
-    svg.select("#" + sourceIpNodeId)
+    svg.select("#" + this.state.sourceIpNodeId)
                                   .classed("blink_me", true);
 
-    svg.select("#" + targetIpNodeId)
+    svg.select("#" + this.state.targetIpNodeId)
                                   .classed("blink_me", true);
 
   }
@@ -320,17 +324,17 @@ function filterDataAndBuildGraph(selectedEdgeId, sourceIpNodeId, targetIpNodeId,
 //load Chord diagram on the node click
 function nodeclick (d)
 {
-  DnsActions.selectSrcIp(d.fullName);
-  DnsActions.toggleMode(DnsConstants.DETAILS_PANEL, DnsConstants.VISUAL_DETAILS_MODE);
-  DnsActions.reloadVisualDetails();
+  EdInActions.selectIp(d.fullName);
+  OniActions.toggleMode(OniConstants.DETAILS_PANEL, OniConstants.VISUAL_DETAILS_MODE);
+  EdInActions.reloadVisualDetails();
 }
 
 function nodeContextualClick (d, i)
 {
   d3.event.preventDefault();
 
-  DnsActions.setFilter(d.fullName);
-  DnsActions.reloadSuspicious();
+  EdInActions.setFilter(d.fullName);
+  EdInActions.reloadSuspicious();
 }
 
 /**
@@ -338,21 +342,23 @@ function nodeContextualClick (d, i)
   */
 function highlightEdge(id)
 {
-  d3.selectAll(".force .edge").classed("edge-faded", true);
+  var chart = d3.select(this.getDOMNode());
 
-  d3.selectAll(".force .node").classed("node-faded", true);
+  chart.selectAll(".edge").classed("edge-faded", true);
 
-  d3.select(".force #" + id)
+  chart.selectAll(".node").classed("node-faded", true);
+
+  chart.select("#" + id)
                     .style("stroke", "#FDB813")
                     .style("stroke-opacity", "1");
 
-  d3.select(".force #" + id).classed("edge-faded", false);
+  chart.select("#" + id).classed("edge-faded", false);
 
   var sourceIpNode = "n" + d3.select("#" + id).data()[0].source.name.replace(/\./g, "_");
   var targetIpNode = "n" + d3.select("#" + id).data()[0].target.name.replace(/\./g, "_");
 
-  d3.select(".force #" + sourceIpNode).classed("node-faded", false);
-  d3.select(".force #" + targetIpNode).classed("node-faded", false);
+  chart.select("#" + sourceIpNode).classed("node-faded", false);
+  chart.select("#" + targetIpNode).classed("node-faded", false);
 }
 
 /**
@@ -360,43 +366,37 @@ function highlightEdge(id)
   */
 function selectEdge(id)
 {
-  d3.selectAll(".force .edge")
+  var chart = d3.select(this.getDOMNode());
+
+  chart.selectAll(".edge")
                       .filter(".active")
                       .classed("active", false)
                       .classed("blink_me", false);
 
-  d3.selectAll(".force .node")
+  chart.selectAll(".node")
                       .filter(".blink_me")
                       .classed("blink_me", false);
 
-  var edge = d3.select(".force #" + id)
+  var edge = chart.select("#" + id)
                                 .style("stroke", "#FDB813")
                                 .style("stroke-opacity", "1")
                                 .classed("blink_me", true)
                                 .classed("active", true);
 
-  var parent = $(".force #" + edge.attr("id")).parent();
-  
+  var parent = $("#" + edge.attr("id"), this.getDOMNode()).parent();
+
   edge.remove();
   parent.append(edge[0]);
 
-  var sourceIpNode = "n" + d3.select(".force #" + id).data()[0].source.name.replace(/\./g, "_");
-  var targetIpNode = "n" + d3.select(".force #" + id).data()[0].target.name.replace(/\./g, "_");
+  var sourceIpNode = "n" + chart.select("#" + id).data()[0].source.name.replace(/\./g, "_");
+  var targetIpNode = "n" + chart.select("#" + id).data()[0].target.name.replace(/\./g, "_");
 
-  d3.select(".force #" + sourceIpNode)
+  chart.select("#" + sourceIpNode)
                               .classed("blink_me", true);
-  d3.select(".force #" + targetIpNode)
+  chart.select("#" + targetIpNode)
                               .classed("blink_me", true);
 
-  showFullGraphWithSelectedEdge();
-}
-
-/**
-  * Triggered when the mouse is out a sconnects row in the table
-  */
-function mouseOut(id)
-{
-  showFullGraphWithSelectedEdge();
+  showFullGraphWithSelectedEdge.call(this);
 }
 
 /**
@@ -404,7 +404,8 @@ function mouseOut(id)
   */
 function showFullGraphWithSelectedEdge()
 {
-    var color = d3.scale.cubehelix()
+  var chart = d3.select(this.getDOMNode());
+  var color = d3.scale.cubehelix()
                                    .domain([16, 13, 12, 2])
                                    .range([d3.hsl(214, 0.04, 0.34), d3.hsl(216, 0.02, 0.59), d3.hsl(216, 0.69, 0.84), d3.hsl(201, 0.1, 0.72)]);
 
@@ -412,7 +413,7 @@ function showFullGraphWithSelectedEdge()
                                     .domain([13])
                                     .range([0.1, 1]);
 
-  d3.selectAll(".force .edge")
+  chart.selectAll(".edge")
                       .filter("*:not(.active)")
                       .style("stroke", function (d)
                       {
@@ -420,13 +421,13 @@ function showFullGraphWithSelectedEdge()
                         {
                             return "#ed1c24";
                         }
-    
+
                         return color(d.weight);
                       })
                       .style("stroke-opacity", function (d) { return opacity(d.weight); });
 
-  d3.selectAll(".force .edge").classed("edge-faded", false);
-  d3.selectAll(".force .node").classed("node-faded", false);
+  chart.selectAll(".edge").classed("edge-faded", false);
+  chart.selectAll(".node").classed("node-faded", false);
 }
 
 function getUniqueNodes(nodes)
@@ -452,7 +453,7 @@ var NetworkPanel = React.createClass({
   render:function()
   {
     var content;
-    
+
     if (this.state.error)
     {
       content = (
@@ -473,9 +474,9 @@ var NetworkPanel = React.createClass({
     {
       content = '';
     }
-    
+
     return (
-      <div className="col-md-12 padding0 force">{content}</div>
+      <div>{content}</div>
     )
   },
   componentDidMount: function()
@@ -484,6 +485,7 @@ var NetworkPanel = React.createClass({
     SuspiciousStore.addThreatHighlightListener(this._onHighlight);
     SuspiciousStore.addThreatUnhighlightListener(this._onUnhighlight);
     SuspiciousStore.addThreatSelectListener(this._onSelect);
+    window.addEventListener('resize', this.buildGraph);
   },
   componentWillUnmount: function ()
   {
@@ -491,6 +493,7 @@ var NetworkPanel = React.createClass({
     SuspiciousStore.removeThreatHighlightListener(this._onHighlight);
     SuspiciousStore.removeThreatUnhighlightListener(this._onUnhighlight);
     SuspiciousStore.removeThreatSelectListener(this._onSelect);
+    window.removeEventListener('resize', this.buildGraph);
   },
   componentDidUpdate: function ()
   {
@@ -499,34 +502,19 @@ var NetworkPanel = React.createClass({
       this.buildGraph();
     }
   },
-  /**
-    * Builds/creates the Network force directed graph
-    * 
-    * @params:
-    *   selectedEdgeId: id attr of the selected node if applicable
-    *   sourceIpNodeId: id attr of the source Node in the selected edge if applicable
-    *   targetIpNodeId: id attr of the target Node in the selected edge if applicable
-  */
-  buildGraph: function (selectedEdgeId, sourceIpNodeId, targetIpNodeId)
+  buildGraph: function ()
   {
-    //If the params are undefined we default them to null
-    selectedEdgeId = selectedEdgeId || null;
-
-    sourceIpNodeId = sourceIpNodeId || null;
-
-    targetIpNodeId = targetIpNodeId || null;
-    
     if (!topLevelDomains)
     {
-      d3.csv('static/domainList.csv', function (domains)
+      d3.csv('domainList.csv', function (domains)
       {
         topLevelDomains = domains;
-        filterDataAndBuildGraph.call(this, selectedEdgeId, sourceIpNodeId, targetIpNodeId, this.state.data);
+        filterDataAndBuildGraph.call(this);
       }.bind(this));
     }
     else
     {
-      filterDataAndBuildGraph.call(this, selectedEdgeId, sourceIpNodeId, targetIpNodeId, this.state.data);
+      filterDataAndBuildGraph.call(this);
     }
   },
   _onChange: function ()
@@ -536,25 +524,25 @@ var NetworkPanel = React.createClass({
   _onHighlight: function ()
   {
     var threat, id;
-    
+
     threat = SuspiciousStore.getHighlightedThreat();
-    
+
     id = getDnsNodeName(threat.dns_qry_name) + '-' + threat.ip_dst;
     id = 'k' + encodeNodeId(id);
-    
-    highlightEdge(id);
+
+    highlightEdge.call(this, id);
   },
   _onUnhighlight: showFullGraphWithSelectedEdge,
   _onSelect: function ()
   {
     var threat, id;
-    
+
     threat = SuspiciousStore.getSelectedThreat();
-    
+
     id = getDnsNodeName(threat.dns_qry_name) + '-' + threat.ip_dst;
     id = 'k' + encodeNodeId(id);
-    
-    selectEdge(id);
+
+    selectEdge.call(this, id);
   }
 });
 

@@ -1,5 +1,6 @@
 var OniDispatcher = require('../../../js/dispatchers/OniDispatcher');
 var OniConstants = require('../../../js/constants/OniConstants');
+var NetflowConstants = require('../constants/NetflowConstants');
 var RestStore = require('../../../js/stores/RestStore');
 var OniUtils = require('../../../js/utils/OniUtils');
 var assign = require('object-assign');
@@ -10,19 +11,26 @@ var CHANGE_FILTER_EVENT = 'change_filter';
 var HIGHLIGHT_THREAT_EVENT = 'hightlight_thread';
 var UNHIGHLIGHT_THREAT_EVENT = 'unhightlight_thread';
 var SELECT_THREAT_EVENT = 'select_treath';
-var MAX_ROWS = 250;
 
 var filter = '';
 var highlightedThread = null;
 var selectedThread = null;
 var unfilteredData = null;
 
-var SuspiciousStore = assign(new RestStore(OniConstants.API_SUSPICIOUS), {
+var SuspiciousStore = assign(new RestStore(NetflowConstants.API_SUSPICIOUS), {
   errorMessages: {
     404: 'Please choose a different date, no data has been found'
   },
   headers: {
-    // TODO: Add Headers
+    rank: 'Rank',
+    tstart: 'Time',
+    srcIP: 'Source IP',
+    dstIP: 'Destination IP',
+    sport: 'Source Port',
+    dport: 'Destination Port',
+    proto: 'Protocol',
+    ipkt: 'Input Packets',
+    ibyt: 'Input Bytes'
   },
   getData: function ()
   {
@@ -50,7 +58,7 @@ var SuspiciousStore = assign(new RestStore(OniConstants.API_SUSPICIOUS), {
         return item.sev=='0';
     });
 
-    if (state.data.length>MAX_ROWS) state.data = state.data.slice(0, MAX_ROWS);
+    if (state.data.length>OniConstants.MAX_SUSPICIOUS_ROWS) state.data = state.data.slice(0, OniConstants.MAX_SUSPICIOUS_ROWS);
 
     return state;
   },
@@ -62,7 +70,7 @@ var SuspiciousStore = assign(new RestStore(OniConstants.API_SUSPICIOUS), {
   },
   setDate: function (date)
   {
-    this.setEndpoint(OniConstants.API_SUSPICIOUS.replace('${date}', date.replace(/-/g, '')));
+    this.setEndpoint(NetflowConstants.API_SUSPICIOUS.replace('${date}', date.replace(/-/g, '')));
   },
   setFilter: function (newFilter)
   {

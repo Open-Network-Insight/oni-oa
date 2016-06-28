@@ -1,9 +1,10 @@
 var React = require('react');
 
-var DnsActions = require('../actions/DnsActions');
-var DnsConstants = require('../constants/DnsConstants');
+var OniActions = require('../../../js/actions/OniActions');
+var EdInActions = require('../../../js/actions/EdInActions');
+var OniConstants = require('../../../js/constants/OniConstants');
 
-var GridPanelMixin = require('./GridPanelMixin.react');
+var GridPanelMixin = require('../../../js/components/GridPanelMixin.react');
 var SuspiciousStore = require('../stores/SuspiciousStore');
 
 var labelCssClasses, riskCssClasses;
@@ -32,9 +33,11 @@ var SuspiciousPanel = React.createClass({
   {
     SuspiciousStore.removeChangeDataListener(this._onChange);
   },
-  _renderRepCell: function (rawReps)
+  _renderRepCell: function (keyPrefix, rawReps)
   {
     var reps, highestRep, key, toolTipContent;
+
+    if (!rawReps) return '';
 
     rawReps = rawReps.split('::');
 
@@ -62,7 +65,7 @@ var SuspiciousPanel = React.createClass({
     });
 
     return (
-      <i className={'fa fa-shield ip-info ' + riskCssClasses[highestRep] + '-risk'}
+      <i key={keyPrefix + '_rep'} className={'fa fa-shield ' + riskCssClasses[highestRep] + '-risk'}
           data-container="body" data-toggle="popover" data-placement="right" data-content={toolTipContent}>
       </i>
     );
@@ -71,7 +74,7 @@ var SuspiciousPanel = React.createClass({
   {
     var queryRep;
 
-    queryRep = this._renderRepCell(item.query_rep);
+    queryRep = this._renderRepCell('dns_qry_name_' + idx,  item.query_rep);
 
     return (
       <p key={'dns_qry_name_' + idx} className="dns_qry_name">
@@ -141,6 +144,7 @@ var SuspiciousPanel = React.createClass({
   _render_top_domain_cell: false,
   _render_unix_tstamp_cell: false,
   _render_word_cell: false,
+  // Event Hanlders
   _onChange: function ()
   {
     var state;
@@ -154,17 +158,17 @@ var SuspiciousPanel = React.createClass({
     this.selectItems(item);
 
     // Select elements on Network and Details view
-    DnsActions.selectThreat(item);
-    DnsActions.reloadDetails();
-    DnsActions.toggleMode(DnsConstants.DETAILS_PANEL, DnsConstants.DETAILS_MODE);
+    EdInActions.selectThreat(item);
+    EdInActions.reloadDetails();
+    OniActions.toggleMode(OniConstants.DETAILS_PANEL, OniConstants.DETAILS_MODE);
   },
   _onMouseEnterRow: function (item)
   {
-    DnsActions.highlightThreat(item);
+    EdInActions.highlightThreat(item);
   },
   _onMouseLeaveRow: function (item)
   {
-    DnsActions.unhighlightThreat(item);
+    EdInActions.unhighlightThreat(item);
   }
 });
 

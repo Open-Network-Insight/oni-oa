@@ -13,6 +13,8 @@ var OniConstants = {
   NETVIEW_PANEL: 'Network View',
   NOTEBOOK_PANEL: 'Notebook',
   DETAILS_PANEL: 'Details',
+  // Store Constants
+  MAX_SUSPICIOUS_ROWS: 250,
   // Store Actions
   RELOAD_SUSPICIOUS: 'RELOAD_SUSPICIOUS',
   RELOAD_DETAILS: 'RELOAD_DETAILS',
@@ -23,12 +25,7 @@ var OniConstants = {
   SELECT_THREAT: 'SELECT_THREAT',
   SELECT_IP: 'SELECT_IP',
   // Server Paths
-  NOTEBOOKS_PATH: '/notebooks/ipynb',
-  API_SUSPICIOUS: '../../data/flow/${date}/flow_scores.csv',
-  API_DETAILS: '../../data/flow/${date}/edge-${src_ip}-${dst_ip}-${time}.tsv',
-  API_VISUAL_DETAILS: '../../data/flow/${date}/chord-${ip}.tsv',
-  API_COMMENTS: '../../data/flow/${date}/threats',
-  API_INCIDENT_PROGRESSION: '../../data/flow/${date}/threat-dendro-${id}'
+  NOTEBOOKS_PATH: '/notebooks/ipynb'
 };
 
 module.exports = OniConstants;

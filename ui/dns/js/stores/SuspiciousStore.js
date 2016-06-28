@@ -1,7 +1,8 @@
-var DnsDispatcher = require('../dispatchers/DnsDispatcher');
+var OniDispatcher = require('../../../js/dispatchers/OniDispatcher');
+var OniConstants = require('../../../js/constants/OniConstants');
 var DnsConstants = require('../constants/DnsConstants');
-var RestStore = require('./RestStore');
-var OniUtils = require('../OniUtils');
+var RestStore = require('../../../js/stores/RestStore');
+var OniUtils = require('../../../js/utils/OniUtils');
 var assign = require('object-assign');
 
 var IP_FILTER = 'ip_dst';
@@ -12,7 +13,6 @@ var CHANGE_DATE_EVENT = 'change_date';
 var HIGHLIGHT_THREAT_EVENT = 'hightlight_thread';
 var UNHIGHLIGHT_THREAT_EVENT = 'unhightlight_thread';
 var SELECT_THREAT_EVENT = 'select_treath';
-var MAX_ROWS = 250;
 
 var filter = '';
 var filterName = '';
@@ -59,7 +59,7 @@ var SuspiciousStore = assign(new RestStore(DnsConstants.API_SUSPICIOUS), {
         return item.dns_sev=="0";
     });
 
-    if (state.data.length>MAX_ROWS) state.data = state.data.slice(0, MAX_ROWS);
+    if (state.data.length>OniConstants.MAX_SUSPICIOUS_ROWS) state.data = state.data.slice(0, OniConstants.MAX_SUSPICIOUS_ROWS);
 
     return state;
   },
@@ -68,6 +68,10 @@ var SuspiciousStore = assign(new RestStore(DnsConstants.API_SUSPICIOUS), {
     this._data = unfilteredData = data;
 
     this.emitChangeData();
+  },
+  setDate: function (date)
+  {
+    this.setEndpoint(DnsConstants.API_SUSPICIOUS.replace('${date}', date.replace(/-/g, '')));
   },
   setFilter: function (newFilter)
   {
@@ -105,27 +109,6 @@ var SuspiciousStore = assign(new RestStore(DnsConstants.API_SUSPICIOUS), {
   },
   removeChangeFilterListener: function (callback) {
     this.removeListener(CHANGE_FILTER_EVENT, callback);
-  },
-  setDate: function (newDate)
-  {
-    date = newDate;
-
-    this.emitChangeDate();
-
-    this.setEndpoint(DnsConstants.API_SUSPICIOUS.replace('${date}', date.replace(/-/g, '')));
-  },
-  getDate: function ()
-  {
-    return date;
-  },
-  emitChangeDate: function () {
-    this.emit(CHANGE_DATE_EVENT);
-  },
-  addChangeDateListener: function (callback) {
-    this.on(CHANGE_DATE_EVENT, callback);
-  },
-  removeChangeDateListener: function (callback) {
-    this.removeListener(CHANGE_DATE_EVENT, callback);
   },
   highlightThreat: function (threat)
   {
@@ -188,24 +171,24 @@ var SuspiciousStore = assign(new RestStore(DnsConstants.API_SUSPICIOUS), {
   }
 });
 
-DnsDispatcher.register(function (action) {
+OniDispatcher.register(function (action) {
   switch (action.actionType) {
-    case DnsConstants.UPDATE_FILTER:
+    case OniConstants.UPDATE_FILTER:
       SuspiciousStore.setFilter(action.filter);
       break;
-    case DnsConstants.UPDATE_DATE:
+    case OniConstants.UPDATE_DATE:
       SuspiciousStore.setDate(action.date);
       break;
-    case DnsConstants.RELOAD_SUSPICIOUS:
+    case OniConstants.RELOAD_SUSPICIOUS:
       SuspiciousStore.reload();
       break;
-    case DnsConstants.HIGHLIGHT_THREAT:
+    case OniConstants.HIGHLIGHT_THREAT:
       SuspiciousStore.highlightThreat(action.threat);
       break;
-    case DnsConstants.UNHIGHLIGHT_THREAT:
+    case OniConstants.UNHIGHLIGHT_THREAT:
       SuspiciousStore.unhighlightThreat();
       break;
-    case DnsConstants.SELECT_THREAT:
+    case OniConstants.SELECT_THREAT:
       SuspiciousStore.selectThreat(action.threat);
       break;
   }

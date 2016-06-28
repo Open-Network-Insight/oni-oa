@@ -1,28 +1,31 @@
 var React = require('react');
 
-var DnsConstants = require('../constants/DnsConstants');
+var OniConstants = require('../../../js/constants/OniConstants');
 
-var DnsAppStore = require('../stores/DnsAppStore');
+var OniStore = require('../../../js/stores/OniStore');
 
 var DetailsTablePanel = require('./DetailsTablePanel.react');
 var DetailsDendrogramPanel = require('./DetailsDendrogramPanel.react');
 
 var DetailsPanel = React.createClass({
+  propTypes: {
+    title: React.PropTypes.string.isRequired
+  },
   getInitialState: function ()
   {
     return {};
   },
   componentDidMount: function ()
   {
-    DnsAppStore.addPanelToggleModeListener(this._onToggleMode);
+    OniStore.addPanelToggleModeListener(this._onToggleMode);
   },
   componentWillUnmount: function ()
   {
-    DnsAppStore.removePanelToggleModeListener(this._onToggleMode);
+    OniStore.removePanelToggleModeListener(this._onToggleMode);
   },
   render: function ()
   {
-    if (this.state.mode === DnsConstants.VISUAL_DETAILS_MODE)
+    if (this.state.mode === OniConstants.VISUAL_DETAILS_MODE)
     {
       return (
         <DetailsDendrogramPanel />
@@ -31,14 +34,16 @@ var DetailsPanel = React.createClass({
     else
     {
       return (
-        <DetailsTablePanel />
+        <div className="inner-container-box">
+          <DetailsTablePanel />
+        </div>
       );
     }
   },
   _onToggleMode: function (panel, mode)
   {
     if (panel!==this.props.title) return;
-    
+
     this.setState({mode: mode});
   }
 });

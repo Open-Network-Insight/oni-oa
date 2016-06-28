@@ -5,14 +5,18 @@
 
     <meta charset="UTF-8">
 
+    <!--Bootstrap styles-->
+    <link rel="stylesheet" type="text/css" href="../node_modules/bootstrap/dist/css/bootstrap.min.css" />
     <!--CDN for font awesome ICONS-->
     <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css">
-    <!--Styles Sheet (Based on bootstrap)-->
-    <link rel="stylesheet" type="text/css" href="../css/custom.min.css" />
-    <link rel="stylesheet" type="text/css" href="static/css/app.css" />
     <!--Bootstrap Date picker styles-->
-    <link rel="stylesheet" href="../css/bootstrap-datepicker3.min.css" />
-    <link rel="stylesheet" type="text/css" href="static/css/dendrogram.css" />
+    <link rel="stylesheet" type="text/css" href="../node_modules/bootstrap-datepicker/dist/css/bootstrap-datepicker3.min.css" />
+    <!-- ONI styles -->
+    <link rel="stylesheet" type="text/css" href="../css/oni.css" />
+    <!-- PoC theme -->
+    <link rel="stylesheet" type="text/css" href="../css/poc.css" />
+    <!-- Dendrogram styles -->
+    <link rel="stylesheet" type="text/css" href="css/dendrogram.css" />
     <style>
     .dendrogram .node.depth_1 text
     {
@@ -26,7 +30,7 @@
     </style>
 </head>
 <body>
-    <nav class="navbar navbar-inverse">
+    <nav id="oni-nav" class="navbar navbar-inverse">
         <div class="container-fluid">
             <!-- App name and toggle get grouped for better mobile display -->
             <div class="navbar-header">
@@ -48,13 +52,13 @@
                         </a>
                         <ul class="dropdown-menu" aria-labelledby="flowsMenu">
                             <li>
-                              <a class="oni-dated-link" data-href="../index_sconnects.html?dataDate=${date}">Suspicious Connects</a>
+                              Suspicious NetFlow
                             </li>
                             <li>
-                              <a class="oni-shrinked-dated-link" data-href="../../notebooks/user/${date}/Threat_Investigation_${date}.ipynb">Threat Investigation</a>
+                              Threat Investigation
                             </li>
                             <li>
-                              <a class="oni-dated-link" data-href="../storyboard_sconnect.html?dataDate=${date}">Storyboard</a>
+                              Storyboard
                             </li>
                         </ul>
                     </li>
@@ -65,41 +69,37 @@
                         </a>
                         <ul class="dropdown-menu" aria-labelledby="dnsMenu">
                             <li>
-                              <a class="oni-dated-link" data-href="threat_investigation.html#date=${date}">Threat Investigation</a>
+                              Suspicious DNS
                             </li>
                             <li>
-                              <a class="oni-dated-link" data-href="story_board.html#date=${date}">Storyboard</a>
+                              Threat Investigation
+                            </li>
+                            <li>
+                              Storyboard
                             </li>
                         </ul>
                     </li>
                 </ul>
             </div>
-            <div class="row bg-default text-right" id="collapse_box">
+            <div id="search-box" class="row text-right">
                 <!--Tools Buttons-->
-                <div class="col-md-12 pd-top-btm5">
-                    <div id="nav_form" class="col-md-12 form-inline"></div>
+                <div id="nav_form" class="col-md-12">
+                  <!-- Search form placeholder -->
                 </div>
             </div> <!-- /Tools Buttons-->
         </div>
     </nav>
-    <div class="container-fluid">
-        <!-- MAIN Content row-->
-        <div class="row">
-            <!--Main Content - In here we will be adding sub-columns to form the sections layout-->
-            <span id="lda_scores"></span>
-            <span id="netflow_diagram"></span>
-
-            <span id="notebook"></span>
-            <span id="details"></span>
-        </div>
+    <div id="oni-content-wrapper" class="container-fluid">
+        <!-- Main Content Placeholder -->
     </div>
 
     <!-- SCRIPTS -->
-    <script type="application/javascript" src="../js/jquery.min.js"></script>
-    <script type="application/javascript" src="../js/d3.min.js"></script>
+    <script type="application/javascript" src="../node_modules/jquery/dist/jquery.min.js"></script>
+    <script type="application/javascript" src="../node_modules/d3/d3.min.js"></script>
     <script type="application/javascript" src="../js/cubehelix/cubehelix.js"></script>
-    <script type="application/javascript" src="../js/bootstrap.min.js"></script>
-    <script type="application/javascript" src="../js/bootstrap-datepicker.min.js"></script>
-    <script type="application/javascript" src="static/js/suspicious.bundle.min.js"></script>
+    <script type="application/javascript" src="../node_modules/bootstrap/dist/js/bootstrap.min.js"></script>
+    <script type="application/javascript" src="../node_modules/bootstrap-datepicker/dist/js/bootstrap-datepicker.min.js"></script>
+    <script type="application/javascript" src="../node_modules/underscore/underscore-min.js"></script>
+    <script type="application/javascript" src="js/suspicious.bundle.min.js"></script>
 </body>
 </html>
