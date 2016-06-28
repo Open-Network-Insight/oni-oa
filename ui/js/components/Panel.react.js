@@ -2,17 +2,22 @@ var React = require('react');
 var assign = require('object-assign');
 
 var OniActions = require('../actions/OniActions');
-var OniConstants = require('../constants/OniConstants');
 var OniStore = require('../stores/OniStore');
 
 var Panel = React.createClass({
   propTypes: {
     title: React.PropTypes.string.isRequired,
     container: React.PropTypes.bool,
+    className: React.PropTypes.string,
     reloadable: React.PropTypes.bool,
     onReload: React.PropTypes.func,
     expandable: React.PropTypes.bool,
     toggleable: React.PropTypes.bool
+  },
+  getDefaultProps: function () {
+    return {
+      className: 'col-md-6'
+    }
   },
   getInitialState: function ()
   {
@@ -103,7 +108,7 @@ var Panel = React.createClass({
       }
     }
 
-    cssCls = this.state.maximized ? 'col-md-12' : this.state.minimized ? 'oni-minimized' : 'col-md-6';
+    cssCls = this.state.maximized ? 'col-md-12' : this.state.minimized ? 'oni-minimized' : this.props.className;
     containerCss = 'panel-body-container' + (this.props.container ? ' container-box' : '');
 
     return (

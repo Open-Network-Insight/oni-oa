@@ -4,6 +4,11 @@ var OniActions = require('../actions/OniActions');
 var OniUtils = require('../utils/OniUtils');
 
 var DateInput = React.createClass({
+  getDefaultProps: function () {
+    return {
+      onChange: function () {}
+    }
+  },
   getInitialState: function ()
   {
     return {date: OniUtils.getCurrentDate()};

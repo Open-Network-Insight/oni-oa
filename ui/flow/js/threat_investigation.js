@@ -30,7 +30,7 @@ var IPythonNotebookPanel = require('../../js/components/IPythonNotebookPanel.rea
 
 React.render(
   <Panel title={OniConstants.NOTEBOOK_PANEL} container className="col-md-12">
-    <IPythonNotebookPanel date={OniUtils.getCurrentDate()} ipynb="dns/${date}/Threat_Investigation.ipynb" />
+    <IPythonNotebookPanel date={OniUtils.getCurrentDate()} ipynb="flow/${date}/Threat_Investigation.ipynb" />
   </Panel>,
   document.getElementById('oni-content-wrapper')
 );
