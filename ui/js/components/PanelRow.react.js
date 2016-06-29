@@ -3,10 +3,19 @@ var React = require('react');
 var OniStore = require('../stores/OniStore');
 
 var PanelRow = React.createClass({
+  propTypes: {
+    maximized: React.PropTypes.bool
+  },
+  getDefaultProps: function ()
+  {
+    return {
+      maximized: false
+    }
+  },
   getInitialState: function () {
     var state;
 
-    state = {maximized: false, minimized: false, childrenTitles: []};
+    state = {maximized: this.props.maximized, minimized: false, childrenTitles: []};
 
     React.Children.forEach(this.props.children, child => {
         state.childrenTitles.push(child.props.title);

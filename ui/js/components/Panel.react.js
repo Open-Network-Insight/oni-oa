@@ -8,6 +8,7 @@ var Panel = React.createClass({
   propTypes: {
     title: React.PropTypes.string.isRequired,
     container: React.PropTypes.bool,
+    header: React.PropTypes.bool,
     className: React.PropTypes.string,
     reloadable: React.PropTypes.bool,
     onReload: React.PropTypes.func,
@@ -16,7 +17,8 @@ var Panel = React.createClass({
   },
   getDefaultProps: function () {
     return {
-      className: 'col-md-6'
+      className: 'col-md-6',
+      header: true
     }
   },
   getInitialState: function ()
@@ -25,35 +27,35 @@ var Panel = React.createClass({
   },
   componentDidMount: function ()
   {
-    if (this.props.expandable)
+    if (this.props.header && this.props.expandable)
     {
       OniStore.addPanelExpandListener(this._onExpand);
       OniStore.addPanelRestoreListener(this._onRestore);
     }
 
-    if (this.props.toggleable)
+    if (this.props.header && this.props.toggleable)
     {
       OniStore.addPanelToggleModeListener(this._onToggleMode);
     }
   },
   componentWillUnmount: function ()
   {
-    if (this.props.expandable)
+    if (this.props.header && this.props.expandable)
     {
       OniStore.removePanelExpandListener(this._onExpand);
       OniStore.removePanelRestoreListener(this._onRestore);
     }
 
-    if (this.props.toggleable)
+    if (this.props.header && this.props.toggleable)
     {
       OniStore.removePanelToggleModeListener(this._onToggleMode);
     }
   },
   render: function ()
   {
-    var reloadButton, resizeButton, toggleButton, cssCls, containerCss;
+    var panelHeading, reloadButton, resizeButton, toggleButton, cssCls, containerCss;
 
-    if (this.props.reloadable)
+    if (this.props.header && this.props.reloadable)
     {
       reloadButton = (
         <li className="refresh">
@@ -64,7 +66,7 @@ var Panel = React.createClass({
       );
     }
 
-    if (this.props.expandable)
+    if (this.props.header && this.props.expandable)
     {
       if (this.state.maximized)
       {
@@ -88,7 +90,7 @@ var Panel = React.createClass({
       }
     }
 
-    if (this.props.toggleable)
+    if (this.props.header && this.props.toggleable)
     {
       if (this.state.baseMode)
       {
@@ -109,20 +111,27 @@ var Panel = React.createClass({
     }
 
     cssCls = this.state.maximized ? 'col-md-12' : this.state.minimized ? 'oni-minimized' : this.props.className;
+
+    if (this.props.header) {
+      panelHeading = (
+        <div className="panel-heading">
+          <h3 className="panel-title pull-left src-only"><strong>{this.props.title}</strong></h3>
+          <ul className="panel-toolbar pull-right">
+            {reloadButton}
+            {resizeButton}
+            {toggleButton}
+         </ul>
+        </div>
+      );
+    }
+
     containerCss = 'panel-body-container' + (this.props.container ? ' container-box' : '');
 
     return (
       <div className={'oni-frame text-center ' + cssCls}>
         <div className="oni-frame-content">
-          <div className="panel">
-              <div className="panel-heading">
-                  <h3 className="panel-title pull-left src-only"><strong>{this.props.title}</strong></h3>
-                  <ul className="panel-toolbar pull-right">
-                    {reloadButton}
-                    {resizeButton}
-                    {toggleButton}
-                  </ul>
-              </div>
+          <div className={'panel' + (this.props.header?'':' no-heading')}>
+              {panelHeading}
               <div className="panel-body">
                   <div className={containerCss}>
                     {this.props.children}
