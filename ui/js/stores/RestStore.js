@@ -113,7 +113,7 @@ assign(RestStore.prototype, EventEmitter.prototype, {
       },
       error: function (response)
       {
-        this.setData({loading: true, headers: [], data: [], error: this.errorMessages[response.status] || this.defaultErrorMessage});
+        this.setData({loading: false, headers: [], data: [], error: this.errorMessages[response.status] || this.defaultErrorMessage});
       }
     });
   }

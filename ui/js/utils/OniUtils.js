@@ -1,15 +1,15 @@
 var OniUtils = {
   IP_V4_REGEX: /^(?=\d+\.\d+\.\d+\.\d+$)(?:(?:25[0-5]|2[0-4][0-9]|1[0-9]{2}|[1-9][0-9]|[0-9])\.?){4}$/,
-  getCurrentDate: function ()
+  getCurrentDate: function (name)
   {
     // Look for a date on location's hash, default to today
-    var matches;
+    var date;
 
-    matches = /date=(\d{4}-\d{2}-\d{2})/.exec(location.hash);
-    if (matches)
+    date = OniUtils.getUrlParam(name || 'date');
+
+    if (date)
     {
-      // Get capturing group
-      return matches[1];
+      return date;
     }
     else
     {
@@ -23,9 +23,14 @@ var OniUtils = {
   getCurrentFilter: function ()
   {
     // Look for a date on location's hash, default to today
+    return OniUtils.getUrlParam('filter');
+  },
+  getUrlParam: function (name, defaultValue)
+  {
+    // Look for a date on location's hash, default to today
     var matches;
 
-    matches = /filter=([^|]+)/.exec(location.hash);
+    matches = new RegExp(name + '=([^|]+)').exec(location.hash);
     if (matches)
     {
       // Get capturing group
@@ -33,7 +38,7 @@ var OniUtils = {
     }
 
     // Filter is not present
-    return null;
+    return defaultValue || null;
   },
   setUrlParam: function (name, value) {
     var regex, hash, replacement, matches;

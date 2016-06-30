@@ -175,3 +175,22 @@ tr.warning {
     stroke: #000;
     stroke-width: .5px;
 }
+
+/*************************************
+ **         Ingest Summary          **
+ *************************************/
+
+
+.x.axis path {
+    stroke: #000;
+}
+
+.y.axis path {
+    stroke: #000;
+}
+
+path.line {
+    fill: none;
+    stroke: #000;
+    stroke-width: .5px;
+}

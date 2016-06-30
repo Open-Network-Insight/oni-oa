@@ -3,9 +3,10 @@ var OniConstants = require('../constants/OniConstants');
 var OniUtils = require('../utils/OniUtils');
 
 var OniActions = {
-  setDate: function (date)
+  setDate: function (date, name)
   {
-    OniUtils.setUrlParam('date', date);
+    name = name || 'date';
+    OniUtils.setUrlParam(name, date);
 
     OniDispatcher.dispatch({
       actionType: OniConstants.UPDATE_FILTER,
@@ -14,7 +15,8 @@ var OniActions = {
 
     OniDispatcher.dispatch({
       actionType: OniConstants.UPDATE_DATE,
-      date: date
+      date: date,
+      name: name
     });
   },
   expandPanel: function (panel)

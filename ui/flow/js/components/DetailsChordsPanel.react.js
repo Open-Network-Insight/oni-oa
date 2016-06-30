@@ -227,7 +227,7 @@ var DetailsChordsPanel = React.createClass({
   },
   componentDidUpdate: function ()
   {
-    if (!this.state.loading)
+    if (!this.state.loading && !this.state.error)
     {
       this.buildGraph();
     }

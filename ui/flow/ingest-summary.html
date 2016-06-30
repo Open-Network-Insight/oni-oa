@@ -1,99 +1,61 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Ingest Summary</title>
+    <title>NetFlow :: Ingest Summary</title>
 
+    <meta charset="UTF-8">
+
+    <!--Bootstrap styles-->
+    <link rel="stylesheet" type="text/css" href="../node_modules/bootstrap/dist/css/bootstrap.min.css" />
+    <!--CDN for font awesome ICONS-->
     <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css">
-    <link rel="stylesheet" href="css/bootstrap.min.css" />
-    <link rel="stylesheet" href="css/bootstrap-datepicker3.min.css" />
-    <link rel="stylesheet" href="css/custom.min.css" />
-    <link rel="stylesheet" href="css/style.css" />
-
+    <!--Bootstrap Date picker styles-->
+    <link rel="stylesheet" type="text/css" href="../node_modules/bootstrap-datepicker/dist/css/bootstrap-datepicker3.min.css" />
+    <!-- ONI styles -->
+    <link rel="stylesheet" type="text/css" href="../css/oni.css" />
+    <!-- PoC theme -->
+    <link rel="stylesheet" type="text/css" href="../css/poc.css" />
     <style type="text/css">
-        html, body, body > div.container-fluid {
-            height: 100%;
-            overflow:hidden;
-            width:100%;
-        }
+      #oni-is-header {
+          width: 100%;
+          position: absolute;
+          top: 0;
+          left: 0;
+          z-index: 2;
+          height: auto;
+      }
 
-        body {
-            font-size: 12px;
-        }
+      #oni-is, #oni-is-summary {
+          height: 100%;
+      }
 
-        #chart-row {
-            height: 100%;
-        }
+      .axis {
+          shape-rendering: crispEdges;
+      }
 
-        svg {
-            font-size: 10px;
-        }
+      .axis path, .axis line {
+          fill: none;
+      }
 
-        .axis {
-            shape-rendering: crispEdges;
-        }
-
-            .axis path, .axis line {
-                fill: none;
-            }
-
-        .x.axis path {
-            stroke: #000;
-        }
-
-        .y.axis path {
-            stroke: #000;
-        }
-
-        path.line {
-            fill: none;
-            stroke: #000;
-            stroke-width: .5px;
-        }
-
-        rect.pane {
-            cursor: e-resize;
-            fill: none;
-            pointer-events: all;
-        }
-
-        #chart-header > span {
-            font-size: 14px;
-        }
-
-        #chart {
-            height: 90%;
-        }
-
-        .top30 {
-            margin-top: 30px;
-        }
-
-        .top5 {
-            margin-top: 5px;
-        }
-
-        .bg-default {
-            background-color: #edeff0;
-        }
-
-        .pd-top-btm5 {
-            padding-top: 5px;
-            padding-bottom: 5px;
-        }
+      rect.pane {
+          cursor: e-resize;
+          fill: none;
+          pointer-events: all;
+      }
     </style>
 </head>
 <body>
-    <nav class="navbar navbar-inverse">
+    <nav id="oni-nav" class="navbar navbar-inverse">
         <div class="container-fluid">
             <!-- App name and toggle get grouped for better mobile display -->
             <div class="navbar-header">
-                <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">
+                <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#main-menu">
                     <span class="sr-only">Toggle navigation</span>
                     <span class="icon-bar"></span>
                     <span class="icon-bar"></span>
                     <span class="icon-bar"></span>
                 </button>
-                <span class="navbar-brand">Open Network Insight :: Flows :: Ingest Summary</span>
+                <span class="navbar-brand">Open Network Insight :: NetFlow :: Ingest Summary</span>
             </div>
             <!-- Collect the nav links, forms, and other content for toggling -->
             <div class="collapse navbar-collapse" id="main-menu">
@@ -104,9 +66,15 @@
                             <span class="caret"></span>
                         </a>
                         <ul class="dropdown-menu" aria-labelledby="flowsMenu">
-                            <li id="flowsIndex"><a href="" target="_blank">Suspicious Connects</a></li>
-                            <li id="detect"><a href="" target="_blank">Threat Investigation</a></li>
-                            <li id="stboard"><a href="" target="_blank">Storyboard</a></li>
+                            <li>
+                                <a class="oni-dated-link" data-href="../suspicious.html#date=${date}">Suspicious Connects</a>
+                            </li>
+                            <li>
+                              Threat Investigation
+                            </li>
+                            <li>
+                              Storyboard
+                            </li>
                         </ul>
                     </li>
                     <li class="dropdown">
@@ -115,502 +83,41 @@
                             <span class="caret"></span>
                         </a>
                         <ul class="dropdown-menu" aria-labelledby="dnsMenu">
-                            <li id="dnsIndex"><a href="dns/index_sdns.html">Suspicious DNS</a></li>
-                            <li id="dnsThreatInv"><a href="dns/threat_investigation.html">Threat Investigation</a></li>
-                            <li id="dnsStoryBrd"><a href="dns/story_board.html">Storyboard</a></li>
+                            <li>
+                                <a class="oni-dated-link" data-href="suspicious.html#date=${date}">Suspicious DNS</a>
+                            </li>
+                            <li>
+                              Threat Investigation
+                            </li>
+                            <li>
+                              Storyboard
+                            </li>
                         </ul>
                     </li>
                 </ul>
             </div>
-            <div class="row bg-default text-right" id="collapse_box">
+            <div id="search-box" class="row text-right">
                 <!--Tools Buttons-->
-                <div class="col-md-12 pd-top-btm5">
-                    <div class="col-md-12 form-inline">
-                        <div class="form-group">
-                            <label for="start_date_picker" class="control-label">Start Date:</label>
-                            <input placeholder="Start date" type="text" id="start_date_picker" name="startDate" class="form-control form-control-xs" />
-                            <label for="end_date_picker" class="control-label">End Date:</label>
-                            <input placeholder="End date" type="text" id="end_date_picker" name="endDate" class="form-control form-control-xs" />
-                            <button class="btn btn-default btn-xs" title="Reload chart" id="reload_chart"><i class="fa fa-undo"></i></button>
-                        </div><!--/form-group-->
-                    </div>
+                <div id="nav_form" class="col-md-12">
+                  <!-- Search form placeholder -->
                 </div>
             </div> <!-- /Tools Buttons-->
         </div>
     </nav>
-
-    <div class="container-fluid">
-        <div class="row">
-            <div class="col-12 text-center" id="chart-status"></div>
-        </div>
-        <div class="row">
-            <div class="col-md-12 text-center top5" id="chart-header">
-                <p id="range"></p>
-                <p id="total"></p>
-                <p id="istructions" class="small">** Zoom in/out using mouse wheel or two fingers in track pad <br /> ** Move across the x-axis by clicking anywhere in the graph and dragging to left or right</p>
+    <div id="oni-content-wrapper" class="container-fluid">
+        <!--div class="row">
+        </div-->
+            <!--div class="col-md-12 text-center" id="oni-is-header">
             </div>
-        </div>
-        <div class="row" id="chart-row">
-            <div class="col-md-12" id="chart">
-
-            </div>
-        </div>
+        </div-->
+      <!-- Main Content Placeholder -->
     </div>
 
-    <script src="js/d3.min.js" charset="utf-8"></script>
-    <script type="text/javascript" src="js/jquery.min.js"></script>
-    <script src="js/bootstrap.min.js"></script>
-    <script src="js/bootstrap-datepicker.min.js"></script>
-
-    <script>
-        var requestQueue, ingestData, x, y, xAxis, yAxis, area, svg, rect, format;
-
-        
-        requestQueue = [];
-
-        /**
-         *  @param {Date} date      A base point in time for calculation
-         *  @param {Number} delta   An integer, positive or negative, to calculate the new date
-         *  @param {String} unit    One of 'day', 'month', 'year'
-         *
-         *  @returns A new date, delta days before/after date
-         */
-        function calcDate(date, delta, unit)
-        {
-            var year, month, day, newDate, now;
-
-            unit  = unit || 'day';
-
-            year = date.getFullYear();
-            month = date.getMonth();
-            day = date.getDate();
-
-            switch (unit)
-            {
-                case 'year':
-                    year += delta;
-                    break;
-                case 'month':
-                    month += delta;
-                    break;
-                case 'day':
-                    day += delta;
-                    break;
-            }
-
-            now = new Date();
-            newDate = new Date(year, month, day, date.getHours(), date.getMinutes(), date.getSeconds(), date.getMilliseconds());
-
-            // Make sure we dont return a date in the future
-            return newDate < now ? newDate : now;
-        }
-
-        /**
-         *  Returns a UI friendly representation of a data
-         *
-         *  @param {Date} date  A date object to format
-         *
-         *  @return {String} A string representing a Date object
-         **/
-        function formatDate(date)
-        {
-            return date.toISOString().substr(0, 10);
-        }
-
-        /**
-         *  Creates a Date object from a string
-         *
-         *  @param {String} dateStr     A string containing date information
-         *
-         *  @return {Date}  A date object represetation of the string
-         **/
-        function parseDate(dateStr)
-        {
-            return new Date(Date.parse(dateStr + new Date().toString().substr(33)));
-        }
-
-        /**
-         *  Pops a request from the queue and send that to the server
-         *
-         *  @param {Date} startDate     A start point on time
-         *  @param {Date} endDate       A end point on time
-         *  @param {Function} callback  A callback function to be call with the CSV data from
-         *                              the server
-         **/
-        function request_next_data(startDate, endDate, callback)
-        {
-            var date, url, year, month;
-
-            if (requestQueue.length==0) return;
-
-            date = requestQueue.shift();
-            year = date.getFullYear();
-            month = date.getMonth() + 1 + "";
-            month = month.length==1 ? "0" + month : month;
-
-            url = "user/ingest_summary/is_${year}${month}.csv".replace('${year}', year).replace('${month}', month);
-
-            d3.csv(url, function (data)
-            {
-                var dayFilte,
-                    parse = d3.time.format("%Y-%m-%d %H:%M").parse; // Date formatting parser
-
-                if (data)
-                {
-                  if (date.getFullYear()==startDate.getFullYear() && date.getMonth()==startDate.getMonth())
-                  {
-                      dayFilter = startDate.getDate();
-                      data = data.filter(function (row)
-                      {
-                          return parseDate(row.date, true).getDate()>=dayFilter
-                      });
-                  }
-
-                  if (date.getFullYear()==endDate.getFullYear() && date.getMonth()==endDate.getMonth())
-                  {
-                      dayFilter = endDate.getDate();
-                      data = data.filter(function (row)
-                      {
-                          return parseDate(row.date, true).getDate()<=dayFilter
-                      });
-                  }
-
-                  // Parse dates and numbers.
-                  data.forEach(function (d) {
-                      d.date = parse(d.date);
-                      d.flows = +d.flows;
-                  });
-
-                  // Sort the data by date ASC 
-                  data.sort(function (a, b) {
-                      return a.date - b.date;
-                  });
-
-                  ingestData.push(data);
-                }
-
-                if (requestQueue.length==0)
-                {
-                    callback(ingestData);
-                }
-                else
-                {
-                    setTimeout(request_next_data, 1, startDate, endDate, callback);
-                }
-            });
-        }
-
-        /**
-         *  Start asking the server for CSV data to create the chart
-         *
-         *  @param {Date} startDate     A start point on time
-         *  @param {Date} endDate       A end point on time
-         *  @param {Function} callback  A callback function which draws data
-         **/
-        function request_data(startDate, endDate, callback)
-        {
-            var date, delta, startRequests, i, year, month, days;
-
-            // Find out how many request need to be made
-            delta = (endDate.getFullYear() - startDate.getFullYear()) * 12 + (endDate.getMonth() - startDate.getMonth());
-
-            startRequests = requestQueue.length==0;
-
-            // Go to first day in month
-            date = new Date(startDate);
-            date.setDate(1);
-
-            // Queue date requests
-            requestQueue.push( date );
-            for (i=1 ; i<=delta ; i++)
-            {
-                requestQueue.push( calcDate(date, i, 'month') );
-            }
-
-            // dequeue is no request is running
-            startRequests && (ingestData=[]) && request_next_data(startDate, endDate, callback);
-        }
-
-        function buildGraph() {
-
-            // graph dimensions
-            var m = [0, 80, 160, 79], // Margin
-                w = $("#chart").width() - m[1] - m[3], // Width
-                startDate, endDate;
-            // initial height
-            var h = 300;
-
-            if (document.body.clientHeight > 300)
-                h = $("#chart").height();
-
-            // assing the total height - the margins (top, bottom)
-            h = h - m[0] - m[2],
-            format = d3.time.format("%Y-%m-%d %H:%M");
-
-            // Scales.
-            x = d3.time.scale().range([0, w]); // get X function
-            y = d3.scale.linear().range([h, 0]); // get Y function
-            xAxis = d3.svg.axis().scale(x).orient("bottom"); // Get the X axis (Time)
-            yAxis = d3.svg.axis().scale(y).orient("left"); // Get Y Axis (Netflows)
-
-            // An area generator.
-            area = d3.svg.area()
-                .x(function (d) {
-                    return x(d.date);
-                })
-                .y0(h)
-                .y1(function (d) {
-                    if (!isNaN(d.flows))
-                        return y(d.flows);
-                    else
-                        return y(0);
-                });
-
-            // define the Main SVG
-            svg = d3.select("#chart").append("svg:svg")
-            .attr("width", w + m[1] + m[3])
-            .attr("height", h + 20)
-                .append("svg:g")
-                .attr("transform", "translate(" + m[3] + "," + m[0] + ")")
-
-            // Append the clipPath to avoid the Area overlapping 
-            svg.append("svg:clipPath")
-                .attr("id", "clip")
-              .append("svg:rect")
-                .attr("x", x(0))
-                .attr("y", y(1))
-                .attr("width", x(1) - x(0))
-                .attr("height", y(0) - y(1));
-
-            // Append the Y Axis group
-            svg.append("svg:g")
-                .attr("class", "y axis");
-
-            // Append the Area path
-            /*svg.append("svg:path")
-                .attr("class", "area")
-                .attr("clip-path", "url(#clip)")
-                .style("fill", "#0071c5");*/
-
-            // Append the X axis group
-            svg.append("svg:g")
-                .attr("class", "x axis")
-                .attr("transform", "translate(0," + h + ")");
-
-            // Append a pane rect, which will help us to add the zoom functionality
-            rect = svg.append("svg:rect")
-                .attr("class", "pane")
-                .attr("width", w)
-                .attr("height", h);
-
-            // Bind the Data
-
-            startDate = parseDate($('#start_date_picker').val());
-            endDate = parseDate($('#end_date_picker').val());
-
-            request_data(startDate, endDate, function (data) {
-                var minDate, maxDate, maxFlows;
-
-                data.forEach(function (dataSet)
-                {
-                    var a;
-
-                    a = [{date: minDate}];a.push.apply(a, dataSet);
-                    minDate = d3.min(a, function (d) { return d.date; });
-                    a[0] = {date: maxDate, flows: maxFlows};
-                    maxDate = d3.max(a, function (d) { return d.date; });
-                    maxFlows = d3.max(a, function (d) { return d.flows; })
-                });
-
-                // bind the data to the X and Y generators
-                x.domain([minDate, maxDate]);
-                y.domain([0, maxFlows]);
-
-                // Bind the data to our path element.
-                svg.selectAll("path.area").data(data).enter().insert('path', 'g')
-                                                            .attr('class', 'area')
-                                                            .attr('clip-path', 'url(#clip)')
-                                                            .style('fill', '#0071c5')
-                                                            .attr('d', function (d) {
-                                                                return area(d);
-                                                            });
-
-                //Add the pane rect the zoom behavior
-                rect.call(d3.behavior.zoom().x(x)
-                  .scaleExtent([0.3, 2300]) // these are magic numbers to avoid the grap be zoomable in/out to the infinity
-                  .on("zoom", zoom));
-
-                draw();
-
-            });
-        }
-
-        /*
-            Draws the area chart
-        */
-        function draw() {
-            var total, minDate, maxDate;
-
-            svg.select("g.x.axis").call(xAxis);
-            svg.select("g.y.axis").call(yAxis);
-            svg.selectAll("path.area").attr("d", function (d) { return area(d); });
-            var numberFormat = d3.format(",d"); // number formatter (comma separated number i.e. 100,000,000)
-
-            d3.select("#range").html("Seeing total flows <strong>from:</strong> " + x.domain().map(format).join(" <strong>to:</strong> "));
-
-            //Calculate the total flows between the displayed date range
-
-            total = 0;
-            minDate = x.domain()[0];
-            maxDate = x.domain()[1];
-
-            // Go to the first millisecond on dates
-            minDate.setSeconds(0);minDate.setMilliseconds(0);
-            maxDate.setSeconds(59);maxDate.setMilliseconds(0);
-
-            d3.selectAll("path.area").data().forEach(function (pathData)
-            {
-                pathData.forEach(function (record)
-                {
-                    // Discard records outside displayed date range
-                    if (record.date >= minDate && record.date <= maxDate) {
-                        total += +record.flows;
-                    }
-                });
-            });
-
-            d3.select("#total").html("<strong>Total netflows in range:</strong> " + numberFormat(total));
-        }
-
-        /*
-            Zoom event handler
-        */
-        function zoom() {
-            if (d3.event.sourceEvent.type == "wheel") {
-                if (d3.event.sourceEvent.wheelDelta < 0)
-                    rect.style("cursor", "zoom-out");
-                else
-                    rect.style("cursor", "zoom-in");
-            }
-            else if (d3.event.sourceEvent.type == "mousemove") {
-                rect.style("cursor", "e-resize");
-            }
-            draw();
-        }
-
-        function getParam(params) {
-            var obj = {}, i, parts, len, key, value;
-
-            if (typeof params === 'string') {
-                value = location.search.match(new RegExp('[?&]' + params + '=?([^&]*)[&#$]?'));
-                return value ? value[1] : undefined;
-            }
-
-            var _params = location.search.substr(1).split('&');
-
-            for (i = 0, len = _params.length; i < len; i++) {
-                parts = _params[i].split('=');
-                if (!parts[0]) { continue; }
-                obj[parts[0]] = parts[1] || true;
-            }
-
-            if (typeof params !== 'object') { return obj; }
-
-            for (key in params) {
-                value = params[key];
-                if (typeof value === 'undefined') {
-                    delete obj[key];
-                } else {
-                    obj[key] = value;
-                }
-            }
-
-            parts = [];
-            for (key in obj) {
-                parts.push(key + (obj[key] === true ? '' : '=' + obj[key]));
-            }
-
-            location.search = parts.join('&');
-        };
-
-        /*
-            Document Ready
-        */
-        $(function () {
-            var startDate, endDate, today;
-
-            today = new Date();
-            startDate = getParam("startDate");
-            endDate = getParam("endDate");
-
-            if (!startDate && endDate)
-            {
-                startDate = formatDate(calcDate(parseDate(endDate), -7));
-                getParam({startDate: startDate, endDate: endDate});
-            }
-            else if (startDate && !endDate)
-            {
-                endDate = formatDate(calcDate(parseDate(startDate), 7));
-                getParam({startDate: startDate, endDate: endDate});
-            }
-            else if (!startDate && !endDate)
-            {
-                // Default endDate to today and startDate to 7 days before
-                startDate = formatDate(calcDate(today, -7));
-                endDate = formatDate(today);
-                getParam({startDate: startDate, endDate: endDate});
-            }
-
-            // We got values for both dates, make use endDate is after startDate
-            if (endDate < startDate)
-            {
-                getParam({startDate: endDate, endDate: startDate});
-            }
-
-            // Update datepickers
-            $("#start_date_picker").val(startDate);
-            $("#end_date_picker").val(endDate);
-
-            // Update Flows links
-            $("#flowsIndex > a").attr('href', "index_sconnects.html?dataDate=" + endDate);
-            $("#stboard > a").attr('href', "storyboard_sconnect.html?dataDate=" + endDate);
-            // Update DNS links
-            $("#dnsIndex > a").attr('href', "dns/index_sdns.html#date=" + endDate);
-            $("#dnsThreatInv > a").attr('href', "dns/threat_investigation.html#date=" + endDate);
-            $("#dnsStoryBrd > a").attr('href', "dns/story_board.html#date=" + endDate);
-
-            endDate = endDate.replace(/-/g, "");
-            // Update Flows notebook link
-            $("#detect > a").attr('href', '/notebooks/user/' + endDate + "/Threat_Investigation_" + endDate + ".ipynb");
-
-            $("#start_date_picker, #end_date_picker").datepicker({
-                format: "yyyy-mm-dd",
-                autoclose: true,
-                endDate: today
-            })
-            /*.on("changeDate", function (e) {
-                var datePicker, params;
-
-                datePicker = $(this);
-                params = {};
-
-                params[datePicker.attr('name')] = datePicker.val();
-            })*/;
-
-            $("#reload_chart").click(function ()
-            {
-                getParam({startDate: $('#start_date_picker').val(), endDate: $('#end_date_picker').val()});
-            });
-
-            buildGraph();
-
-            $(window).resize(function () {
-                $('#chart').html("");
-                buildGraph();
-            });
-        });
-
-
-    </script>
+    <!-- SCRIPTS -->
+    <script type="application/javascript" src="../node_modules/jquery/dist/jquery.min.js"></script>
+    <script type="application/javascript" src="../node_modules/d3/d3.min.js"></script>
+    <script type="application/javascript" src="../node_modules/bootstrap/dist/js/bootstrap.min.js"></script>
+    <script type="application/javascript" src="../node_modules/bootstrap-datepicker/dist/js/bootstrap-datepicker.min.js"></script>
+    <script type="application/javascript" src="js/ingest-summary.bundle.min.js"></script>
 </body>
 </html>

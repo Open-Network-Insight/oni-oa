@@ -9,12 +9,14 @@
   },
   "scripts": {
     "watch-suspicious": "watchify js/suspicious.js -o js/suspicious.bundle.min.js -v -d",
-    "watch-threat_investigation": "watchify js/threat_investigation.js -o js/threat_investigation.bundle.min.js -v -d",
+    "watch-threat-investigation": "watchify js/threat-investigation.js -o js/threat-investigation.bundle.min.js -v -d",
     "watch-story_board": "watchify js/story_board.js -o js/story_board.bundle.min.js -v -d",
-    "build-all": "npm run build-suspicious && npm run build-threat_investigation",
+    "watch-ingest-summary": "watchify js/ingest-summary.js -o js/ingest-summary.bundle.min.js -v -d",
+    "build-all": "npm run build-suspicious && npm run build-threat-investigation && npm run build-ingest-summary",
     "build-suspicious": "browserify js/suspicious.js | uglifyjs -cm > js/suspicious.bundle.min.js",
-    "build-threat_investigation": "browserify js/threat_investigation.js | uglifyjs -cm > js/threat_investigation.bundle.min.js",
-    "build-story_board": "browserify js/story_board.js | uglifyjs -cm > js/story_board.bundle.min.js"
+    "build-threat-investigation": "browserify js/threat-investigation.js | uglifyjs -cm > js/threat-investigation.bundle.min.js",
+    "build-story_board": "browserify js/story_board.js | uglifyjs -cm > js/story_board.bundle.min.js",
+    "build-ingest-summary": "browserify js/ingest-summary.js | uglifyjs -cm > js/ingest-summary.bundle.min.js"
   },
   "browserify": {
     "transform": [

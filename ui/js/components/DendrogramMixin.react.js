@@ -169,7 +169,7 @@ var DendrogramMixin = {
   },
   componentDidUpdate: function ()
   {
-    if (!this.state.loading)
+    if (!this.state.loading && !this.state.error)
     {
       buildDendrogram.call(this, this.state.root);
     }
