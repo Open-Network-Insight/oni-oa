@@ -163,15 +163,18 @@ var DendrogramMixin = {
       <div className="dendrogram">{content}</div>
     )
   },
-  shouldComponentUpdate: function ()
-  {
-    return this.state.root.children!==undefined;
-  },
   componentDidUpdate: function ()
   {
     if (!this.state.loading && !this.state.error)
     {
-      buildDendrogram.call(this, this.state.root);
+      if (this.state.root.name===undefined)
+      {
+        d3.select(this.getDOMNode()).select('svg').remove();
+      }
+      else
+      {
+        buildDendrogram.call(this, this.state.root);
+      }
     }
   }
 };

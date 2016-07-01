@@ -46,7 +46,7 @@ var ExecutiveThreatBriefingPanel = React.createClass({
         );
 
         summaries.push(
-          <div className="row">
+          <div key={'comment_summary_' + i} className="row">
             <div className="col-md-12">
               <pre id={'comment_' + i + '_summary'} key={'comment_' + i + '_summary'} className="comment_summary" style={{display: "none"}}>
                 {comment.summary.replace(/\\n/g, '\n')}
@@ -57,7 +57,7 @@ var ExecutiveThreatBriefingPanel = React.createClass({
       }.bind(this));
 
       content = [
-        <div className="row">
+        <div key="comment_titles" className="row">
           <div id="incident_list" className="btn-group-vertical col-md-12" role="group" aria-label="Comments">
             {titles}
           </div>

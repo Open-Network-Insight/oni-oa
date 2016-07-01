@@ -42,6 +42,7 @@ OniDispatcher.register(function (action) {
 
       break;
     case OniConstants.RELOAD_COMMENTS:
+      IncidentProgressionStore.clearFilter();
       IncidentProgressionStore.resetData();
       break;
     case OniConstants.SELECT_COMMENT:
