@@ -6,8 +6,8 @@ var NetflowConstants = require('../constants/NetflowConstants');
 var DateUtils = require('../../../js/utils/DateUtils');
 var RestStore = require('../../../js/stores/RestStore');
 
-var START_DATE_FILTER = 'start_date';
-var END_DATE_FILTER = 'end_date';
+var START_DATE_FILTER = NetflowConstants.START_DATE;
+var END_DATE_FILTER = NetflowConstants.END_DATE;
 var CURRENT_DATE_FILTER = 'current_date';
 
 var requestQueue = [];
@@ -140,10 +140,10 @@ OniDispatcher.register(function (action) {
   switch (action.actionType) {
     case OniConstants.UPDATE_DATE:
       switch (action.name) {
-        case START_DATE_FILTER:
+        case NetflowConstants.START_DATE:
           IngestSummaryStore.setStartDate(action.date);
           break;
-        case END_DATE_FILTER:
+        case NetflowConstants.END_DATE:
           IngestSummaryStore.setEndDate(action.date);
           break;
      }

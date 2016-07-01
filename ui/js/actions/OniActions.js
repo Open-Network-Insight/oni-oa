@@ -5,8 +5,20 @@ var OniUtils = require('../utils/OniUtils');
 var OniActions = {
   setDate: function (date, name)
   {
+    var regex;
+
     name = name || 'date';
     OniUtils.setUrlParam(name, date);
+
+    // Update links to match date
+
+    regex = new RegExp('\\${' + name + '}', 'g');
+    $('a[data-href]').each(function ()
+    {
+      var link = $(this);
+
+      link.attr('href', link.data('href').replace(regex, date));
+    });
 
     OniDispatcher.dispatch({
       actionType: OniConstants.UPDATE_FILTER,

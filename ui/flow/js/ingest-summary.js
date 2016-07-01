@@ -2,6 +2,7 @@ var React = require('react');
 
 var OniActions = require('../../js/actions/OniActions');
 var InSumActions = require('./actions/InSumActions');
+var NetflowConstants = require('./constants/NetflowConstants');
 var OniUtils = require('../../js/utils/OniUtils');
 var DateUtils = require('../../js/utils/DateUtils');
 
@@ -12,12 +13,12 @@ var DateInput = require('../../js/components/DateInput.react');
 var startDate, endDate, today;
 
 today = new Date();
-startDate = OniUtils.getUrlParam('start_date');
-endDate = OniUtils.getUrlParam('end_date');
+startDate = OniUtils.getUrlParam(NetflowConstants.START_DATE);
+endDate = OniUtils.getUrlParam(NetflowConstants.END_DATE);
 
 if (!startDate && endDate)
 {
-  startDate = DateUtils.formatDate(DateUtils.moveDateTo(DateUtils.parseDate(endDate), -7));
+  startDate = DateUtils.formatDate(DateUtils.calcDate(DateUtils.parseDate(endDate), -7));
 }
 else if (startDate && !endDate)
 {
@@ -48,13 +49,13 @@ React.render(
           <div className="input-group-addon">
             <span className="glyphicon glyphicon-calendar" aria-hidden="true"></span>
           </div>
-          <DateInput id="startDatePicker" name="start_date" value={startDate}/>
+          <DateInput id="startDatePicker" name={NetflowConstants.START_DATE} value={startDate}/>
         </div>
       </div>
       <div className="form-group">
         <label htmlFor="endDatePicker"> - </label>
         <div className="input-group input-group-xs">
-          <DateInput id="endDatePicker" name="end_date" value={endDate} />
+          <DateInput id="endDatePicker" name={NetflowConstants.END_DATE} value={endDate} />
           <div className="input-group-btn">
             <button className="btn btn-default" type="button" title="Reload" onClick={InSumActions.reloadSummary}>
               <span className="glyphicon glyphicon-repeat" aria-hidden="true"></span>
@@ -85,8 +86,8 @@ React.render(
 );
 
 // Set period
-OniActions.setDate(startDate, 'start_date');
-OniActions.setDate(endDate, 'end_date');
+OniActions.setDate(startDate, NetflowConstants.START_DATE);
+OniActions.setDate(endDate, NetflowConstants.END_DATE);
 
 // Load data
 InSumActions.reloadSummary();
