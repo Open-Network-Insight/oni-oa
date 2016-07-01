@@ -1,71 +1,75 @@
 var assign = require('object-assign');
 
-var DnsDispatcher = require('../dispatchers/DnsDispatcher');
+var OniDispatcher = require('../../../js/dispatchers/OniDispatcher');
+var OniConstants = require('../../../js/constants/OniConstants');
 var DnsConstants = require('../constants/DnsConstants');
-var RestStore = require('./RestStore');
+var RestStore = require('../../../js/stores/RestStore');
 
 var fields = ['title', 'summary'];
 var filterName;
 
 var IncidentProgressionStore = assign(new RestStore(DnsConstants.API_INCIDENT_PROGRESSION), {
-    errorMessages: {
-        404: 'Please choose a different date, no data has been found'
-    },
-    setDate: function (date)
-    {
-        this.setEndpoint(DnsConstants.API_INCIDENT_PROGRESSION.replace('${date}', date.replace(/-/g, '')));
-    },
-    setFilter: function (name, value)
-    {
-        filterName = name;
-        this.setRestFilter('id', value);
-    },
-    getFilterName: function ()
-    {
-        return filterName;
-    },
-    getFilterValue: function ()
-    {
-        return this.getRestFilter('id');
-    },
-    clearFilter: function ()
-    {
-       this.removeRestFilter('id');
-    }
+  errorMessages: {
+    404: 'Please choose a different date, no data has been found'
+  },
+  setDate: function (date)
+  {
+    this.setEndpoint(DnsConstants.API_INCIDENT_PROGRESSION.replace('${date}', date.replace(/-/g, '')));
+  },
+  setFilter: function (name, value)
+  {
+    filterName = name;
+    this.setRestFilter('id', value);
+  },
+  getFilterName: function ()
+  {
+    return filterName;
+  },
+  getFilterValue: function ()
+  {
+    return this.getRestFilter('id');
+  },
+  clearFilter: function ()
+  {
+    this.removeRestFilter('id');
+  }
 });
 
-DnsDispatcher.register(function (action) {
-    switch (action.actionType) {
-        case DnsConstants.UPDATE_DATE:
-            IncidentProgressionStore.setDate(action.date);
+OniDispatcher.register(function (action) {
+  switch (action.actionType) {
+    case OniConstants.UPDATE_DATE:
+      IncidentProgressionStore.setDate(action.date);
 
-            break;
-        case DnsConstants.SELECT_COMMENT:
-            var comment, filterParts, key;
+      break;
+    case OniConstants.RELOAD_COMMENTS:
+      IncidentProgressionStore.resetData();
+      break;
+    case OniConstants.SELECT_COMMENT:
+      var comment, filterParts, key;
 
-            IncidentProgressionStore.clearFilter();
+      IncidentProgressionStore.clearFilter();
 
-            comment = action.comment;
+      comment = action.comment;
 
-            filterParts = [];
+      filterParts = [];
 
-            for (key in comment)
-            {
-                // Skip comment fields
-                if (fields.indexOf(key)>=0) continue;
+      for (key in comment)
+      {
+        // Skip comment fields
+        if (fields.indexOf(key)>=0) continue;
 
-                if (comment[key])
-                {
-                    IncidentProgressionStore.setFilter(key, comment[key]);
+        if (comment[key])
+        {
+          IncidentProgressionStore.setFilter(key, comment[key]);
 
-                    break;
-                }
-            }
+          break;
+        }
+      }
 
-            IncidentProgressionStore.reload();
+      IncidentProgressionStore.reload();
 
-            break;
-    }
+      break;
+  }
 });
 
 module.exports = IncidentProgressionStore;

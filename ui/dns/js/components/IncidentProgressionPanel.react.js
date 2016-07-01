@@ -1,6 +1,6 @@
 var React = require('react');
 
-var DendrogramMixin = require('./DendrogramMixin.react');
+var DendrogramMixin = require('../../../js/components/DendrogramMixin.react');
 var IncidentProgressionStore = require('../stores/IncidentProgressionStore');
 
 var fieldMapper = {
@@ -9,43 +9,43 @@ var fieldMapper = {
 };
 
 var IncidentProgressionPanel = React.createClass({
-    mixins: [DendrogramMixin],
-    componentDidMount: function ()
+  mixins: [DendrogramMixin],
+  componentDidMount: function ()
+  {
+    IncidentProgressionStore.addChangeDataListener(this._onChange);
+  },
+  componentWillUnmount: function ()
+  {
+    IncidentProgressionStore.removeChangeDataListener(this._onChange);
+  },
+  _onChange: function ()
+  {
+    var state, filterName, root;
+
+    state = IncidentProgressionStore.getData();
+
+    root = {
+      name: IncidentProgressionStore.getFilterValue(),
+      children: []
+    };
+
+    if (!state.loading)
     {
-        IncidentProgressionStore.addChangeDataListener(this._onChange);
-    },
-    componentWillUnmount: function ()
-    {
-        IncidentProgressionStore.removeChangeDataListener(this._onChange);
-    },
-    _onChange: function ()
-    {
-        var state, filterName, root;
+      filterName = IncidentProgressionStore.getFilterName();
 
-        state = IncidentProgressionStore.getData();
-
-        root = {
-            name: IncidentProgressionStore.getFilterValue(),
-            children: []
-        };
-
-        if (!state.loading)
-        {
-            filterName = IncidentProgressionStore.getFilterName();
-
-            state.data.forEach(function (item)
-            {
-                root.children.push({
-                    name: item[fieldMapper[filterName]]
-                });
-            }.bind(this));
-        }
-
-        state.root = root;
-        delete state.data;
-
-        this.setState(state);
+      state.data.forEach(function (item)
+      {
+        root.children.push({
+          name: item[fieldMapper[filterName]]
+        });
+      }.bind(this));
     }
+
+    state.root = root;
+    delete state.data;
+
+    this.setState(state);
+  }
 });
 
 module.exports = IncidentProgressionPanel;

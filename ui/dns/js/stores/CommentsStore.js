@@ -1,8 +1,9 @@
 var assign = require('object-assign');
 
+var OniDispatcher = require('../../../js/dispatchers/OniDispatcher');
+var OniConstants = require('../../../js/constants/OniConstants');
 var DnsConstants = require('../constants/DnsConstants');
-var DnsDispatcher = require('../dispatchers/DnsDispatcher');
-var RestStore = require('./RestStore');
+var RestStore = require('../../../js/stores/RestStore');
 
 var CommentsStore = assign(new RestStore(DnsConstants.API_COMMENTS), {
   _parser: d3.dsv('|', 'text/plain'),
@@ -17,12 +18,12 @@ var CommentsStore = assign(new RestStore(DnsConstants.API_COMMENTS), {
   }
 });
 
-DnsDispatcher.register(function (action) {
+OniDispatcher.register(function (action) {
   switch (action.actionType) {
-    case DnsConstants.UPDATE_DATE:
+    case OniConstants.UPDATE_DATE:
       CommentsStore.setDate(action.date);
       break;
-    case DnsConstants.RELOAD_COMMENTS:
+    case OniConstants.RELOAD_COMMENTS:
       CommentsStore.reload();
       break;
   }

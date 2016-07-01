@@ -90,11 +90,11 @@
     }
 
     .oni-frame-content > .panel > .panel-heading .panel-toolbar li.resize-small,
-    .oni-maximized .oni-frame-content > .panel > .panel-heading .panel-toolbar li.fullscreen {
+    .oni-frame.oni-maximized .oni-frame-content > .panel > .panel-heading .panel-toolbar li.fullscreen {
        display: none;
     }
 
-    .oni-maximized .oni-frame-content > .panel > .panel-heading .panel-toolbar li.resize-small {
+    .row.oni-maximized .oni-frame-content > .panel > .panel-heading .panel-toolbar li.resize-small {
        display: inline-block;
     }
 }
