@@ -25,6 +25,10 @@ body {
   min-height: 44px;
 }
 
+.navbar #nav_form label {
+  margin: 0 10px;
+}
+
 .oni-frame .panel {
     border-color: #0071C5;
 }
