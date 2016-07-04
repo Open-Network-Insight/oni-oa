@@ -1,7 +1,11 @@
 var React = require('react');
 
+var DateUtils = require('../../../js/utils/DateUtils');
+var InSumActions = require('../actions/InSumActions');
+var IngestSummaryStore = require('../stores/IngestSummaryStore');
+
 function initialDraw() {
-  var rootNode, format, x, y, xAxis, yAxis, area, svg, rect, total, minDate, maxDate, minDate, maxDate, maxFlows, numberFormat;
+  var rootNode, format, x, y, xAxis, yAxis, area, svg, rect, total, minDate, maxDate, maxFlows, numberFormat;
 
   rootNode = d3.select(this.getDOMNode());
 
@@ -76,6 +80,9 @@ function initialDraw() {
     maxFlows = d3.max(a, function (d) { return d.flows; })
   });
 
+  !minDate && (minDate = DateUtils.parseDate(IngestSummaryStore.getStartDate()));
+  !maxDate && (maxDate = DateUtils.parseDate(IngestSummaryStore.getEndDate()));
+
   // bind the data to the X and Y generators
   x.domain([minDate, maxDate]);
   y.domain([0, maxFlows]);
@@ -147,10 +154,6 @@ function initialDraw() {
 
   draw.call(this);
 }
-
-
-var InSumActions = require('../actions/InSumActions');
-var IngestSummaryStore = require('../stores/IngestSummaryStore');
 
 var IngestSummaryPanel = React.createClass({
   propTypes: {

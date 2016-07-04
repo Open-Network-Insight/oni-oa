@@ -20,9 +20,15 @@ var IngestSummaryStore = assign(new RestStore(NetflowConstants.API_INGEST_SUMMAR
   {
     this.setRestFilter(START_DATE_FILTER, date);
   },
+  getStartDate: function () {
+    return this.getRestFilter(START_DATE_FILTER);
+  },
   setEndDate: function (date)
   {
     this.setRestFilter(END_DATE_FILTER, date);
+  },
+  getEndDate: function () {
+    return this.getRestFilter(END_DATE_FILTER);
   },
   /**
    *  Start asking the server for CSV data to create the chart
