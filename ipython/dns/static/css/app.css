@@ -533,3 +533,30 @@ tr.warning {
     margin-left: 5px;
     background-image: url(../../../images/ajax-loader.gif);
 }
+
+/**
+ * Small and Desktop CSS
+ **/
+ @media(max-width: 768px) {
+    /***************************************
+     **             Suspicious            **
+     ***************************************/
+    th.dns_qry_name, td.dns_qry_name
+    {
+        max-width: 200px;
+    }
+}
+
+/**
+ * Desktop CSS
+ **/
+ @media(min-width: 769px) {
+    /***************************************
+     **             Suspicious            **
+     ***************************************/
+    th.dns_qry_name, td.dns_qry_name
+    {
+         width: 50%;
+        max-width: 300px;
+    }
+}

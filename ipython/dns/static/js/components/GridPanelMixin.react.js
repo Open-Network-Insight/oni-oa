@@ -48,7 +48,7 @@ var GridPanelMixin = {
         if (this['_render_' + key + '_cell']===false) continue;
 
         gridHeaders.push(
-          <th key={'th_' + key} className={'text-center'}>{dataHeaders[key]}</th>
+          <th key={'th_' + key} className={'text-center ' + key}>{dataHeaders[key]}</th>
         );
       }
 
@@ -73,7 +73,7 @@ var GridPanelMixin = {
           cellContent = this[cellRenderer](item[key], item, index);
 
           cells.push(
-            <td key={'td_' + index + '_' + key} className={'text-center'}>
+            <td key={'td_' + index + '_' + key} className={'text-center ' + key}>
               {cellContent}
             </td>
           );

@@ -74,7 +74,7 @@ var SuspiciousPanel = React.createClass({
     queryRep = this._renderRepCell(item.query_rep);
 
     return (
-      <p key={'dns_qry_name_' + idx} className="dns_qry_name">
+      <p key={'dns_qry_name_' + idx}>
         {query} {queryRep}
       </p>
     );
