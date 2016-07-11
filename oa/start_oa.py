@@ -24,11 +24,10 @@ def main():
 def start_oa(args):
     
     # setup the main logger for all the OA process.    
-    logger = Util.create_logger('OA',create_file=False)
+    logger = Util.get_logger('OA',create_file=False)
 
-    logger.info("--------- STARTING OA -----------")   
-    validate_parameters_values(args,logger)    
-    create_folder_structure(args.type,args.date,logger)
+    logger.info("-------------------- STARTING OA ---------------------")   
+    validate_parameters_values(args,logger)   
 
     # create data type instance.
     module = __import__("{0}.{0}_oa".format(args.type),fromlist=['OA'])
@@ -36,16 +35,7 @@ def start_oa(args):
     # start OA.   
     oa_process = module.OA(args.date,args.limit,logger)
     oa_process.start()
-
-def create_folder_structure(type,date,logger):
-
-    # create date folder structure if it does not exist.
-    logger.info("Creating folder structure for OA data")    
-    data_type_folder = "../data/{0}/{1}"    
-    if not os.path.isdir(data_type_folder.format(type,date)): os.makedirs(data_type_folder.format(type,date))
-    if not os.path.isdir(data_type_folder.format(type,"ingest_summary")): os.makedirs(data_type_folder.format(type,"ingest_summary"))
-
-   
+  
 def validate_parameters_values(args,logger):
     
     logger.info("Validating input parameter values")
@@ -67,7 +57,6 @@ def validate_parameters_values(args,logger):
     if not is_date_ok: logger.error("date parameter is not correct, please validate it") 
     if not is_type_ok: logger.error("type parameter is not supported, please select a valid type")
     if not is_limit_ok: logger.error("limit parameter is not correct, please select a valid limit")
-
     if not is_date_ok or not is_type_ok or not is_limit_ok: sys.exit(1)
    
 
