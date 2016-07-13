@@ -16,7 +16,7 @@ class Reputation(object):
 
         # get logger if exists. if not, create new instance.
         self._logger = logging.getLogger('OA.GTI')  if logger else Util.get_logger('OA.GTI',create_file=False)       
-        self._gti_rest_client_path = conf['refclient']
+        self._gti_rest_client_path = conf['refclient']        
         self._gti_ci = conf['ci']
         self._gti_password = conf['password']
         self._gti_user = conf['user']
@@ -25,7 +25,6 @@ class Reputation(object):
     def check(self, ips=None, urls=None):
 
         self._logger.info("GTI reputation check starts...")
-
         reputation_dict = {}
         command = "{0} -s {1} -q \'{2}\' -i {3} -p \'{4}\' -t".format(self._gti_rest_client_path,self._gti_server,self._gti_ci, self._gti_user, self._gti_password)
 

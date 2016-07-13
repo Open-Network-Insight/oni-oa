@@ -60,9 +60,9 @@ class OA(object):
         self._add_ipynb()  
         self._get_flow_results()
         self._add_network_context()
-        #self._add_geo_localization()
-        #self._add_reputation()        
-        #self._create_flow_scores_csv()
+        self._add_geo_localization()
+        self._add_reputation()        
+        self._create_flow_scores_csv()
         self._get_oa_details()
 
         ##################

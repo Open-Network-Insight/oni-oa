@@ -1,4 +1,23 @@
 {
+    "dns_results_fields":{
+         "frame_time" : 0
+        , "unix_tstamp": 1
+        , "frame_len" : 2 
+        , "ip_dst": 3
+        , "dns_qry_name" : 4
+        , "dns_qry_class" : 5
+        , "dns_qry_type" : 6
+        , "dns_qry_rcode" : 7
+        , "domain" : 8
+        , "subdomain" : 9
+        , "subdomain_length" : 10
+        , "num_periods": 11
+        , "subdomain_entropy" : 12
+        , "top_domain" : 13
+        , "word" : 14
+        , "score" : 15
+        , "query_rep" : 16        
+    },
     "dns_score_fields": 
     {
         "frame_time" : 0
@@ -25,5 +44,8 @@
         , "dns_qry_rcode_name" : 21
         , "network_context" :22
         , "unix_tstamp": 23
+    },
+    "add_reputation":{
+        "query_rep":4   
     }
 }
