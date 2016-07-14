@@ -32,8 +32,8 @@
 	    ,"month":28
 	    ,"day":29
 	    ,"hour":30
-        ,"lda_score_ab":35
-        ,"lda_score_ba":36
+		,"lda_score_ab":35
+		,"lda_score_ba":36
     },
 	"column_indexes_filter": [0,8,9,10,11,12,13,16,17],	
 	"flow_score_fields": {

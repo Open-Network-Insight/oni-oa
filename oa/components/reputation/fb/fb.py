@@ -1,26 +1,19 @@
 import json
 import urllib2
 import urllib
+import logging
 
-
-def _get_reputation_label(reputation):
-    if reputation == 'UNKNOWN':
-        return "fb:UNKNOWN:-1"
-    elif reputation == 'NON_MALICIOUS':
-        return "fb:NON_MALICIOUS:0"
-    elif reputation == 'SUSPICIOUS':
-        return "fb:SUSPICIOUS:2"
-    elif reputation == 'MALICIOUS':
-        return "fb:MALICIOUS:3"
 
 
 class Reputation(object):
-    def __init__(self, conf):
+    def __init__(self,conf, logger=None):
+
         self._fb_app_id = conf['app_id']
         self._fb_app_secret = conf['app_secret']
+        self._logger = logging.getLogger('OA.FB')  if logger else Util.get_logger('OA.FB',create_file=False) 
 
     def check(self, ips=None, urls=None):
-        print "Threat-Exchange reputation check starts..."
+        self._logger.info("Threat-Exchange reputation check starts...")
         reputation_dict = {}
         data = []
 
@@ -33,7 +26,7 @@ class Reputation(object):
             qtype = 'DOMAIN'
             getopt = 'GET_NAME_'
         else:
-            print "Need either an ip or an url to check reputation."
+            self._logger.info("Need either an ip or an url to check reputation.")
             return reputation_dict
 
         for val in values:
@@ -80,8 +73,8 @@ class Reputation(object):
             str_response = urllib2.urlopen(request).read()
             response = json.loads(str_response)
         except urllib2.HTTPError as e:
-            print "Error calling ThreatExchange in module fb: " + e.message
-            reputation_dict[name] = _get_reputation_label('UNKNOWN')
+            self._logger.error("Error calling ThreatExchange in module fb: " + e.message)
+            reputation_dict[name] = self._get_reputation_label('UNKNOWN')
             return reputation_dict
 
         for row in response:
@@ -89,7 +82,7 @@ class Reputation(object):
                 continue
 
             if row['code'] != 200:
-                reputation_dict[name] = _get_reputation_label('UNKNOWN')
+                reputation_dict[name] = self._get_reputation_label('UNKNOWN')
                 return reputation_dict
 
             if 'body' in row:
@@ -97,10 +90,21 @@ class Reputation(object):
                 if 'data' in row_response:
                     row_response_data = row_response['data']
                     name = row_response_data[0]['indicator']['indicator']
-                    reputation_dict[name] = _get_reputation_label(row_response_data[0]['status'])
+                    reputation_dict[name] = self._get_reputation_label(row_response_data[0]['status'])
                 else:
-                    reputation_dict[name] = _get_reputation_label('UNKNOWN')
+                    reputation_dict[name] = self._get_reputation_label('UNKNOWN')
             else:
-                reputation_dict[name] = _get_reputation_label('UNKNOWN')
+                reputation_dict[name] = self._get_reputation_label('UNKNOWN')
 
         return reputation_dict
+
+    def _get_reputation_label(self,reputation):
+
+        if reputation == 'UNKNOWN':
+            return "fb:UNKNOWN:-1"
+        elif reputation == 'NON_MALICIOUS':
+            return "fb:NON_MALICIOUS:0"
+        elif reputation == 'SUSPICIOUS':
+            return "fb:SUSPICIOUS:2"
+        elif reputation == 'MALICIOUS':
+            return "fb:MALICIOUS:3"
