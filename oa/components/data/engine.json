@@ -2,7 +2,7 @@
     "oa_data_engine":"impala",
     
     "impala":{
-        "impala_daemon":"lasdb04"
+        "impala_daemon":"node"
     },
     "hive":{}
 }
