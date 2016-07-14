@@ -9,7 +9,6 @@ from components.data.data import Data
 from components.iana.iana_transform import IanaTransform
 from components.nc.network_context import NetworkContext 
 
-
 import time
 
 class OA(object):
@@ -59,7 +58,7 @@ class OA(object):
         self._add_hh_and_severity()
         self._add_iana()
         self._add_network_context()
-        self._create_dns_scores_csv
+        self._create_dns_scores_csv()
 
         ##################
         end = time.time()
@@ -137,9 +136,8 @@ class OA(object):
         return dns_data        
 
     def _create_dns_scores_csv(self):
-
+        
         dns_scores_csv = "{0}/dns_scores.csv".format(self._data_path)
-        print dns_scores_csv   
         dns_scores_final =  self._move_time_stamp(self._dns_scores)
         dns_scores_final.insert(0,self._dns_scores_headers)
         Util.create_csv_file(dns_scores_csv,dns_scores_final)    
@@ -180,6 +178,8 @@ class OA(object):
 
             self._dns_scores = [ conn + [ rep_results[conn[key]] ]   for conn in self._dns_scores  ]
 
+        
+
     def _add_hh_and_severity(self):
 
         # add hh value and sev columns.
@@ -199,8 +199,8 @@ class OA(object):
             self._dns_scores = [ conn + [ dns_iana.get_name(conn[dns_qry_class_index],"dns_qry_class")] + [dns_iana.get_name(conn[dns_qry_type_index],"dns_qry_type")] + [ dns_iana.get_name(conn[dns_qry_rcode_index],"dns_qry_rcode") ] for conn in self._dns_scores ]
             
         else:            
-            self._dns_scores = [ conn + ["","",""] for conn in self._dns_scores ]           
- 
+            self._dns_scores = [ conn + ["","",""] for conn in self._dns_scores ] 
+
     def _add_network_context(self):
 
         nc_conf_file = "{0}/components/nc/nc_config.json".format(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
@@ -212,6 +212,3 @@ class OA(object):
 
         else:
             self._dns_scores = [ conn + [""] for conn in self._dns_scores ]
-        
-
-    
