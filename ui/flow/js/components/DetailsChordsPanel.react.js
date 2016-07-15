@@ -1,9 +1,5 @@
 var React = require('react');
 var d3 = require('d3');
-
-//var OniActions = require('../../../js/actions/OniActions');
-//var EdInActions = require('../../../js/actions/EdInActions');
-//var OniConstants = require('.i./../../js/constants/OniConstants');
 var ChordsDiagramStore = require('../stores/ChordsDiagramStore');
 
 /**

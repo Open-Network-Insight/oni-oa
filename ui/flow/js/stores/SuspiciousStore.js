@@ -1,9 +1,10 @@
+var assign = require('object-assign');
+
 var OniDispatcher = require('../../../js/dispatchers/OniDispatcher');
 var OniConstants = require('../../../js/constants/OniConstants');
 var NetflowConstants = require('../constants/NetflowConstants');
 var RestStore = require('../../../js/stores/RestStore');
 var OniUtils = require('../../../js/utils/OniUtils');
-var assign = require('object-assign');
 
 var IP_FILTER = 'ip_dst';
 

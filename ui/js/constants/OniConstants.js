@@ -13,6 +13,11 @@ var OniConstants = {
   NETVIEW_PANEL: 'Network View',
   NOTEBOOK_PANEL: 'Notebook',
   DETAILS_PANEL: 'Details',
+  COMMENTS_PANEL:'Executive Threat Briefing',
+  INCIDENT_PANEL:'Incident Progression',
+  IMPACT_ANALYSIS_PANEL:'Impact Analysis',
+  GLOBE_VIEW_PANEL:'Map View | Globe',
+  TIMELINE_PANEL:'Timeline',
   // Edge Investigation
   MAX_SUSPICIOUS_ROWS: 250,
   RELOAD_SUSPICIOUS: 'RELOAD_SUSPICIOUS',

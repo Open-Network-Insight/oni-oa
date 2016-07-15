@@ -32,10 +32,10 @@ var IncidentProgressionPanel = require('./components/IncidentProgressionPanel.re
 React.render(
   <div id="oni-content">
     <PanelRow>
-      <Panel title="Executive Threat Briefing" expandable>
+      <Panel title={OniConstants.COMMENTS_PANEL} expandable>
         <ExecutiveThreatBriefingPanel />
       </Panel>
-      <Panel title="Incident Progression" expandable>
+      <Panel title={OniConstants.INCIDENT_PANEL} expandable>
         <IncidentProgressionPanel />
       </Panel>
     </PanelRow>

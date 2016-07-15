@@ -113,9 +113,10 @@
         z-index: 2;
     }
 
-    .oni-frame-content > .panel.no-heading > .panel-body {
-        padding-top: 0px;
+    .oni-frame-content > .panel.no-heading > .panel-body {      
+        padding-top: 0px;      
     }
+    
     .oni-frame-content > .panel > .panel-body {
         height: 100%;
         padding: 35px 0 0 0;
@@ -144,3 +145,124 @@
         border: none;
     }
 }
+
+/*******************************
+ **           ONI             **
+ *******************************/
+
+
+/*******************************
+ **       STORYBOARD          **
+ *******************************/
+ .storyboard #incident_list, .storyboard .comment_summary  {
+    list-style: none;
+    text-align: left;
+ } 
+
+/**    IMPACT ANALYSIS     **/
+.sb_impact rect.background {
+    fill: none;
+    pointer-events: all;
+} 
+
+.sb_impact .axis {
+    shape-rendering: crispEdges;
+}
+
+.sb_impact .axis path, .sb_impact .axis line {
+    fill: none;
+    stroke: #000;
+    stroke-width: .5px;
+}
+
+.sb_impact svg{    
+    font: 10px sans-serif;
+}
+
+/**         MAP VIEW       **/
+.sb_globe_view .land {
+    fill: #939598;
+    stroke-opacity: 1;
+}
+
+.sb_globe_view .graticule {
+    fill: none;
+    stroke: black;
+    stroke-width: .5;
+    opacity: .2;
+}
+
+.sb_globe_view .labels {
+    font: 8px sans-serif;
+    fill: black;
+    opacity: .5;
+    display: none;
+}
+
+.sb_globe_view .noclicks {
+    pointer-events: none;
+}
+
+.sb_globe_view .point {
+    opacity: .6;
+}
+
+.sb_globe_view .arcs {
+    opacity: .1;
+    stroke: #939598;
+    stroke-width: 3;
+}
+
+.sb_globe_view .flyers {
+    stroke-width: 3;
+    opacity: 1.0;
+    stroke: #A31C24;
+}
+
+.sb_globe_view .arc, .sb_globe_view .flyer {
+    stroke-linejoin: round;
+    fill: none;
+}
+
+.sb_globe_view .arc {
+}
+
+.sb_globe_view .flyer {
+}
+
+.sb_globe_view .flyer:hover {
+}
+
+/**       TIMELINE         **/
+.sb_timeline svg, .sb_timeline #legend{
+    font: 10px sans-serif;
+}
+ 
+.sb_timeline .zoom {
+    fill: transparent;
+    cursor: pointer;
+}
+
+.sb_timeline .y-axis path,
+.sb_timeline .y-axis line,
+.sb_timeline .x-axis path,
+.sb_timeline .x-axis line,
+{
+    path,
+    line {
+        stroke: black;
+        fill: none;
+        stroke-width: 1px;
+    }
+}
+
+.sb_timeline .y-axis g line {
+    stroke: grey;
+    fill: none;
+    stroke-width: 1px;
+}
+
+.sb_timeline .graph-body .line circle {
+    opacity: 0.4;
+}
+
