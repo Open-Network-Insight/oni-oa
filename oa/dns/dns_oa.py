@@ -212,3 +212,60 @@ class OA(object):
 
         else:
             self._dns_scores = [ conn + [""] for conn in self._dns_scores ]
+
+   
+    def _get_suspicious_dns_details(self):
+        print "dns sp dns"
+
+        for conn in self._dns_scores:
+
+            # get data to query
+            date=conn[0].split(" ")
+            date = filter(None,date)
+
+            if len(date) == 5:
+                year=date[2]
+                month=datetime.datetime.strptime(date[0], '%b').strftime('%m')
+                day=date[1]                
+                hh=conn[16]
+                dns_qry_name_index = self._conf["dns_results_fields"]["dns_qry_name"]
+                get_details(dns_qry_name,year,month,day,storage_path,hh)
+
+    def _get_dns_details(dns_qry_name,year,month,day,hh):
+                    
+        limit = 250
+        edge_file ="{0}edge-{1}_{2}_00.csv".format(storage_path,dns_qry_name.replace("/","-"),hh)
+        edge_tmp  ="{0}edge-{1}_{2}_00.tmp".format(storage_path,dns_qry_name.replace("/","-"),hh)
+
+        if not os.path.isfile(edge_file):
+    
+        dns_details_qry = ("SELECT frame_time,frame_len,ip_dst,ip_src,dns_qry_name,dns_qry_class,dns_qry_type,dns_qry_rcode,dns_a FROM {0}.dns WHERE y={1} AND m={2} AND d={3} AND dns_qry_name LIKE \"%{4}%\" AND h={6} LIMIT {5};").format(dbase,year,month,day,dns_qry_name,limit,hh)
+
+        impala_cmd = "impala-shell -i {0} --print_header -B --output_delimiter=',' -q '{1}' -o {2}".format(impala_node,dns_details_qry,edge_tmp)
+        print impala_cmd
+        subprocess.call(impala_cmd,shell=True)
+
+        print "Adding IANA code....."
+        iana_config = json.load(open(iana_config_file))
+        iana = iana_transform.IanaTransform(iana_config["IANA"])
+
+        with open(edge_tmp) as dns_details_csv:
+            rows = csv.reader(dns_details_csv, delimiter=',', quotechar='|')
+            next(dns_details_csv)
+            update_rows = [add_iana_code(row,iana) for row in rows]
+            update_rows = filter(None, update_rows)
+            header = [ "frame_time", "frame_len", "ip_dst","ip_src","dns_qry_name","dns_qry_class_name","dns_qry_type_name","dns_qry_rcode_name","dns_a" ]
+            update_rows.insert(0,header)
+            print update_rows
+
+        with open(edge_file,'wb') as dns_details_edge:
+            writer = csv.writer(dns_details_edge, quoting=csv.QUOTE_ALL)
+            print update_rows
+            writer.writerows(update_rows)
+        try:
+            os.remove(edge_tmp)
+        except OSError:
+            pass
+
+    def _get_dns_dendrogram(self):
+        print "dns dendro"
