@@ -3,11 +3,14 @@ import logging
 import os
 import json
 import shutil
+import sys
+import datetime
 from collections import OrderedDict
 from utils import Util
 from components.data.data import Data
 from components.iana.iana_transform import IanaTransform
 from components.nc.network_context import NetworkContext 
+from multiprocessing import Process
 
 import time
 
@@ -59,6 +62,7 @@ class OA(object):
         self._add_iana()
         self._add_network_context()
         self._create_dns_scores_csv()
+        self._get_oa_details()
 
         ##################
         end = time.time()
@@ -214,58 +218,100 @@ class OA(object):
             self._dns_scores = [ conn + [""] for conn in self._dns_scores ]
 
    
-    def _get_suspicious_dns_details(self):
-        print "dns sp dns"
+    def _get_oa_details(self):
+        
+        self._logger.info("Getting OA DNS suspicious details/chord diagram")       
+        # start suspicious connects details process.
+        p_sp = Process(target=self._get_suspicious_details)
+        p_sp.start()        
 
+        # start chord diagram process.            
+        p_dn = Process(target=self._get_dns_dendrogram)
+        p_dn.start()
+
+        p_sp.join()
+        p_dn.join()
+
+    def _get_suspicious_details(self):
+
+        iana_conf_file = "{0}/components/iana/iana_config.json".format(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+        if os.path.isfile(iana_conf_file):
+            iana_config  = json.loads(open(iana_conf_file).read())
+            dns_iana = IanaTransform(iana_config["IANA"])
+        
         for conn in self._dns_scores:
-
             # get data to query
-            date=conn[0].split(" ")
+            date=conn[conn[self._conf["dns_score_fields"]["frame_time"]]].split(" ")
             date = filter(None,date)
 
             if len(date) == 5:
                 year=date[2]
                 month=datetime.datetime.strptime(date[0], '%b').strftime('%m')
                 day=date[1]                
-                hh=conn[16]
-                dns_qry_name_index = self._conf["dns_results_fields"]["dns_qry_name"]
-                get_details(dns_qry_name,year,month,day,storage_path,hh)
+                hh=conn[conn[self._conf["dns_score_fields"]["hh"]]]
+                dns_qry_name = conn[self._conf["dns_score_fields"]["dns_qry_name"]]
+                self._get_dns_details(dns_qry_name,year,month,day,hh,dns_iana)
 
-    def _get_dns_details(dns_qry_name,year,month,day,hh):
+    def _get_dns_details(self,dns_qry_name,year,month,day,hh,dns_iana):
                     
         limit = 250
-        edge_file ="{0}edge-{1}_{2}_00.csv".format(storage_path,dns_qry_name.replace("/","-"),hh)
-        edge_tmp  ="{0}edge-{1}_{2}_00.tmp".format(storage_path,dns_qry_name.replace("/","-"),hh)
+        edge_file ="{0}/edge-{1}_{2}_00.csv".format(self._data_path,dns_qry_name.replace("/","-"),hh)
+        edge_tmp  ="{0}/edge-{1}_{2}_00.tmp".format(self._data_path,dns_qry_name.replace("/","-"),hh)
 
         if not os.path.isfile(edge_file):
     
-        dns_details_qry = ("SELECT frame_time,frame_len,ip_dst,ip_src,dns_qry_name,dns_qry_class,dns_qry_type,dns_qry_rcode,dns_a FROM {0}.dns WHERE y={1} AND m={2} AND d={3} AND dns_qry_name LIKE \"%{4}%\" AND h={6} LIMIT {5};").format(dbase,year,month,day,dns_qry_name,limit,hh)
+            dns_qry = ("SELECT frame_time,frame_len,ip_dst,ip_src,dns_qry_name,dns_qry_class,dns_qry_type,dns_qry_rcode,dns_a FROM {0}.dns WHERE y={1} AND m={2} AND d={3} AND dns_qry_name LIKE \"%{4}%\" AND h={6} LIMIT {5};").format(self._db,year,month,day,dns_qry_name,limit,hh)
+            
+            # execute query
+            self._engine.query(dns_qry,edge_tmp)
 
-        impala_cmd = "impala-shell -i {0} --print_header -B --output_delimiter=',' -q '{1}' -o {2}".format(impala_node,dns_details_qry,edge_tmp)
-        print impala_cmd
-        subprocess.call(impala_cmd,shell=True)
+            # add IANA to results.
+            if dns_iana:
+                self._logger.info("Adding IANA translation to details results")
+                with open(edge_tmp) as dns_details_csv:
+                    rows = csv.reader(dns_details_csv, delimiter=',', quotechar='|')
+                    next(dns_details_csv)
+                    update_rows = [[conn[0]] + [conn[1]] + [conn[2]] + [conn[3]] + [conn[4]] + [dns_iana.get_name(conn[5],"dns_qry_class")] + [dns_iana.get_name(conn[5],"dns_qry_type")] + [dns_iana.get_name(conn[5],"dns_qry_rcode")] + [conn[8]] for row in rows]
+                    update_rows = filter(None, update_rows)
+                    header = [ "frame_time", "frame_len", "ip_dst","ip_src","dns_qry_name","dns_qry_class_name","dns_qry_type_name","dns_qry_rcode_name","dns_a" ]
+                    update_rows.insert(0,header)
+            else:
+                self._logger.info("WARNING: NO IANA configured.")
 
-        print "Adding IANA code....."
-        iana_config = json.load(open(iana_config_file))
-        iana = iana_transform.IanaTransform(iana_config["IANA"])
-
-        with open(edge_tmp) as dns_details_csv:
-            rows = csv.reader(dns_details_csv, delimiter=',', quotechar='|')
-            next(dns_details_csv)
-            update_rows = [add_iana_code(row,iana) for row in rows]
-            update_rows = filter(None, update_rows)
-            header = [ "frame_time", "frame_len", "ip_dst","ip_src","dns_qry_name","dns_qry_class_name","dns_qry_type_name","dns_qry_rcode_name","dns_a" ]
-            update_rows.insert(0,header)
-            print update_rows
-
-        with open(edge_file,'wb') as dns_details_edge:
-            writer = csv.writer(dns_details_edge, quoting=csv.QUOTE_ALL)
-            print update_rows
-            writer.writerows(update_rows)
-        try:
-            os.remove(edge_tmp)
-        except OSError:
-            pass
+            # create edge file.
+            self._logger.info("Creating edge file:{0}".format(edge_file))
+            with open(edge_file,'wb') as dns_details_edge:
+                writer = csv.writer(dns_details_edge, quoting=csv.QUOTE_ALL)
+                if update_rows:
+                    writer.writerows(update_rows)
+                else:            
+                    shutil.copy(edge_tmp,edge_file)           
+            
+            try:
+                os.remove(edge_tmp)
+            except OSError:
+                pass
+           
 
     def _get_dns_dendrogram(self):
-        print "dns dendro"
+       
+        
+        for conn in self._dns_scores:            
+            date=conn[self._conf["dns_score_fields"]["frame_time"]].split(" ")
+            date = filter(None,date)
+
+            if len(date) == 5:
+                year=date[2]
+                month=datetime.datetime.strptime(date[0], '%b').strftime('%m')
+                day=date[1]
+                ip_dst=conn[self._conf["dns_score_fields"]["ip_dst"]]
+                self._get_dendro(self._db,ip_dst,year,month,day)
+
+    def _get_dendro(self,db,ip_dst,year,month,day):
+
+        dendro_file = "{0}/dendro-{1}.csv".format(self._data_path,ip_dst)
+        if not os.path.isfile(dendro_file):
+            dndro_qry = ("SELECT dns_a, dns_qry_name, ip_dst FROM (SELECT susp.ip_dst, susp.dns_qry_name, susp.dns_a FROM {0}.dns as susp WHERE susp.y={1} AND susp.m={2} AND susp.d={3}  AND susp.ip_dst=\"{4}\" ) AS tmp GROUP BY dns_a, dns_qry_name, ip_dst").format(db,year,month,day,ip_dst)
+
+            # execute query
+            self._engine.query(dndro_qry,dendro_file)
