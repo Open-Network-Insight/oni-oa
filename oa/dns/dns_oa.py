@@ -45,7 +45,7 @@ class OA(object):
 
         # initialize data engine
         self._db = self._oni_conf.get('conf','DBNAME').replace("'","").replace('"','') 
-        #self._engine = Data(self._db,self._logger)
+        self._engine = Data(self._db,self._logger)
 
 
     def start(self):
