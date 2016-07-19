@@ -124,15 +124,15 @@ class OA(object):
         # filter results add sev and rank.
         self._logger.info("Filtering required columns based on configuration")       
         self._flow_scores.extend([ [0] +  [ conn[i] for i in self._conf['column_indexes_filter'] ] + [(conn[ldaab_index] if (conn[ldaab_index]<= conn[ldaba_index]) else conn[ldaba_index])] + [n]  for n, conn in enumerate(self._flow_results) ])
-
-        # create bk file
-        flow_scores_csv = "{0}/flow_scores_bu.csv".format(self._data_path)
-        Util.create_csv_file(flow_scores_csv,self._flow_scores)      
-        
+     
     def _create_flow_scores_csv(self):
 
         flow_scores_csv = "{0}/flow_scores.csv".format(self._data_path)
         Util.create_csv_file(flow_scores_csv,self._flow_scores)
+
+        # create bk file
+        flow_scores_bu_csv = "{0}/flow_scores_bu.csv".format(self._data_path)
+        Util.create_csv_file(flow_scores_bu_csv,self._flow_scores)  
 
     def _add_network_context(self):
 

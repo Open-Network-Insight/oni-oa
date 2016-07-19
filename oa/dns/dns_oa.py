@@ -119,16 +119,7 @@ class OA(object):
         self._dns_scores_headers = [  str(key) for (key,value) in self._conf['dns_score_fields'].items() ]
 
         # add dns content.
-        self._dns_scores = [ conn[:]  for conn in self._dns_results][:]
-        dns_scores_bu = [ conn[:]  for conn in self._dns_results][:]
-
-        # create bk file
-        dns_scores_csv = "{0}/dns_scores_bu.csv".format(self._data_path) 
-                
-        # move unixtime stamp to the end.        
-        dns_scores_bu = self._move_time_stamp(dns_scores_bu)
-        dns_scores_bu.insert(0,self._dns_scores_headers) 
-        Util.create_csv_file(dns_scores_csv,dns_scores_bu)  
+        self._dns_scores = [ conn[:]  for conn in self._dns_results][:]       
 
     def _move_time_stamp(self,dns_data):
         
@@ -144,7 +135,11 @@ class OA(object):
         dns_scores_csv = "{0}/dns_scores.csv".format(self._data_path)
         dns_scores_final =  self._move_time_stamp(self._dns_scores)
         dns_scores_final.insert(0,self._dns_scores_headers)
-        Util.create_csv_file(dns_scores_csv,dns_scores_final)    
+        Util.create_csv_file(dns_scores_csv,dns_scores_final)   
+
+        # create bk file
+        dns_scores_bu_csv = "{0}/dns_scores_bu.csv".format(self._data_path)
+        Util.create_csv_file(dns_scores_bu_csv,dns_scores_final)  
   
     def _add_reputation(self):
 
