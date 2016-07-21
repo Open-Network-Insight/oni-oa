@@ -5,6 +5,8 @@ import json
 import shutil
 import sys
 import datetime
+import csv
+
 from collections import OrderedDict
 from utils import Util
 from components.data.data import Data
@@ -236,14 +238,14 @@ class OA(object):
         
         for conn in self._dns_scores:
             # get data to query
-            date=conn[conn[self._conf["dns_score_fields"]["frame_time"]]].split(" ")
+            date=conn[self._conf["dns_score_fields"]["frame_time"]].split(" ")
             date = filter(None,date)
 
             if len(date) == 5:
                 year=date[2]
                 month=datetime.datetime.strptime(date[0], '%b').strftime('%m')
                 day=date[1]                
-                hh=conn[conn[self._conf["dns_score_fields"]["hh"]]]
+                hh=conn[self._conf["dns_score_fields"]["hh"]]
                 dns_qry_name = conn[self._conf["dns_score_fields"]["dns_qry_name"]]
                 self._get_dns_details(dns_qry_name,year,month,day,hh,dns_iana)
 
@@ -255,7 +257,7 @@ class OA(object):
 
         if not os.path.isfile(edge_file):
     
-            dns_qry = ("SELECT frame_time,frame_len,ip_dst,ip_src,dns_qry_name,dns_qry_class,dns_qry_type,dns_qry_rcode,dns_a FROM {0}.dns WHERE y={1} AND m={2} AND d={3} AND dns_qry_name LIKE \"%{4}%\" AND h={6} LIMIT {5};").format(self._db,year,month,day,dns_qry_name,limit,hh)
+            dns_qry = ("SELECT frame_time,frame_len,ip_dst,ip_src,dns_qry_name,dns_qry_class,dns_qry_type,dns_qry_rcode,dns_a FROM {0}.dns WHERE y={1} AND m={2} AND d={3} AND dns_qry_name LIKE '%{4}%' AND h={6} LIMIT {5};").format(self._db,year,month,day,dns_qry_name,limit,hh)
             
             # execute query
             self._engine.query(dns_qry,edge_tmp)
@@ -265,11 +267,12 @@ class OA(object):
                 self._logger.info("Adding IANA translation to details results")
                 with open(edge_tmp) as dns_details_csv:
                     rows = csv.reader(dns_details_csv, delimiter=',', quotechar='|')
-                    next(dns_details_csv)
-                    update_rows = [[conn[0]] + [conn[1]] + [conn[2]] + [conn[3]] + [conn[4]] + [dns_iana.get_name(conn[5],"dns_qry_class")] + [dns_iana.get_name(conn[5],"dns_qry_type")] + [dns_iana.get_name(conn[5],"dns_qry_rcode")] + [conn[8]] for row in rows]
-                    update_rows = filter(None, update_rows)
-                    header = [ "frame_time", "frame_len", "ip_dst","ip_src","dns_qry_name","dns_qry_class_name","dns_qry_type_name","dns_qry_rcode_name","dns_a" ]
-                    update_rows.insert(0,header)
+		    if len(rows) >1:
+                        next(dns_details_csv)
+                        update_rows = [[conn[0]] + [conn[1]] + [conn[2]] + [conn[3]] + [conn[4]] + [dns_iana.get_name(conn[5],"dns_qry_class")] + [dns_iana.get_name(conn[6],"dns_qry_type")] + [dns_iana.get_name(conn[7],"dns_qry_rcode")] + [conn[8]] for conn in rows]
+                        update_rows = filter(None, update_rows)
+                        header = [ "frame_time", "frame_len", "ip_dst","ip_src","dns_qry_name","dns_qry_class_name","dns_qry_type_name","dns_qry_rcode_name","dns_a" ]
+                        update_rows.insert(0,header)
             else:
                 self._logger.info("WARNING: NO IANA configured.")
 
@@ -306,7 +309,7 @@ class OA(object):
 
         dendro_file = "{0}/dendro-{1}.csv".format(self._data_path,ip_dst)
         if not os.path.isfile(dendro_file):
-            dndro_qry = ("SELECT dns_a, dns_qry_name, ip_dst FROM (SELECT susp.ip_dst, susp.dns_qry_name, susp.dns_a FROM {0}.dns as susp WHERE susp.y={1} AND susp.m={2} AND susp.d={3}  AND susp.ip_dst=\"{4}\" ) AS tmp GROUP BY dns_a, dns_qry_name, ip_dst").format(db,year,month,day,ip_dst)
+            dndro_qry = ("SELECT dns_a, dns_qry_name, ip_dst FROM (SELECT susp.ip_dst, susp.dns_qry_name, susp.dns_a FROM {0}.dns as susp WHERE susp.y={1} AND susp.m={2} AND susp.d={3}  AND susp.ip_dst='{4}' ) AS tmp GROUP BY dns_a, dns_qry_name, ip_dst").format(db,year,month,day,ip_dst)
 
             # execute query
             self._engine.query(dndro_qry,dendro_file)
