@@ -184,8 +184,8 @@ class OA(object):
     def _add_hh_and_severity(self):
 
         # add hh value and sev columns.
-        dns_date_index = self._conf["dns_results_fields"]["frame_time"]        
-        self._dns_scores = [conn + [ conn[dns_date_index].split(" ")[3].split(":")[0]] + [0] + [0] for conn in self._dns_scores  ]
+        dns_date_index = self._conf["dns_results_fields"]["frame_time"]
+	self._dns_scores = [conn + [ filter(None,conn[dns_date_index].split(" "))[3].split(":")[0]] + [0] + [0] for conn in self._dns_scores  ]
 
     def _add_iana(self):
 
@@ -262,17 +262,18 @@ class OA(object):
             # execute query
             self._engine.query(dns_qry,edge_tmp)
 
+	    print dns_qry
+
             # add IANA to results.
             if dns_iana:
                 self._logger.info("Adding IANA translation to details results")
                 with open(edge_tmp) as dns_details_csv:
                     rows = csv.reader(dns_details_csv, delimiter=',', quotechar='|')
-		    if len(rows) >1:
-                        next(dns_details_csv)
-                        update_rows = [[conn[0]] + [conn[1]] + [conn[2]] + [conn[3]] + [conn[4]] + [dns_iana.get_name(conn[5],"dns_qry_class")] + [dns_iana.get_name(conn[6],"dns_qry_type")] + [dns_iana.get_name(conn[7],"dns_qry_rcode")] + [conn[8]] for conn in rows]
-                        update_rows = filter(None, update_rows)
-                        header = [ "frame_time", "frame_len", "ip_dst","ip_src","dns_qry_name","dns_qry_class_name","dns_qry_type_name","dns_qry_rcode_name","dns_a" ]
-                        update_rows.insert(0,header)
+		    next(dns_details_csv)
+		    update_rows = [[conn[0]] + [conn[1]] + [conn[2]] + [conn[3]] + [conn[4]] + [dns_iana.get_name(conn[5],"dns_qry_class")] + [dns_iana.get_name(conn[6],"dns_qry_type")] + [dns_iana.get_name(conn[7],"dns_qry_rcode")] + [conn[8]] for conn in rows]
+		    update_rows = filter(None, update_rows)
+		    header = [ "frame_time", "frame_len", "ip_dst","ip_src","dns_qry_name","dns_qry_class_name","dns_qry_type_name","dns_qry_rcode_name","dns_a" ]
+		    update_rows.insert(0,header)
             else:
                 self._logger.info("WARNING: NO IANA configured.")
 

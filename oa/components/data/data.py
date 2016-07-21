@@ -28,10 +28,10 @@ class Data(object):
         # start data engine with configuration.
         self._engine = module.Engine(db,self._engine_conf[self._engine_name])
 
-    def query(self,query,output_file=None):
+    def query(self,query,output_file=None,delimiter=","):
 
         self._logger.debug("Executing query: {0}".format(query)) 
-        self._engine.query(query,output_file)
+        self._engine.query(query,output_file,delimiter)
      
         
        

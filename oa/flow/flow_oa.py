@@ -338,7 +338,7 @@ class OA(object):
             edge_file = "{0}/edge-{1}-{2}-{3}-{4}.tsv".format(self._data_path,sip.replace(".","_"),dip.replace(".","_"),hr,mm)
 
             # execute query
-            self._engine.query(sp_query,edge_file)
+            self._engine.query(sp_query,output_file=edge_file,delimiter="\\t")
     
     def _get_chord_details(self,bar=None):
 
@@ -376,7 +376,7 @@ class OA(object):
                     ips_filter = (",".join(str(ip) for ip in ips))
                     chord_file = "{0}/chord-{1}.tsv".format(self._data_path,ip.replace(".","_"))                     
                     ch_query = ("SELECT sip as srcip, dip as dstip, MAX(ibyt) as maxbyte, AVG(ibyt) as avgbyte, MAX(ipkt) as maxpkt, AVG(ipkt) as avgpkt from {0}.flow where y={1} and m={2} and d={3} and ( (sip='{4}' and dip IN('{5}')) or (sip IN('{5}') and dip='{4}') ) group by sip,dip")
-                    self._engine.query(ch_query.format(self._db,yr,mn,dy,ip,ips_filter),chord_file)
+                    self._engine.query(ch_query.format(self._db,yr,mn,dy,ip,ips_filter),chord_file,delimiter="\\t")
 
      
  
