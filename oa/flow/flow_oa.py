@@ -279,19 +279,20 @@ class OA(object):
         self._flow_scores.insert(0,flow_headers_rep)       
 
     def _get_oa_details(self):
-    
-        self._logger.info("Getting OA Flow suspicious details/chord diagram")       
-        # start suspicious connects details process.
-        p_sp = Process(target=self._get_suspicious_details)
-        p_sp.start()        
 
-        # start chord diagram process.            
-        p_ch = Process(target=self._get_chord_details)
-        p_ch.start()
+	self._logger.info("Getting OA Flow suspicious details/chord diagram")
+	# start suspicious connects details process.
+	p_sp = Process(target=self._get_suspicious_details)
+	p_sp.start()
 
-        p_sp.join()
-        p_ch.join()
+	# start chord diagram process.
+	p_ch = Process(target=self._get_chord_details)
+	p_ch.start()
 
+	p_sp.join()
+	p_ch.join()
+
+	
     def _get_suspicious_details(self,bar=None):
         
         # skip header
@@ -373,9 +374,9 @@ class OA(object):
                 ips = list(set(ip_list))
              
                 if len(ips) > 1:
-                    ips_filter = (",".join(str(ip) for ip in ips))
+                    ips_filter = (",".join(str("'{0}'".format(ip)) for ip in ips))
                     chord_file = "{0}/chord-{1}.tsv".format(self._data_path,ip.replace(".","_"))                     
-                    ch_query = ("SELECT sip as srcip, dip as dstip, MAX(ibyt) as maxbyte, AVG(ibyt) as avgbyte, MAX(ipkt) as maxpkt, AVG(ipkt) as avgpkt from {0}.flow where y={1} and m={2} and d={3} and ( (sip='{4}' and dip IN('{5}')) or (sip IN('{5}') and dip='{4}') ) group by sip,dip")
+                    ch_query = ("SELECT sip as srcip, dip as dstip, MAX(ibyt) as maxbyte, AVG(ibyt) as avgbyte, MAX(ipkt) as maxpkt, AVG(ipkt) as avgpkt from {0}.flow where y={1} and m={2} and d={3} and ( (sip='{4}' and dip IN({5})) or (sip IN({5}) and dip='{4}') ) group by sip,dip")
                     self._engine.query(ch_query.format(self._db,yr,mn,dy,ip,ips_filter),chord_file,delimiter="\\t")
 
      
