@@ -1,7 +1,5 @@
 var React = require('react');
 
-var OniDispatcher = require('../../../js/dispatchers/OniDispatcher');
-var OniConstants = require('../../../js/constants/OniConstants');
 var EdInActions = require('../../../js/actions/EdInActions');
 var SuspiciousStore = require('../stores/SuspiciousStore');
 var OniUtils = require('../../../js/utils/OniUtils');

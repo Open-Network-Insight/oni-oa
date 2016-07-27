@@ -1,3 +1,5 @@
+var d3 = require('d3');
+var d3Interpolate = require('d3-interpolate');
 var React = require('react');
 
 var OniActions = require('../../../js/actions/OniActions');
@@ -86,7 +88,7 @@ function filterDataAndBuildGraph()
                           return {
                             source: source,
                             target: target,
-                            weight: -Math.log(d.lda_score),
+                            weight: -Math.log(d.score),
                             id: "k" + id
                           };
                         });
@@ -104,9 +106,10 @@ function filterDataAndBuildGraph()
                         .range([0.1, 1]);
 
   // Color for edges
-  var color = d3.scale.cubehelix()
-                      .domain([16, 13, 12, 2])
-                      .range([d3.hsl(214, 0.04, 0.34), d3.hsl(216, 0.02, 0.59), d3.hsl(216, 0.69, 0.84), d3.hsl(201, 0.1, 0.72)]);
+  var color = d3.scale.linear()
+                        .domain([16, 13, 12, 2])
+                        .range([d3.hsl(214, 0.04, 0.34), d3.hsl(216, 0.02, 0.59), d3.hsl(216, 0.69, 0.84), d3.hsl(201, 0.1, 0.72)])
+                        .interpolate(d3Interpolate.interpolateCubehelix);
 
   // Color for nodes
   var nodeColor = d3.scale.ordinal()
@@ -405,9 +408,10 @@ function selectEdge(id)
 function showFullGraphWithSelectedEdge()
 {
   var chart = d3.select(this.getDOMNode());
-  var color = d3.scale.cubehelix()
-                                   .domain([16, 13, 12, 2])
-                                   .range([d3.hsl(214, 0.04, 0.34), d3.hsl(216, 0.02, 0.59), d3.hsl(216, 0.69, 0.84), d3.hsl(201, 0.1, 0.72)]);
+  var color = d3.scale.linear()
+                                .domain([16, 13, 12, 2])
+                                .range([d3.hsl(214, 0.04, 0.34), d3.hsl(216, 0.02, 0.59), d3.hsl(216, 0.69, 0.84), d3.hsl(201, 0.1, 0.72)])
+                                .interpolate(d3Interpolate.interpolateCubehelix);
 
   var opacity = d3.scale.threshold()
                                     .domain([13])

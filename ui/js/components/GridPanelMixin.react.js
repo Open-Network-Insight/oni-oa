@@ -79,7 +79,7 @@ var GridPanelMixin = {
           );
         }
 
-        className = selectedRows.indexOf(item) >= 0 ? 'warning' : null;
+        className = selectedRows.indexOf(item) >= 0 ? 'bg-warning' : null;
 
         eventHandlers = {};
 

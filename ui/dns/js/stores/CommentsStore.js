@@ -1,4 +1,5 @@
 var assign = require('object-assign');
+var d3 = require('d3');
 
 var OniDispatcher = require('../../../js/dispatchers/OniDispatcher');
 var OniConstants = require('../../../js/constants/OniConstants');

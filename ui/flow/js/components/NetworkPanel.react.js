@@ -1,5 +1,8 @@
 var React = require('react');
 
+var d3 = require('d3');
+var d3Interpolate = require('d3-interpolate');
+
 var OniActions = require('../../../js/actions/OniActions');
 var EdInActions = require('../../../js/actions/EdInActions');
 var OniConstants = require('../../../js/constants/OniConstants');
@@ -58,28 +61,15 @@ function draw(selectedEdgeId, sourceIpNodeId, targetIpNodeId, data) {
                                     .range([0.1, 1]);
 
   // Color for edges
-  var color = d3.scale.cubehelix()
-                                  .domain([16, 13, 12, 2])
-                                  .range([d3.hsl(214, 0.04, 0.34), d3.hsl(216, 0.02, 0.59), d3.hsl(216, 0.69, 0.84), d3.hsl(201, 0.1, 0.72)]);
-
-  // Color for nodes
-  var nodeColor = d3.scale.ordinal()
-                        .domain([10, 169, 172, 224, 239, 255])
-                        .range([d3.rgb(237, 28, 36),
-                                d3.rgb(237, 78, 36),
-                                d3.rgb(237, 98, 36),
-                                d3.rgb(237, 138, 36),
-                                d3.rgb(237, 168, 36),
-                                d3.rgb(237, 198, 36)]);
-
-  var linkStrength = d3.scale.threshold()
-                         .domain([13])
-                         .range([0.01, 1]);
+  var color = d3.scale.linear()
+                                .domain([16, 13, 12, 2])
+                                .range([d3.hsl(214, 0.04, 0.34), d3.hsl(216, 0.02, 0.59), d3.hsl(216, 0.69, 0.84), d3.hsl(201, 0.1, 0.72)])
+                                .interpolate(d3Interpolate.interpolateCubehelix);
 
   // Graph dimensions
   var w = $(this.getDOMNode()).width(),
       h = $(this.getDOMNode()).height(),
-      r = Math.round(w * 0.005) // 0.005 magic number for nodes styling purposes when expanding graph, radious is 0.5% of the #grap div
+      r = Math.round(w * 0.005), // 0.005 magic number for nodes styling purposes when expanding graph, radious is 0.5% of the #grap div
       rightMargin = w - r,
       bottomMargin = h - r,
       size = [w, h];
@@ -300,9 +290,10 @@ function selectEdge(id) {
  **/
 function showFullGraphWithSelectedEdge() {
 
-  var color = d3.scale.cubehelix()
-                       .domain([16, 13, 12, 2])
-                       .range([d3.hsl(214, 0.04, 0.34), d3.hsl(216, 0.02, 0.59), d3.hsl(216, 0.69, 0.84), d3.hsl(201, 0.1, 0.72)]);
+  var color = d3.scale.linear()
+                        .domain([16, 13, 12, 2])
+                        .range([d3.hsl(214, 0.04, 0.34), d3.hsl(216, 0.02, 0.59), d3.hsl(216, 0.69, 0.84), d3.hsl(201, 0.1, 0.72)])
+                        .interpolate(d3Interpolate.interpolateCubehelix);
 
   var opacity = d3.scale.threshold()
                         .domain([13])
