@@ -4,6 +4,7 @@ require('d3-tip')(d3);
 var assign = require('object-assign');
 var React = require('react');
 
+var EdInActions = require('../../../js/actions/EdInActions');
 var OniConstants = require('../../../js/constants/OniConstants');
 var OniUtils = require('../../../js/utils/OniUtils');
 var SuspiciousStore = require('../stores/SuspiciousStore');
@@ -161,6 +162,16 @@ var NetworkViewPanel = React.createClass({
                 return this.sizeScale( d.root || d.expanded ? 0 : d.size );
             }.bind(this))
             .on("dblclick", this.onNodeDblClick)
+            .on("contextmenu", (d, i) => {
+                d3.event.preventDefault();
+
+                if (!d.isDataFilter) return;
+
+                this.tip.hide();
+
+                EdInActions.setFilter(d.filter || d.name);
+                EdInActions.reloadSuspicious();
+            })
             .on("mouseover", d => {
                 var direction = '';
 
@@ -322,7 +333,16 @@ var NetworkViewPanel = React.createClass({
 
                 uriKey = hostKey + item.uripath;
                 if (refs[uriKey]===undefined) {
-                    obj = {id: uriKey, name:  item.uripath, type: 'Path', rep: rep, visible: false};
+                    obj = {
+                        id: uriKey,
+                        name:  item.uripath,
+                        type: 'Path',
+                        rep: rep,
+                        visible: false,
+                        isDataFilter: true,
+                        filter: item.fulluri,
+                        tooltip: 'Secondary click to use URI as filter'
+                    };
 
                     refs[uriKey] = obj;
 
@@ -334,7 +354,15 @@ var NetworkViewPanel = React.createClass({
 
                 clientKey = uriKey + item.clientip;
                 if (refs[clientKey]===undefined) {
-                    obj = {id: clientKey, name:  item.clientip, type: 'Ip', rep: rep, visible: false};
+                    obj = {
+                        id: clientKey,
+                        name:  item.clientip,
+                        type: 'Ip',
+                        rep: rep,
+                        visible: false,
+                        isDataFilter: true,
+                        tooltip: 'Secondary click to use IP as filter'
+                    };
 
                     refs[clientKey] = obj;
 

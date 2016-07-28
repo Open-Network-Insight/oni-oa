@@ -7,7 +7,7 @@ var ProxyConstants = require('../constants/ProxyConstants');
 var RestStore = require('../../../js/stores/RestStore');
 
 var IP_FILTER = 'clientip';
-var HOST_FILTER = 'host';
+var URI_FILTER = 'fulluri';
 
 var CHANGE_FILTER_EVENT = 'change_filter';
 var HIGHLIGHT_THREAT_EVENT = 'hightlight_thread';
@@ -43,7 +43,7 @@ var SuspiciousStore = assign(new RestStore(ProxyConstants.API_SUSPICIOUS), {
                 unfilteredData,
                 {
                     data: unfilteredData.data.filter(function (item) {
-                        return filterName === IP_FILTER ? item[IP_FILTER] == filter : item[HOST_FILTER].indexOf(filter) >= 0;
+                        return filterName === IP_FILTER ? item[IP_FILTER] == filter : item[URI_FILTER].indexOf(filter) >= 0;
                     })
                 }
             );
@@ -71,17 +71,17 @@ var SuspiciousStore = assign(new RestStore(ProxyConstants.API_SUSPICIOUS), {
         if (filter === '') {
             filterName = '';
             this.removeRestFilter(IP_FILTER);
-            this.removeRestFilter(HOST_FILTER);
+            this.removeRestFilter(URI_FILTER);
         }
         else if (OniUtils.IP_V4_REGEX.test(filter)) {
-            this.removeRestFilter(HOST_FILTER);
+            this.removeRestFilter(URI_FILTER);
             this.setRestFilter(IP_FILTER, filter);
             filterName = IP_FILTER;
         }
         else {
             this.removeRestFilter(IP_FILTER);
-            this.setRestFilter(HOST_FILTER, filter);
-            filterName = HOST_FILTER;
+            this.setRestFilter(URI_FILTER, filter);
+            filterName = URI_FILTER;
         }
 
         this.emitChangeFilter();

@@ -1,3 +1,5 @@
+var d3 = require('d3');
+
 var OniDispatcher = require('../../../js/dispatchers/OniDispatcher');
 var OniConstants = require('../../../js/constants/OniConstants');
 var ProxyConstants = require('../constants/ProxyConstants');
@@ -8,6 +10,7 @@ var CLIENT_IP_FILTER = 'clientip';
 var HASH_FILTER = 'hash';
 
 var DetailsStore = assign(new RestStore(ProxyConstants.API_DETAILS), {
+    _parser: d3.dsv('\t', 'text/plain'),
     errorMessages: {
         404: 'No details available'
     },
