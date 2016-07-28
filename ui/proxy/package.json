@@ -4,8 +4,10 @@
   "description": "Open Network Insight :: UI :: Proxy",
   "scripts": {
     "watch-suspicious": "watchify js/suspicious.js -o js/suspicious.bundle.min.js -v -d",
-    "build-all": "npm run build-suspicious",
-    "build-suspicious": "browserify js/suspicious.js | uglifyjs -cm > js/suspicious.bundle.min.js"
+    "watch-threat-investigation": "watchify js/threat-investigation.js -o js/threat-investigation.bundle.min.js -v -d",
+    "build-all": "npm run build-suspicious && npm run build-threat-investigation",
+    "build-suspicious": "browserify js/suspicious.js | uglifyjs -cm > js/suspicious.bundle.min.js",
+    "build-threat-investigation": "browserify js/threat-investigation.js | uglifyjs -cm > js/threat-investigation.bundle.min.js"
   },
   "browserify": {
     "transform": [
