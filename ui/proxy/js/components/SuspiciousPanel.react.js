@@ -83,7 +83,26 @@ var SuspiciousPanel = React.createClass({
                 {webcat.split(';').map((cat,idx) => <li key={'webcat' + idx}>{cat}</li>)}
             </ol>
         );
-},
+    },
+    _render_respcode_name_cell: function (respcode_name, item) {
+        var cssClass;
+
+        if (item.respcode<200) { // Informational codes
+            cssClass = 'label label-info';
+        } else if (item.respcode<300) { // Successful codes
+            cssClass = 'label label-success';
+        } else if (item.respcode<400) { // Redirection codes
+            cssClass = 'label label-default';
+        } else if (item.respcode<500) { // Client Error codes
+            cssClass = 'label label-warning';
+        } else { // Server Error codes
+            cssClass = 'label label-danger';
+        }
+
+        return (
+            <span className={cssClass}>{respcode_name}</span>
+        );
+    },
 // Hidden cells
     _render_p_time_cell: false,
     _render_reqmethod_cell: false,
