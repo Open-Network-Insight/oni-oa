@@ -17,6 +17,12 @@
     "react": "^0.13.3",
     "underscore": "^1.8.3"
   },
+  "devDependencies": {
+    "browserify": "~6.2.0",
+    "browserify-shim": "^3.8.12",
+    "reactify": "^0.15",
+    "watchify": "~2.1.0"
+  },
   "scripts": {
     "build-all": "npm run build-flow && npm run build-dns && npm run build-proxy",
     "build-flow": "cd flow/ && npm run build-all && cd ../",
@@ -30,7 +36,12 @@
         {
           "es6": true
         }
-      ]
+      ],
+      "browserify-shim"
     ]
+  },
+  "browserify-shim": {
+    "jquery": "global:$",
+    "d3": "global:d3"
   }
 }

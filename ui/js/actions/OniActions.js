@@ -13,11 +13,13 @@ var OniActions = {
 
         // Update links to match date
 
-        regex = new RegExp('\\${' + name + '}', 'g');
+        regex = new RegExp('\\${(?:[^}]+\\|)?' + name + '(?:\\|[^}]+)?}', 'g');
         $('a[data-href]').each(function () {
             var link = $(this);
 
-            link.attr('href', link.data('href').replace(regex, date));
+            if (regex.test(link.data('href'))) {
+                link.attr('href', link.data('href').replace(regex, date));
+            }
         });
 
         OniDispatcher.dispatch({

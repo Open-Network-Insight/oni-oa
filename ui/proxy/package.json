@@ -11,7 +11,17 @@
   },
   "browserify": {
     "transform": [
-      ["reactify", {"es6": true}]
+      [
+        "reactify",
+        {
+          "es6": true
+        }
+      ],
+      "browserify-shim"
     ]
+  },
+  "browserify-shim": {
+    "jquery": "global:$",
+    "d3": "global:d3"
   }
 }

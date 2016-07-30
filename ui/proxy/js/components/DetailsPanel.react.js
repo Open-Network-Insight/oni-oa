@@ -9,7 +9,7 @@ var DetailsPanel = React.createClass({
     store: DetailsStore,
     // Custom cells
     _render_p_date_cell: function (date, item) {
-        return date + ' ' + item.time;
+        return date + ' ' + item.p_time;
     },
     // Hidden cells
     _render_p_time_cell: false,

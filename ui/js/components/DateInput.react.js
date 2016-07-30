@@ -1,5 +1,4 @@
 var $ = require('jquery');
-require('bootstrap-datepicker');
 var React = require('react');
 
 var OniActions = require('../actions/OniActions');

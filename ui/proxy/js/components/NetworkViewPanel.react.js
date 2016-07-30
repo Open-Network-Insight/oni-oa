@@ -1,7 +1,6 @@
 var $ = require('jquery');
-var d3 = require('d3');
-require('d3-tip')(d3);
 var assign = require('object-assign');
+var d3 = require('d3');
 var React = require('react');
 
 var EdInActions = require('../../../js/actions/EdInActions');

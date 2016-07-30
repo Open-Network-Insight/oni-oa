@@ -1,5 +1,4 @@
 var $ = require('jquery');
-require('bootstrap-jquery');
 var React = require('react');
 
 var OniActions = require('../actions/OniActions');
@@ -7,7 +6,7 @@ var EdInActions = require('../actions/EdInActions');
 var OniConstants = require('../constants/OniConstants');
 var OniUtils = require('../utils/OniUtils');
 
-var SuspiciousMixin = {
+var SuspiciousGridMixin = {
     emptySetMessage: 'There is no data available for selected date',
     getInitialState: function () {
         return this.store.getData();
@@ -78,4 +77,4 @@ var SuspiciousMixin = {
     }
 };
 
-module.exports = SuspiciousMixin;
+module.exports = SuspiciousGridMixin;

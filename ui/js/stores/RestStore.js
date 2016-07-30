@@ -5,10 +5,16 @@ var EventEmitter = require('events').EventEmitter;
 
 var CHANGE_DATA_EVENT = 'change_data';
 
-var RestStore = function (endpoint) {
+var RestStore = function (endpoint, data) {
     this.setEndpoint(endpoint);
     this._filters = {};
-    this._data = {loading: false, headers: [], data: [], error: undefined};
+    this._data = assign({
+            loading: false,
+            headers: [],
+            data: []
+        }, data
+    );
+
     this._parser = d3.csv;
 };
 
