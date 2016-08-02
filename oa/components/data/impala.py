@@ -2,14 +2,15 @@ from subprocess import check_output
 
 class Engine(object):
 
-    def __init__(self,db,conf):
+    def __init__(self,db,conf, pipeline):
    
         self._daemon_node = conf['impala_daemon']
         self._db = db
-        impala_cmd = "impala-shell -i {0} --quiet -q 'INVALIDATE METADATA {1}.dns'".format(self._daemon_node,self._db)
+        self._pipeline = pipeline
+        impala_cmd = "impala-shell -i {0} --quiet -q 'INVALIDATE METADATA {1}.{2}'".format(self._daemon_node,self._db, self._pipeline)
         check_output(impala_cmd,shell=True)
     
-        impala_cmd = "impala-shell -i {0} --quiet -q 'REFRESH {1}.dns'".format(self._daemon_node,self._db)
+        impala_cmd = "impala-shell -i {0} --quiet -q 'REFRESH {1}.{2}'".format(self._daemon_node,self._db, self._pipeline)
         check_output(impala_cmd,shell=True)
 
     def query(self,query,output_file=None,delimiter=","):

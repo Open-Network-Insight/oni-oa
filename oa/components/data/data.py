@@ -6,13 +6,13 @@ import inspect
 
 class Data(object):
 
-    def __init__(self,db,logger=None):
+    def __init__(self,db, pipeline,logger=None):
 
         # get logger if exists. if not, create new instance.
         self._logger = logging.getLogger('OA.DATA')  if logger else Util.get_logger('OA.DATA',create_file=False)       
-        self._initialize_engine(db)
+        self._initialize_engine(db, pipeline)
 
-    def _initialize_engine(self,db):
+    def _initialize_engine(self,db, pipeline):
 
         # read engine configuration.
         data_conf_file = "{0}/engine.json".format(os.path.dirname(os.path.abspath(__file__)))
@@ -26,7 +26,7 @@ class Data(object):
         module = __import__("components.data.{0}".format(self._engine_name),fromlist=['Engine'])
 
         # start data engine with configuration.
-        self._engine = module.Engine(db,self._engine_conf[self._engine_name])
+        self._engine = module.Engine(db,self._engine_conf[self._engine_name], pipeline)
 
     def query(self,query,output_file=None,delimiter=","):
 

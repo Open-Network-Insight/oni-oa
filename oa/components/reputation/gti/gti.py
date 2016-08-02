@@ -1,13 +1,14 @@
 import json
 import logging
-import os
+import os, csv
 from utils import Util
-from subprocess import check_output, CalledProcessError
+from subprocess import check_output, CalledProcessError 
 
 class Reputation(object):
 
-    BATCH_SIZE = 5
+    BATCH_SIZE = 1
     REP_KEY = 'rep'
+    CAT_KEY = 'cat'
     AFLAG_KEY = 'aflag'
     DEFAULT_REP = 16
     QUERY_PLACEHOLDER = "###QUERY###"
@@ -21,9 +22,13 @@ class Reputation(object):
         self._gti_password = conf['password']
         self._gti_user = conf['user']
         self._gti_server = conf['server']        
+        self._category_file = conf["category_file"]
+        self._category_dict = {}
+        self._load_category_dicts()
+        
 
-    def check(self, ips=None, urls=None):
 
+    def check(self, ips=None, urls=None, cat=False):
         self._logger.info("GTI reputation check starts...")
         reputation_dict = {}
         command = "{0} -s {1} -q \'{2}\' -i {3} -p \'{4}\' -t".format(self._gti_rest_client_path,self._gti_server,self._gti_ci, self._gti_user, self._gti_password)
@@ -31,7 +36,7 @@ class Reputation(object):
         if not os.path.isfile(self._gti_rest_client_path):
             self._logger.error("There is not GTI client configured. Please check configuration file.")
             return reputation_dict
-
+        
         if ips is not None:
             values = ips
             op = "ip"
@@ -53,6 +58,8 @@ class Reputation(object):
                 cmd_temp = command
                 query = ",".join(queries)
                 command = command.replace(self.QUERY_PLACEHOLDER, query)
+
+                # print "com" + command
                 responses += self._call_gti(command, self.BATCH_SIZE)
                 command = cmd_temp
                 i = 0
@@ -62,20 +69,27 @@ class Reputation(object):
             query = ",".join(queries)
             command = command.replace(self.QUERY_PLACEHOLDER, query)
             responses += self._call_gti(command, len(queries))
-
+        
         ip_counter = 0
-        for query_resp in responses:
-            if self.AFLAG_KEY in query_resp or self.REP_KEY not in query_resp:
+        for query_resp in responses: 
+            if self.AFLAG_KEY in query_resp or self.REP_KEY not in query_resp :
                 reputation_dict[values[ip_counter]] = self._get_reputation_label(self.DEFAULT_REP)
             else:
+                if cat and self._category_dict:   
+                    if self.CAT_KEY in query_resp:  
+                        category_name_group = self._get_category_name_group(query_resp[self.CAT_KEY])
+                else:   
+                    category_name_group = ""
                 reputation = query_resp[self.REP_KEY]
                 reputation = int(reputation)
-                reputation_dict[values[ip_counter]] = self._get_reputation_label(reputation)
-            ip_counter += 1
+                reputation_dict[values[ip_counter]] = self._get_reputation_label(reputation) + category_name_group
+
+            ip_counter += 1 
 
         return reputation_dict
 
-    def _get_reputation_label(self,reputation):
+
+    def _get_reputation_label(self,reputation): 
         if reputation < 15:
             return "gti:Minimal:1"
         elif 15 <= reputation < 30:
@@ -83,10 +97,28 @@ class Reputation(object):
         elif 30 <= reputation < 50:
             return "gti:Medium:2"
         elif reputation >= 50:
-            return "gti:High:3"
+            return "gti:High:3" 
+
+
+    def _load_category_dicts(self): 
+        if os.path.isfile(self._category_file): 
+            with open(self._category_file) as f:
+                csv_reader = csv.reader(f)
+                self._category_dict = dict((row[0], row[1] + '|' + row[2]) for row in csv_reader)
+
+
+    def _get_category_name_group(self, category):
+        category_name_group = ":" 
+        cat_counter = len(category)
+        for cat_code in category:
+            cat_counter -=1
+            category_name_group += self._category_dict.get(str(cat_code),"")
+            category_name_group += ";" if cat_counter > 0 else ""
+
+        return category_name_group 
+ 
 
     def _call_gti(self, command, num_values):
-
         try:
             response_json = check_output(command, shell=True)
             result_dict = json.loads(response_json[0:len(response_json) - 1])

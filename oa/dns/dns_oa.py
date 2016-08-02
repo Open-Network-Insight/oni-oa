@@ -30,6 +30,7 @@ class OA(object):
         # initialize required parameters.
         self._scrtip_path = os.path.dirname(os.path.abspath(__file__))
         self._date = date
+        self._table_name = "dns"
         self._dns_results = []
         self._limit = limit
         self._data_path = None
@@ -47,7 +48,7 @@ class OA(object):
 
         # initialize data engine
         self._db = self._oni_conf.get('conf','DBNAME').replace("'","").replace('"','') 
-        self._engine = Data(self._db,self._logger)
+        self._engine = Data(self._db,self._table_name ,self._logger)
 
 
     def start(self):
@@ -257,23 +258,21 @@ class OA(object):
 
         if not os.path.isfile(edge_file):
     
-            dns_qry = ("SELECT frame_time,frame_len,ip_dst,ip_src,dns_qry_name,dns_qry_class,dns_qry_type,dns_qry_rcode,dns_a FROM {0}.dns WHERE y={1} AND m={2} AND d={3} AND dns_qry_name LIKE '%{4}%' AND h={6} LIMIT {5};").format(self._db,year,month,day,dns_qry_name,limit,hh)
+            dns_qry = ("SELECT frame_time,frame_len,ip_dst,ip_src,dns_qry_name,dns_qry_class,dns_qry_type,dns_qry_rcode,dns_a FROM {0}.{1} WHERE y={2} AND m={3} AND d={4} AND dns_qry_name LIKE '%{5}%' AND h={6} LIMIT {7};").format(self._db,self._table_name,year,month,day,dns_qry_name,hh,limit)
             
             # execute query
             self._engine.query(dns_qry,edge_tmp)
-
-	    print dns_qry
-
+ 
             # add IANA to results.
             if dns_iana:
                 self._logger.info("Adding IANA translation to details results")
                 with open(edge_tmp) as dns_details_csv:
                     rows = csv.reader(dns_details_csv, delimiter=',', quotechar='|')
-		    next(dns_details_csv)
-		    update_rows = [[conn[0]] + [conn[1]] + [conn[2]] + [conn[3]] + [conn[4]] + [dns_iana.get_name(conn[5],"dns_qry_class")] + [dns_iana.get_name(conn[6],"dns_qry_type")] + [dns_iana.get_name(conn[7],"dns_qry_rcode")] + [conn[8]] for conn in rows]
-		    update_rows = filter(None, update_rows)
-		    header = [ "frame_time", "frame_len", "ip_dst","ip_src","dns_qry_name","dns_qry_class_name","dns_qry_type_name","dns_qry_rcode_name","dns_a" ]
-		    update_rows.insert(0,header)
+        		    next(dns_details_csv)
+        		    update_rows = [[conn[0]] + [conn[1]] + [conn[2]] + [conn[3]] + [conn[4]] + [dns_iana.get_name(conn[5],"dns_qry_class")] + [dns_iana.get_name(conn[6],"dns_qry_type")] + [dns_iana.get_name(conn[7],"dns_qry_rcode")] + [conn[8]] for conn in rows]
+        		    update_rows = filter(None, update_rows)
+        		    header = [ "frame_time", "frame_len", "ip_dst","ip_src","dns_qry_name","dns_qry_class_name","dns_qry_type_name","dns_qry_rcode_name","dns_a" ]
+        		    update_rows.insert(0,header)
             else:
                 self._logger.info("WARNING: NO IANA configured.")
 
@@ -304,13 +303,14 @@ class OA(object):
                 month=datetime.datetime.strptime(date[0], '%b').strftime('%m')
                 day=date[1]
                 ip_dst=conn[self._conf["dns_score_fields"]["ip_dst"]]
-                self._get_dendro(self._db,ip_dst,year,month,day)
+                self._get_dendro(self._db,self._table_name,ip_dst,year,month,day)
 
-    def _get_dendro(self,db,ip_dst,year,month,day):
+
+    def _get_dendro(self,db,table,ip_dst,year,month,day):
 
         dendro_file = "{0}/dendro-{1}.csv".format(self._data_path,ip_dst)
         if not os.path.isfile(dendro_file):
-            dndro_qry = ("SELECT dns_a, dns_qry_name, ip_dst FROM (SELECT susp.ip_dst, susp.dns_qry_name, susp.dns_a FROM {0}.dns as susp WHERE susp.y={1} AND susp.m={2} AND susp.d={3}  AND susp.ip_dst='{4}' ) AS tmp GROUP BY dns_a, dns_qry_name, ip_dst").format(db,year,month,day,ip_dst)
+            dndro_qry = ("SELECT dns_a, dns_qry_name, ip_dst FROM (SELECT susp.ip_dst, susp.dns_qry_name, susp.dns_a FROM {0}.{1} as susp WHERE susp.y={2} AND susp.m={3} AND susp.d={4} AND susp.ip_dst='{5}' ) AS tmp GROUP BY dns_a, dns_qry_name, ip_dst").format(db,table,year,month,day,ip_dst)
 
             # execute query
             self._engine.query(dndro_qry,dendro_file)

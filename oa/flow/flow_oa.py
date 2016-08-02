@@ -32,6 +32,7 @@ class OA(object):
         # initialize required parameters.
         self._scrtip_path = os.path.dirname(os.path.abspath(__file__))
         self._date = date
+        self._table_name = "flow"
         self._flow_results = []
         self._limit = limit
         self._data_path = None
@@ -330,10 +331,10 @@ class OA(object):
             mm = date_array_2[1]
         
             # connection details query.
-            sp_query = ("SELECT treceived as tstart,sip as srcip,dip as dstip,sport as sport,dport as dport,proto as proto,flag as flags,stos as TOS,ibyt as bytes,ipkt as pkts,input as input, output as output,rip as rip from {0}.flow where ((sip='{1}' AND dip='{2}') or (sip='{2}' AND dip='{1}')) AND y={7} AND m={3} AND d={4} AND h={5} AND trminute={6} order by tstart limit 100")
+            sp_query = ("SELECT treceived as tstart,sip as srcip,dip as dstip,sport as sport,dport as dport,proto as proto,flag as flags,stos as TOS,ibyt as bytes,ipkt as pkts,input as input, output as output,rip as rip from {0}.{1} where ((sip='{2}' AND dip='{3}') or (sip='{3}' AND dip='{2}')) AND y={8} AND m={4} AND d={5} AND h={6} AND trminute={7} order by tstart limit 100")
                  
             # sp query.
-            sp_query = sp_query.format(self._db,sip,dip,mh,dy,hr,mm,yr)
+            sp_query = sp_query.format(self._db,self._table_name,sip,dip,mh,dy,hr,mm,yr)
 
             # output file.
             edge_file = "{0}/edge-{1}-{2}-{3}-{4}.tsv".format(self._data_path,sip.replace(".","_"),dip.replace(".","_"),hr,mm)
@@ -376,8 +377,8 @@ class OA(object):
                 if len(ips) > 1:
                     ips_filter = (",".join(str("'{0}'".format(ip)) for ip in ips))
                     chord_file = "{0}/chord-{1}.tsv".format(self._data_path,ip.replace(".","_"))                     
-                    ch_query = ("SELECT sip as srcip, dip as dstip, MAX(ibyt) as maxbyte, AVG(ibyt) as avgbyte, MAX(ipkt) as maxpkt, AVG(ipkt) as avgpkt from {0}.flow where y={1} and m={2} and d={3} and ( (sip='{4}' and dip IN({5})) or (sip IN({5}) and dip='{4}') ) group by sip,dip")
-                    self._engine.query(ch_query.format(self._db,yr,mn,dy,ip,ips_filter),chord_file,delimiter="\\t")
+                    ch_query = ("SELECT sip as srcip, dip as dstip, MAX(ibyt) as maxbyte, AVG(ibyt) as avgbyte, MAX(ipkt) as maxpkt, AVG(ipkt) as avgpkt from {0}.{1} where y={2} and m={3} and d={4} and ( (sip='{5}' and dip IN({6})) or (sip IN({6}) and dip='{5}') ) group by sip,dip")
+                    self._engine.query(ch_query.format(self._db,self._table_name,yr,mn,dy,ip,ips_filter),chord_file,delimiter="\\t")
 
      
  

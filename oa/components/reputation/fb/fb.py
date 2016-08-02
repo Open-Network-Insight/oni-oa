@@ -12,7 +12,7 @@ class Reputation(object):
         self._fb_app_secret = conf['app_secret']
         self._logger = logging.getLogger('OA.FB')  if logger else Util.get_logger('OA.FB',create_file=False) 
 
-    def check(self, ips=None, urls=None):
+    def check(self, ips=None, urls=None, cat=False):
         self._logger.info("Threat-Exchange reputation check starts...")
         reputation_dict = {}
         data = []
@@ -64,11 +64,13 @@ class Reputation(object):
             'access_token': token,
             'batch': data
         }
+        
         request_body = urllib.urlencode(request_body)
 
         url = "https://graph.facebook.com/"
         content_type = {'Content-Type': 'application/json'}
         request = urllib2.Request(url, request_body, content_type)
+
         try:
             str_response = urllib2.urlopen(request).read()
             response = json.loads(str_response)
@@ -84,10 +86,13 @@ class Reputation(object):
             if row['code'] != 200:
                 reputation_dict[name] = self._get_reputation_label('UNKNOWN')
                 return reputation_dict
+            if 'body' in row: 
+                try:
+                    row_response = json.loads(row['body']) 
+                except ValueError as e:
+                    self._logger.error("Error reading JSON body response in fb module: " + e.message)
 
-            if 'body' in row:
-                row_response = json.loads(row['body'])
-                if 'data' in row_response:
+                if 'data' in row_response and row_response['data'] != []: 
                     row_response_data = row_response['data']
                     name = row_response_data[0]['indicator']['indicator']
                     reputation_dict[name] = self._get_reputation_label(row_response_data[0]['status'])
