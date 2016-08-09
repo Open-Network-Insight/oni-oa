@@ -1,83 +1,24 @@
 var React = require('react');
 
-var OniActions = require('../../../js/actions/OniActions');
-var EdInActions = require('../../../js/actions/EdInActions');
-var OniConstants = require('../../../js/constants/OniConstants');
-
 var GridPanelMixin = require('../../../js/components/GridPanelMixin.react');
+var SuspiciousGridMixin = require('../../../js/components/SuspiciousGridMixin.react.js');
+var OniUtils = require('../../../js/utils/OniUtils.js');
 var SuspiciousStore = require('../stores/SuspiciousStore');
 
-var labelCssClasses, riskCssClasses;
-
-labelCssClasses = {'3':'danger', '2':'warning', '1':'default', '0':'default'};
-riskCssClasses = {'3':'high', '2':'medium', '1':'low', '0':'low', '-1':'low'};
-
 var SuspiciousPanel = React.createClass({
-  mixins: [GridPanelMixin],
-  emptySetMessage: 'There is no data available for selected date',
-  getInitialState: function ()
-  {
-    return SuspiciousStore.getData();
-  },
-  componentDidMount: function ()
-  {
-    SuspiciousStore.addChangeDataListener(this._onChange);
-
-    $(this.getDOMNode()).popover({
-      trigger: 'hover',
-      html: true,
-      selector: '[data-toggle="popover"]'
-    });
-  },
-  componentWillUnmount: function ()
-  {
-    SuspiciousStore.removeChangeDataListener(this._onChange);
-  },
-  _renderRepCell: function (keyPrefix, rawReps)
-  {
-    var reps, highestRep, key, toolTipContent;
-
-    if (!rawReps) return '';
-
-    rawReps = rawReps.split('::');
-
-    if (!rawReps || rawReps.length===0) return '';
-
-    reps = {};
-    highestRep = -1;
-
-    rawReps.forEach(function (serviceInfo) {
-      var info;
-
-      info = serviceInfo.split(':'); // SERVICE:SERVICE_REPUTATION:ONI_REPUTATION
-
-      reps[info[0]] = {
-        'text': info[1],
-        'cssClass': labelCssClasses[info[2]] || labelCssClasses[0]
-      };
-
-      highestRep = Math.max(highestRep, info[2]);
-    });
-
-    toolTipContent = '';
-    Object.keys(reps).forEach(function (key) {
-      toolTipContent += '<p>' + key + ': <span class="label label-' + reps[key].cssClass + '">' + reps[key].text + '</span></p>';
-    });
-
-    return (
-      <i key={keyPrefix + '_rep'} className={'fa fa-shield ' + riskCssClasses[highestRep] + '-risk'}
-          data-container="body" data-toggle="popover" data-placement="right" data-content={toolTipContent}>
-      </i>
-    );
-  },
+  mixins: [GridPanelMixin, SuspiciousGridMixin],
+  store: SuspiciousStore,
   _render_dns_qry_name_cell: function (query, item, idx)
   {
-    var queryRep;
+    var reps, highestRep, queryRep;
 
-    queryRep = this._renderRepCell('dns_qry_name_' + idx,  item.query_rep);
+    reps = OniUtils.parseReputation(item.query_rep);
+    highestRep = OniUtils.getHighestReputation(reps);
+
+    queryRep = this._renderRepCell('dns_qry_name_' + idx,  reps);
 
     return (
-      <p key={'dns_qry_name_' + idx}>
+      <p key={'dns_qry_name_' + idx} className={'text-' + OniUtils.CSS_RISK_CLASSES[highestRep]}>
         {query} {queryRep}
       </p>
     );
@@ -143,33 +84,7 @@ var SuspiciousPanel = React.createClass({
   _render_subdomain_length_cell: false,
   _render_top_domain_cell: false,
   _render_unix_tstamp_cell: false,
-  _render_word_cell: false,
-  // Event Hanlders
-  _onChange: function ()
-  {
-    var state;
-
-    state = SuspiciousStore.getData();
-
-    this.setState(state);
-  },
-  _onClickRow: function (item)
-  {
-    this.selectItems(item);
-
-    // Select elements on Network and Details view
-    EdInActions.selectThreat(item);
-    EdInActions.reloadDetails();
-    OniActions.toggleMode(OniConstants.DETAILS_PANEL, OniConstants.DETAILS_MODE);
-  },
-  _onMouseEnterRow: function (item)
-  {
-    EdInActions.highlightThreat(item);
-  },
-  _onMouseLeaveRow: function (item)
-  {
-    EdInActions.unhighlightThreat(item);
-  }
+  _render_word_cell: false
 });
 
 module.exports = SuspiciousPanel;

@@ -6,7 +6,7 @@ var CHANGE_DATA_EVENT = 'change_data';
 var JsonStore = function (endpoint) {
     this.setEndpoint(endpoint);
     this._filters = {};
-    this._data = {loading: false, data: [], error: undefined};
+    this._data = {loading: false};
 };
 
 assign(JsonStore.prototype, EventEmitter.prototype, {
@@ -29,7 +29,7 @@ assign(JsonStore.prototype, EventEmitter.prototype, {
     },
     resetData: function ()
     {
-        this._data = {loading: false, data: [], error: undefined};
+        this._data = {loading: false};
 
         this.emitChangeData();
     },
@@ -55,7 +55,7 @@ assign(JsonStore.prototype, EventEmitter.prototype, {
     reload: function ()
     {
         var url, name;
-        this.setData({loading: true, data: [], error: undefined});
+        this.setData({loading: true});
 
         url = this.endpoint;
 
@@ -73,13 +73,12 @@ assign(JsonStore.prototype, EventEmitter.prototype, {
 
                 this.setData({
                   loading: false,
-                  data: response,
-                  error: undefined
+                  data: response
                 });
             },
             error: function (response)
             {
-                this.setData({loading: true, data: [], error: this.errorMessages[response.status] || this.defaultErrorMessage});
+                this.setData({error: this.errorMessages[response.status] || this.defaultErrorMessage});
             }          
         });
     }

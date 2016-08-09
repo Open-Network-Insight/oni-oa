@@ -52,7 +52,6 @@ var GridPanelMixin = {
         );
       }
 
-
       gridBody = [];
       this.state.data.forEach((function (item, index) {
         var key, cells, className, cellRenderer, cellContent;
@@ -79,7 +78,7 @@ var GridPanelMixin = {
           );
         }
 
-        className = selectedRows.indexOf(item) >= 0 ? 'warning' : null;
+        className = selectedRows.indexOf(item) >= 0 ? 'bg-warning' : null;
 
         eventHandlers = {};
 

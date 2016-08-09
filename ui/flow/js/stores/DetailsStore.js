@@ -17,7 +17,18 @@ var DetailsStore = assign(new RestStore(NetflowConstants.API_DETAILS), {
     404: 'No details available'
   },
   headers: {
-    // TODO: Add Headers
+    tstart: 'Time',
+    srcip: 'Source IP',
+    dstip: 'Destination IP',
+    sport: 'Source Port',
+    dport: 'Destination Port',
+    proto: 'Protocol',
+    flags: 'Flags',
+    tos: 'Type Of Service',
+    bytes: 'Bytes',
+    pkts: 'Packages',
+    input: 'Input',
+    output: 'Output'
   },
   setDate: function (date)
   {

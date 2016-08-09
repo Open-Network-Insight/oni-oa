@@ -21,17 +21,8 @@ var FilterInput = React.createClass({
   },
   render: function ()
   {
-    var cssClasses;
-
-    cssClasses = 'form-control';
-
-    if (this.state.filter && !OniUtils.IP_V4_REGEX.test(this.state.filter))
-    {
-      cssClasses += ' has-error';
-    }
-
     return (
-      <input id={this.props.id} type="text" className={cssClasses} placeholder="0.0.0.0" autoFocus={true} onChange={this._onChange} value={this.state.filter} onKeyUp={this._onKeyUp} />
+      <input id={this.props.id} type="text" className="form-control" placeholder="0.0.0.0" autoFocus={true} onChange={this._onChange} value={this.state.filter} onKeyUp={this._onKeyUp} />
     );
   },
   _onKeyUp: function (e)

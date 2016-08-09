@@ -1,4 +1,5 @@
 var assign = require('object-assign');
+var d3 = require('d3');
 
 var OniDispatcher = require('../../../js/dispatchers/OniDispatcher');
 var OniConstants = require('../../../js/constants/OniConstants');
@@ -10,10 +11,8 @@ var CommentsStore = assign(new RestStore(DnsConstants.API_COMMENTS), {
   errorMessages: {
     404: 'Please choose a different date, no comments have been found'
   },
-  setDate: function (newDate)
+  setDate: function (date)
   {
-    date = newDate;
-
     this.setEndpoint(DnsConstants.API_COMMENTS.replace('${date}', date.replace(/-/g, '')));
   }
 });

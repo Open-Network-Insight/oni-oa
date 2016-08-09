@@ -38,6 +38,7 @@
     html, body {
         height: 100%;
         min-height: 900px;
+        overflow-x: hidden;
     }
 
     #oni-nav {
@@ -103,6 +104,10 @@
  * Desktop CSS
 **/
 @media(min-width: 992px) {
+    body {
+        overflow-x: hidden;
+    }
+
     #oni-content > .row {
         height: 50%;
     }
@@ -265,4 +270,3 @@
 .sb_timeline .graph-body .line circle {
     opacity: 0.4;
 }
-

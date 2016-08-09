@@ -3,7 +3,7 @@ var React = require('react');
 var OniConstants = require('../../js/constants/OniConstants');
 var OniActions = require('../../js/actions/OniActions');
 var EdInActions = require('../../js/actions/EdInActions');
-var StoryBoardActions = require('../../js/actions/StoryBoardActions');
+var StoryboardActions = require('../../js/actions/StoryboardActions');
 var OniUtils = require('../../js/utils/OniUtils');
  
 // Build and Render Toolbar
@@ -13,7 +13,7 @@ var DateInput = require('../../js/components/DateInput.react');
 function resetFilterAndReload()
 {
   EdInActions.setFilter('');
-  StoryBoardActions.reloadComments();
+  StoryboardActions.reloadComments();
 };
 
 React.render(
@@ -24,7 +24,7 @@ React.render(
         <div className="input-group input-group-xs">
           <FilterInput id="ip_filter" />
           <div className="input-group-btn">
-            <button className="btn btn-primary" type="button" id="btn_searchIp" title="Enter an IP Address and click the search button to filter the results." onClick={StoryBoardActions.reloadComments}>
+            <button className="btn btn-primary" type="button" id="btn_searchIp" title="Enter an IP Address and click the search button to filter the results." onClick={StoryboardActions.reloadComments}>
               <span className="glyphicon glyphicon-search" aria-hidden="true"></span>
             </button>
           </div>
@@ -87,11 +87,11 @@ var initial_filter = OniUtils.getCurrentFilter();
 
 // Set search criteria
 OniActions.setDate(OniUtils.getCurrentDate());
-initial_filter && StoryBoardActions.setFilter(initial_filter);
+initial_filter && StoryboardActions.setFilter(initial_filter);
 
 // Load data
-StoryBoardActions.reloadComments();
+StoryboardActions.reloadComments();
 
 // Create a hook to allow notebook iframe to reloadComments
-window.iframeReloadHook = StoryBoardActions.reloadComments;
+window.iframeReloadHook = StoryboardActions.reloadComments;
   
