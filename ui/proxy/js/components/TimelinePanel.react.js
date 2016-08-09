@@ -27,13 +27,15 @@ var TimelinePanel = React.createClass({
         root = {
             name: TimelineStore.getFilterValue(),
             date: '',
+            legend:false, 
             children: []
         };
 
         if (!state.loading && !state.error)
         {
             filterName = TimelineStore.getFilterName();
-            root.date = TimelineStore._sdate;
+            root.date = TimelineStore._sdate; 
+            root.legend = TimelineStore._slegend;  
 
             state.data.forEach(function (item)
             {
@@ -46,10 +48,9 @@ var TimelinePanel = React.createClass({
 
             }.bind(this));
         }
-        rawdata = state.data; 
-        
-        state.root = root;
-        delete state.data;
+
+        state.root = root; 
+        delete state.data; 
 
         this.setState(state);
     }

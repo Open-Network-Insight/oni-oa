@@ -2,9 +2,8 @@ var $ = require('jquery');
 var d3 = require('d3');
 var React = require('react');
 
-
 function buildGraph(root, ipsrc) {
-
+    var legend = root.legend == undefined? true : root.legend;
     var chartPlaceholder = $(this.getDOMNode()).find("#graph");
     chartPlaceholder.html("");
     $(this.getDOMNode()).find("#legend").html("");
@@ -48,7 +47,7 @@ function buildGraph(root, ipsrc) {
         dtpart = sdate.split(" ")
         dpart = dtpart[0].split("-")
         tpart = dtpart[1].split(":")
-        //The 7 numbers specify the year, month, day, hour, minute, second, and millisecond, in that order:
+        //The 7 numbers specify the year, month, day, hour, minute, second, in that order:
         //2014-07-08 02:38:59
         pdate = new Date(parseInt(dpart[0]), parseInt(dpart[1]) - 1, parseInt(dpart[2]), parseInt(tpart[0]) - 1, parseInt(tpart[1]) - 1, parseInt(tpart[2]) - 1);
 
@@ -96,7 +95,8 @@ function buildGraph(root, ipsrc) {
             var series = el.parentNode.firstChild.innerHTML.replace(/\(\d+\)/g, "");
             var port = el.parentNode.__data__.ports[0];
             var timestamp = d3.select(el).data()[0];
-            $(this.getDOMNode()).find("#legend").html('Hovering [' + timestamp + '] <br /> in series "' + series + '" at port ' + port);
+            if (legend)
+                $(this.getDOMNode()).find("#legend").html('Hovering [' + timestamp + '] <br /> in series "' + series + '" at port ' + port);
         }.bind(this)
 
         );
@@ -139,7 +139,7 @@ var TimelineMixin = {
     componentDidUpdate: function ()
     {
         if (!this.state.loading && !this.state.error)
-        {
+        { 
             buildGraph.call(this, this.state.root);
         }
     }
