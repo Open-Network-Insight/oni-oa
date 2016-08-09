@@ -32,7 +32,7 @@ var PanelRow = React.createClass({
     var cssCls = this.state.maximized ? 'oni-maximized' : this.state.minimized ? 'oni-minimized' : '';
 
     return (
-      <div className={'row ' + cssCls}>
+      <div className={'oni-row row ' + cssCls}>
         {this.props.children}
       </div>
     );

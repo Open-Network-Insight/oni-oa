@@ -1,9 +1,9 @@
 var React = require('react');
 
+var DateInput = require('../../js/components/DateInput.react');
 var OniActions = require('../../js/actions/OniActions');
 var OniConstants = require('../../js/constants/OniConstants');
 var OniUtils = require('../../js/utils/OniUtils');
-var DateInput = require('../../js/components/DateInput.react');
 var StoryboardActions = require('../../js/actions/StoryboardActions');
 
 React.render(
@@ -31,13 +31,22 @@ var IncidentProgressionPanel = require('./components/IncidentProgressionPanel.re
 
 React.render(
   <div id="oni-content">
-    <PanelRow>
-      <Panel title={OniConstants.COMMENTS_PANEL} expandable>
-        <ExecutiveThreatBriefingPanel />
-      </Panel>
-      <Panel title={OniConstants.INCIDENT_PANEL} expandable>
-        <IncidentProgressionPanel />
-      </Panel>
+    <PanelRow maximized>
+        <div className="oni-sidebar col-md-4">
+            <PanelRow>
+                <Panel className="col-md-12" title={OniConstants.COMMENTS_PANEL}>
+                    <ExecutiveThreatBriefingPanel />
+                </Panel>
+            </PanelRow>
+            <PanelRow>
+                <Panel className="col-md-12" title={OniConstants.TIMELINE_PANEL}>
+                    Comming Soon...
+                </Panel>
+            </PanelRow>
+        </div>
+        <Panel className="col-md-8" title={OniConstants.INCIDENT_PANEL} container>
+            <IncidentProgressionPanel className="oni-incident-progression"/>
+        </Panel>
     </PanelRow>
   </div>,
   document.getElementById('oni-content-wrapper')

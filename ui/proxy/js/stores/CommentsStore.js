@@ -3,17 +3,17 @@ var d3 = require('d3');
 
 var OniDispatcher = require('../../../js/dispatchers/OniDispatcher');
 var OniConstants = require('../../../js/constants/OniConstants');
-var DnsConstants = require('../constants/DnsConstants');
+var ProxyConstants = require('../constants/ProxyConstants');
 var RestStore = require('../../../js/stores/RestStore');
 
-var CommentsStore = assign(new RestStore(DnsConstants.API_COMMENTS), {
+var CommentsStore = assign(new RestStore(ProxyConstants.API_COMMENTS), {
   _parser: d3.dsv('|', 'text/plain'),
   errorMessages: {
     404: 'Please choose a different date, no comments have been found'
   },
   setDate: function (date)
   {
-    this.setEndpoint(DnsConstants.API_COMMENTS.replace('${date}', date.replace(/-/g, '')));
+    this.setEndpoint(ProxyConstants.API_COMMENTS.replace('${date}', date.replace(/-/g, '')));
   }
 });
 

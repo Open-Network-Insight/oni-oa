@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>DNS :: Storyboard</title>
+    <title>Proxy :: Storyboard</title>
 
     <meta charset="UTF-8">
 
@@ -19,10 +19,71 @@
     <link rel="stylesheet" type="text/css" href="../css/dendrogram.css" />
 
     <style>
-        #oni-content > .row {
+        #oni-content > .row > .oni-sidebar {
             height: 100%;
         }
-   </style>
+
+        #oni-content > .row > .oni-sidebar > .row {
+            height: 50%;
+        }
+
+        /* Incident Progression */
+        .oni-incident-progression .node text {
+            top: -10px;
+            text-anchor: middle;
+            /*display: none;*/
+            stroke: rgb(0, 0, 0);
+            font: 10pt verdana, sans-serif;
+            letter-spacing: 2pt;
+            font-weight: normal;
+
+            -webkit-touch-callout: none; /* iOS Safari */
+            -webkit-user-select: none;   /* Chrome/Safari/Opera */
+            -khtml-user-select: none;    /* Konqueror */
+            -moz-user-select: none;      /* Firefox */
+            -ms-user-select: none;       /* Internet Explorer/Edge */
+            user-select: none;
+        }
+
+        .oni-incident-progression .node.referer text {
+            text-anchor: end;
+        }
+
+        .oni-incident-progression .node circle {
+            fill-opacity: 0.3;
+            stroke-opacity: 1;
+        }
+
+        .oni-incident-progression .node circle.background {
+            fill: white;
+            stroke: white;
+            fill-opacity: 1;
+            stroke-opacity: 1;
+        }
+
+        .oni-incident-progression .node circle.fulluri {
+            fill: rgba(238, 238, 238, 0.3);
+            stroke: rgb(238, 238, 238);
+        }
+
+        .oni-incident-progression .blur {
+            opacity: 0.2 !important;
+        }
+
+        .oni-incident-progression .active {
+            opacity: 1 !important;
+        }
+
+        .oni-incident-progression .active text {
+            /*display: initial;*/
+        }
+
+        .oni-incident-progression .link {
+            fill: none;
+            stroke: #ccc;
+            stroke-width: 1.5px;
+        }
+    </style>
 </head>
 <body>
     <nav id="oni-nav" class="navbar navbar-inverse">
@@ -35,7 +96,7 @@
                     <span class="icon-bar"></span>
                     <span class="icon-bar"></span>
                 </button>
-                <span class="navbar-brand">Open Network Insight :: DNS :: Storyboard</span>
+                <span class="navbar-brand">Open Network Insight :: Proxy :: Storyboard</span>
             </div>
             <!-- Collect the nav links, forms, and other content for toggling -->
             <div class="collapse navbar-collapse" id="main-menu">
@@ -47,7 +108,7 @@
                         </a>
                         <ul class="dropdown-menu" aria-labelledby="flowsMenu">
                             <li>
-                                <a data-href="../flow/suspicious.html#date=${date}">Suspicious</a>
+                                <a data-href="../flow/suspicious.html#date=${date}">Suspicious Connects</a>
                             </li>
                             <li>
                                 <a data-href="../flow/threat-investigation.html#date=${date}">Threat Investigation</a>
@@ -64,6 +125,23 @@
                             DNS
                             <span class="caret"></span>
                         </a>
+                        <ul class="dropdown-menu" aria-labelledby="proxyMenu">
+                            <li>
+                                <a data-href="../dns/suspicious.html#date=${date}">Suspicious</a>
+                            </li>
+                            <li>
+                                <a data-href="../dns/threat-investigation.html#date=${date}">Threat Investigation</a>
+                            </li>
+                            <li>
+                                <a data-href="../dns/storyboard.html#date=${date}">Storyboard</a>
+                            </li>
+                        </ul>
+                    </li>
+                    <li class="dropdown">
+                        <a class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">
+                            Proxy
+                            <span class="caret"></span>
+                        </a>
                         <ul class="dropdown-menu" aria-labelledby="dnsMenu">
                             <li>
                                 <a data-href="suspicious.html#date=${date}">Suspicious</a>
@@ -73,23 +151,6 @@
                             </li>
                             <li>
                                 <a data-href="storyboard.html#date=${date}">Storyboard</a>
-                            </li>
-                        </ul>
-                    </li>
-                    <li class="dropdown">
-                        <a class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">
-                            Proxy
-                            <span class="caret"></span>
-                        </a>
-                        <ul class="dropdown-menu" aria-labelledby="proxyMenu">
-                            <li>
-                                <a data-href="../proxy/suspicious.html#date=${date}">Suspicious</a>
-                            </li>
-                            <li>
-                                <a data-href="../proxy/threat-investigation.html#date=${date}">Threat Investigation</a>
-                            </li>
-                            <li>
-                                <a data-href="../proxy/storyboard.html#date=${date}">Storyboard</a>
                             </li>
                         </ul>
                     </li>
@@ -110,6 +171,7 @@
     <!-- SCRIPTS -->
     <script type="application/javascript" src="../node_modules/jquery/dist/jquery.min.js"></script>
     <script type="application/javascript" src="../node_modules/d3/d3.min.js"></script>
+    <script type="application/javascript" src="../node_modules/d3-hierarchy/build/d3-hierarchy.min.js"></script>
     <script type="application/javascript" src="../node_modules/bootstrap/dist/js/bootstrap.min.js"></script>
     <script type="application/javascript" src="../node_modules/bootstrap-datepicker/dist/js/bootstrap-datepicker.min.js"></script>
     <script type="application/javascript" src="js/storyboard.bundle.min.js"></script>

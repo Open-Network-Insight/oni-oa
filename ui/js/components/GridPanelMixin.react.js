@@ -52,7 +52,6 @@ var GridPanelMixin = {
         );
       }
 
-
       gridBody = [];
       this.state.data.forEach((function (item, index) {
         var key, cells, className, cellRenderer, cellContent;

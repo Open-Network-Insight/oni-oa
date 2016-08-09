@@ -16,7 +16,10 @@ var SuspiciousPanel = React.createClass({
     toolTipContent+= '<p>Domain: <strong>' + domain + '</strong></p>';
 
     return (
-      <i key={keyPrefix + '_geo'}className="fa fa-globe" data-container="body" data-toggle="popover" data-placement="right" data-content={toolTipContent}></i>
+      <span
+          key={keyPrefix + '_geo'} className="fa fa-lg fa-globe"
+          data-container="body" data-toggle="popover" data-placement="right" data-content={toolTipContent}>
+      </span>
     );
   },
   _renderIpCell: function (keyPrefix, ip, isInternal, geo, domain, reps) {

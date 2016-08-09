@@ -48,7 +48,7 @@ var SuspiciousGridMixin = {
         );
 
         return (
-            <span key={keyPrefix + '_rep'} className="fa fa-shield" data-container="body" data-toggle="popover"
+            <span key={keyPrefix + '_rep'} className="fa fa-lg fa-shield" data-container="body" data-toggle="popover"
                   data-placement="right" data-content={tooltipContent}>
             </span>
         );

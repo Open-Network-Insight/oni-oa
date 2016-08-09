@@ -1,5 +1,5 @@
 var React = require('react');
-var StoryBoardActions = require('../../../js/actions/StoryBoardActions');
+var StoryBoardActions = require('../../../js/actions/StoryboardActions');
 var CommentsStore = require('../stores/CommentsStore');
 
 var ExecutiveThreatBriefingPanel = React.createClass({
@@ -38,17 +38,21 @@ var ExecutiveThreatBriefingPanel = React.createClass({
 
             this.state.data.forEach(function (comment, i)
             {
+                var title, summary;
+
+                title = comment.title || '';
                 titles.push(
                     <button key={'comment_' + i + '_title'} type="button" className="btn btn-default btn-sm" onClick={function (e) { e.preventDefault(); this._onSelect(comment, i); }.bind(this)}>
-                        {comment.title}
+                        {title}
                     </button> 
                 );
 
+                summary = comment.summary || '';
                 summaries.push(  
                     <div key={'comment_summary_' + i} className="row">
                         <div className="col-md-12">
                           <pre id={'comment_' + i + '_summary'} key={'comment_' + i + '_summary'} className="comment_summary" style={{display: "none"}}>
-                            {comment.summary.replace(/\\n/g, '\n')}
+                            {summary.replace(/\\n/g, '\n')}
                           </pre>
                         </div>
                       </div>
