@@ -28,6 +28,7 @@ var Panel = require('../../js/components/Panel.react');
 
 var ExecutiveThreatBriefingPanel = require('./components/ExecutiveThreatBriefingPanel.react');
 var IncidentProgressionPanel = require('./components/IncidentProgressionPanel.react');
+var TimelinePanel = require('./components/TimelinePanel.react');
 
 React.render(
   <div id="oni-content">
@@ -39,8 +40,8 @@ React.render(
                 </Panel>
             </PanelRow>
             <PanelRow>
-                <Panel className="col-md-12" title={OniConstants.TIMELINE_PANEL}>
-                    Comming Soon...
+                <Panel className="col-md-12 sb_timeline" title={OniConstants.TIMELINE_PANEL}>
+                    <TimelinePanel />
                 </Panel>
             </PanelRow>
         </div>
