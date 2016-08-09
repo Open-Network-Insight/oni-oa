@@ -9,7 +9,7 @@ var GridPanelMixin = {
   },
   render: function ()
   {
-    var content, gridHeaders, gridBody, dataHeaders, selectedRows, key, eventHandlers;
+    var content, gridHeaders, gridBody, iterator, selectedRows, key, eventHandlers;
 
     if (this.state.error)
     {
@@ -37,34 +37,32 @@ var GridPanelMixin = {
     }
     else
     {
-      dataHeaders = this.state.headers;
+      iterator = this.state.iterator || Object.keys(this.state.headers);
 
       selectedRows = this.state.selectedRows || [];
 
       gridHeaders = [];
-      for (key in dataHeaders)
-      {
+      iterator.forEach(key => {
         // If a cell renderer is false, we should skip that cell
-        if (this['_render_' + key + '_cell']===false) continue;
+        if (this['_render_' + key + '_cell']===false) return;
 
         gridHeaders.push(
-          <th key={'th_' + key} className={'text-center ' + key}>{dataHeaders[key]}</th>
+          <th key={'th_' + key} className={'text-center ' + key}>{this.state.headers[key]}</th>
         );
-      }
+      });
 
       gridBody = [];
-      this.state.data.forEach((function (item, index) {
+      this.state.data.forEach((item, index) => {
         var key, cells, className, cellRenderer, cellContent;
 
         cells = [];
-        for (key in item)
-        {
+        iterator.forEach(key => {
           cellRenderer = '_render_' + key + '_cell';
 
           if (!this[cellRenderer])
           {
             // If a cell renderer is false, we should skip that cell
-            if (this[cellRenderer]===false) continue;
+            if (this[cellRenderer]===false) return;
 
             cellRenderer = '_renderCell';
           }
@@ -76,7 +74,7 @@ var GridPanelMixin = {
               {cellContent}
             </td>
           );
-        }
+        });
 
         className = selectedRows.indexOf(item) >= 0 ? 'bg-warning' : null;
 
@@ -90,7 +88,7 @@ var GridPanelMixin = {
         gridBody.push(
           <tr key={'tr_' + index} className={className} {...eventHandlers}>{cells}</tr>
         );
-      }).bind(this));
+      });
 
       content = (
         <table className="table table-intel table-intel-striped table-hover" style={{fontSize: 'small'}}>
