@@ -15,9 +15,9 @@ var easyMode = {
 /**
  * Trigger reload event on parent document
  */
-function reloadParentData(path_to_file)
+function reloadParentData()
 {
-    window.parent.iframeReloadHook && window.parent.iframeReloadHook(path_to_file);
+    window.parent.iframeReloadHook && window.parent.iframeReloadHook();
 }
 
 /**
@@ -27,7 +27,7 @@ function reloadParentData(path_to_file)
  */
 function showEasyMode()
 {
-    if (easyMode.ready) $(document.body).addClass('oni_easy_mode');
+    if (easyMode.ready) $(document.body).addClass('oni').addClass('oni_easy_mode');
 
     $(document.body).removeClass('oni_ninja_mode');
 }
@@ -39,7 +39,7 @@ function showEasyMode()
  */
 function hideEasyMode()
 {
-    $(document.body).addClass('oni_ninja_mode').removeClass('oni_easy_mode');
+    $(document.body).addClass('oni_ninja_mode').removeClass('oni').removeClass('oni_easy_mode');
 }
 
 /**
@@ -145,6 +145,14 @@ function isEasyModeAvailable()
     return window.parent!=window;
 }
 
+function isEasyModeEnabled() {
+    return /showEasyMode/.test(window.location.hash);
+}
+
+function isNinjaModeEnabled() {
+    return /showNinjaMode/.test(window.location.hash);
+}
+
 /**
  * The following code enables toggle from normal user mode (wizard) and ninja node (notebook UI)
  */
@@ -152,9 +160,6 @@ define(['base/js/namespace', 'base/js/events'], function(IPython, events)
 {
     // Do nothing when running stand alone
     if (!isEasyModeAvailable()) return;
-
-    // Add oni CSS class for styling
-    $(document.body).addClass('oni');
 
     // We are running inside and iframe from ONI. Let's have some fun!
 
@@ -213,7 +218,7 @@ define(['base/js/namespace', 'base/js/events'], function(IPython, events)
             // First error found
             easyMode.building = false;
             easyMode.ready = false;
-            alert('Ooops some code failed. Please go to ipython notebook mode and manually fix the error.');
+            isEasyModeEnabled() && alert('Ooops some code failed. Please go to ipython notebook mode and manually fix the error.');
             $(document.body).removeClass('oni');
             removeProgressIndicator();
             hideEasyMode();
@@ -236,7 +241,7 @@ define(['base/js/namespace', 'base/js/events'], function(IPython, events)
             easyMode.building = false;
 
             removeProgressIndicator();
-            showEasyMode();
+            isEasyModeEnabled() && showEasyMode();
         }
         else
         {
@@ -272,18 +277,20 @@ define(['base/js/namespace', 'base/js/events'], function(IPython, events)
     });
 });
 
-$(function ()
-{
-    if (!isEasyModeAvailable()) return;
+if (isEasyModeAvailable()) {
+    // Add oni CSS class for styling
+    $(document.body).addClass('oni');
 
     // Listen for URL's hash changes
     $(window).on('hashchange', function ()
     {
-      if (/showEasyMode/.test(window.location.hash)) showEasyMode();
-      else if (/showNinjaMode/.test(window.location.hash)) hideEasyMode();
+        if (isEasyModeEnabled()) showEasyMode();
+        else if (isNinjaModeEnabled()) hideEasyMode();
     });
 
-    // Show progress indicator
-    showBuildingUiIndicator();
-});
+    $(function () {
+        // Show progress indicator
+        showBuildingUiIndicator();
+    });
+}
 
