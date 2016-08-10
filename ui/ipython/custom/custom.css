@@ -60,7 +60,7 @@
   width: 16px;
   height: 11px;
   margin-left: 5px;
-  background-image: url(/app/static/images/ajax-loader.gif);
+  background-image: url(./ajax-loader.gif);
 }
 
 body[data-notebook-name*="Threat"] .widget-area .widget-box div table{
