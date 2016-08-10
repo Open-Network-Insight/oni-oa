@@ -145,8 +145,8 @@ function filterDataAndBuildGraph()
 
   // Graph force
   var force = d3.layout.force()
-                          .charge(-Math.round(h * 0.45)) // 0.45 is a magic number for graph styling purposes charge is 45% of the grap height
-                          .linkDistance(Math.round(h * 0.081)) // 0.081 is a magic number for graph styling purposes linkDistance is 8.1% of the graph height
+                          .charge(-Math.round(w * 0.45)) // 0.45 is a magic number for graph styling purposes charge is 45% of the grap width
+                          .linkDistance(Math.round(w * 0.081)) // 0.081 is a magic number for graph styling purposes linkDistance is 8.1% of the graph width
                           .gravity(.1)
                           .size(size)
                           .nodes(nodes)
