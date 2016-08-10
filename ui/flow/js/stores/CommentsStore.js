@@ -1,8 +1,8 @@
-var d3 = require('d3');
 var assign = require('object-assign');
+var d3 = require('d3');
 
-var OniConstants = require('../../../js/constants/OniConstants');
 var NetflowConstants = require('../constants/NetflowConstants');
+var OniConstants = require('../../../js/constants/OniConstants');
 var OniDispatcher = require('../../../js/dispatchers/OniDispatcher');
 var RestStore = require('../../../js/stores/RestStore');
 
@@ -11,9 +11,8 @@ var CommentsStore = assign(new RestStore(NetflowConstants.API_COMMENTS), {
   errorMessages: {
     404: 'Please choose a different date, no comments have been found'
   },
-  setDate: function (newDate)
+  setDate: function (date)
   {
-    date = newDate;
     this.setEndpoint(NetflowConstants.API_COMMENTS.replace('${date}', date.replace(/-/g, '')));
   } 
 });

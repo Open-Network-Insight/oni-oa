@@ -1,9 +1,9 @@
 var assign = require('object-assign');
 var d3 = require('d3');
 
-var OniDispatcher = require('../../../js/dispatchers/OniDispatcher');
-var OniConstants = require('../../../js/constants/OniConstants');
 var DnsConstants = require('../constants/DnsConstants');
+var OniConstants = require('../../../js/constants/OniConstants');
+var OniDispatcher = require('../../../js/dispatchers/OniDispatcher');
 var RestStore = require('../../../js/stores/RestStore');
 
 var CommentsStore = assign(new RestStore(DnsConstants.API_COMMENTS), {

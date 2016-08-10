@@ -193,7 +193,7 @@ var IngestSummaryPanel = React.createClass({
     else
     {
       content = (
-        <div id={this.props.id}>
+        <div id={this.props.id} className="text-center">
           <div id={this.props.id + '-header'}>
             <p id={this.props.id + '-range'}></p>
             <p id={this.props.id + '-total'}></p>
