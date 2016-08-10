@@ -50,17 +50,19 @@ React.render(
 var PanelRow = require('../../js/components/PanelRow.react');
 var Panel = require('../../js/components/Panel.react');
 
-var ExecutiveThreatBriefingPanel = require('./components/ExecutiveThreatBriefingPanel.react');
+var ExecutiveThreatBriefingPanel = require('../../js/components/ExecutiveThreatBriefingPanel.react');
 var IncidentProgressionPanel = require('./components/IncidentProgressionPanel.react');
 var ImpactAnalysis = require('./components/ImpactAnalysisPanel.react');
 var MapView = require('./components/GlobeViewPanel.react');
 var TimelinePanel = require('./components/TimelinePanel.react');
 
+var CommentsStore = require('./stores/CommentsStore');
+
 React.render(
   <div id="oni-content" className="storyboard">
   <PanelRow>
-      <Panel title={OniConstants.COMMENTS_PANEL} expandable container className="col-md-6" >
-          <ExecutiveThreatBriefingPanel />
+      <Panel title={OniConstants.COMMENTS_PANEL} expandable className="col-md-6" >
+          <ExecutiveThreatBriefingPanel store={CommentsStore} />
       </Panel>
       <Panel title={OniConstants.INCIDENT_PANEL} expandable container className="col-md-6">
           <IncidentProgressionPanel />

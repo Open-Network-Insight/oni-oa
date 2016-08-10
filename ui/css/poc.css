@@ -29,11 +29,11 @@ body {
   margin: 0 10px;
 }
 
-.oni-frame .panel {
+.oni-frame-content > .panel {
     border-color: #0071C5;
 }
 
-.oni-frame .panel > .panel-heading {
+.oni-frame-content > .panel > .panel-heading {
     color: #fff;
     background-color: #0071C5;
     border-color: #0071C5;

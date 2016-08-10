@@ -11,14 +11,19 @@ var ChartMixin = {
     },
     componentDidUpdate: function (prevProps, prevState)
     {
-        if (this.state.error) return;
+        var state;
 
-        if (!this.state.loading) {
+        prevState = prevState || {};
+        state = this.state || {};
+
+        if (state.error) return;
+
+        if (!state.loading) {
             if (prevState.loading) {
                 this.buildChart();
             }
 
-            this.state.data && this.draw();
+            state.data && this.draw();
         }
     },
     renderContent: function () {

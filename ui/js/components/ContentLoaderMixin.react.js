@@ -1,9 +1,6 @@
 var React = require('react');
 
 var ContentLoaderMixin = {
-    getInitialState: function () {
-        return {};
-    },
     renderError: function () {
         return (
             <div className="oni-content-loader">
@@ -21,12 +18,14 @@ var ContentLoaderMixin = {
         );
     },
     render: function () {
-        var content;
+        var state, content;
 
-        if (this.state.error) {
+        state = this.state || {};
+
+        if (state.error) {
             content = this.renderError();
         }
-        else if (this.state.loading) {
+        else if (state.loading) {
             content = this.renderContentLoader();
         }
         else {

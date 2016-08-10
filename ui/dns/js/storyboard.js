@@ -26,14 +26,16 @@ React.render(
 var PanelRow = require('../../js/components/PanelRow.react');
 var Panel = require('../../js/components/Panel.react');
 
-var ExecutiveThreatBriefingPanel = require('./components/ExecutiveThreatBriefingPanel.react');
+var ExecutiveThreatBriefingPanel = require('../../js/components/ExecutiveThreatBriefingPanel.react');
 var IncidentProgressionPanel = require('./components/IncidentProgressionPanel.react');
+
+var CommentsStore = require('./stores/CommentsStore');
 
 React.render(
   <div id="oni-content">
     <PanelRow>
       <Panel title={OniConstants.COMMENTS_PANEL} expandable>
-        <ExecutiveThreatBriefingPanel />
+        <ExecutiveThreatBriefingPanel store={CommentsStore} />
       </Panel>
       <Panel title={OniConstants.INCIDENT_PANEL} expandable>
         <IncidentProgressionPanel />

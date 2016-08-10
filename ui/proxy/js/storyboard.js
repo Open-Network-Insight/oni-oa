@@ -26,9 +26,11 @@ React.render(
 var PanelRow = require('../../js/components/PanelRow.react');
 var Panel = require('../../js/components/Panel.react');
 
-var ExecutiveThreatBriefingPanel = require('./components/ExecutiveThreatBriefingPanel.react');
+var ExecutiveThreatBriefingPanel = require('../../js/components/ExecutiveThreatBriefingPanel.react');
 var IncidentProgressionPanel = require('./components/IncidentProgressionPanel.react');
 var TimelinePanel = require('./components/TimelinePanel.react');
+
+var CommentsStore = require('./stores/CommentsStore');
 
 React.render(
   <div id="oni-content">
@@ -36,7 +38,7 @@ React.render(
         <div className="oni-sidebar col-md-4">
             <PanelRow>
                 <Panel className="col-md-12" title={OniConstants.COMMENTS_PANEL}>
-                    <ExecutiveThreatBriefingPanel />
+                    <ExecutiveThreatBriefingPanel store={CommentsStore} />
                 </Panel>
             </PanelRow>
             <PanelRow>

@@ -98,9 +98,9 @@ var Panel = React.createClass({
         containerCss = 'panel-body-container' + (this.props.container ? ' container-box' : '');
 
         return (
-            <div className={'oni-frame text-center ' + cssCls}>
+            <div className={'oni-frame ' + cssCls}>
                 <div className="oni-frame-content">
-                    <div className={'panel' + (this.props.header ? '' : ' no-heading')}>
+                    <div className={'panel panel-primary' + (this.props.header ? '' : ' no-heading')}>
                         {panelHeading}
                         <div className="panel-body">
                             <div className={containerCss}>
