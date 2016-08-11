@@ -82,7 +82,7 @@ var Panel = React.createClass({
             }
         }
 
-        cssCls = this.state.maximized ? 'col-md-12' : this.state.minimized ? 'oni-minimized' : this.props.className;
+        cssCls = this.state.maximized ? 'oni-maximized col-md-12' : this.state.minimized ? 'oni-minimized' : "";
 
         if (this.props.header) {
             panelHeading = (
@@ -98,7 +98,7 @@ var Panel = React.createClass({
         containerCss = 'panel-body-container' + (this.props.container ? ' container-box' : '');
 
         return (
-            <div className={'oni-frame ' + cssCls}>
+            <div className={'oni-frame ' + this.props.className + ' ' + cssCls}>
                 <div className="oni-frame-content">
                     <div className={'panel panel-primary' + (this.props.header ? '' : ' no-heading')}>
                         {panelHeading}

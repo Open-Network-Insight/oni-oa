@@ -14,7 +14,7 @@ var GridPanelMixin = {
     if (this.state.error)
     {
       content = (
-        <span className="text-danger">
+        <span className="text-center text-danger">
           {this.state.error}
         </span>
       );
