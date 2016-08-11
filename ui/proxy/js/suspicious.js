@@ -56,6 +56,8 @@ var NetworkViewPanel = require('./components/NetworkViewPanel.react');
 var IPythonNotebookPanel = require('../../js/components/IPythonNotebookPanel.react');
 var DetailsPanel = require('./components/DetailsPanel.react');
 
+var ipynbClosure = IPythonNotebookPanel.createIPythonNotebookClosure(OniConstants.NOTEBOOK_PANEL);
+
 React.render(
     <div id="oni-content">
         <PanelRow>
@@ -68,8 +70,8 @@ React.render(
             </Panel>
         </PanelRow>
         <PanelRow>
-            <Panel title={OniConstants.NOTEBOOK_PANEL} container expandable>
-                <IPythonNotebookPanel date={OniUtils.getCurrentDate()} ipynb="proxy/${date}/Edge_Investigation.ipynb" />
+            <Panel title={ipynbClosure.getTitle()} container  extraButtons={ipynbClosure.getButtons}>
+                <IPythonNotebookPanel title={ipynbClosure.getTitle()} date={OniUtils.getCurrentDate()} ipynb="proxy/${date}/Edge_Investigation.ipynb" />
             </Panel>
             <Panel title={OniConstants.DETAILS_PANEL} expandable>
                 <DetailsPanel />
