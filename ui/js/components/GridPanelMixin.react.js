@@ -30,9 +30,9 @@ var GridPanelMixin = {
     else if (this.state.data.length===0)
     {
         content = (
-            <span className="">
+            <div className="text-center">
                 {this.emptySetMessage || ''}
-            </span>
+            </div>
         );
     }
     else

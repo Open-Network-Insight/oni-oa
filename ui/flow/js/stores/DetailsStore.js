@@ -26,7 +26,7 @@ var DetailsStore = assign(new RestStore(NetflowConstants.API_DETAILS), {
     flags: 'Flags',
     tos: 'Type Of Service',
     bytes: 'Bytes',
-    pkts: 'Packages',
+    pkts: 'Packets',
     input: 'Input',
     output: 'Output'
   },
