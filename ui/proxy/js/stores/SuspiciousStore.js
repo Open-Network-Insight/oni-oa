@@ -28,9 +28,11 @@ var SuspiciousStore = assign(new RestStore(ProxyConstants.API_SUSPICIOUS), {
         p_date: 'Time',
         clientip: 'Client IP',
         host: 'Host',
+        uri_rep: ' ',
         webcat: 'Web Category',
         respcode_name: 'Response Code'
     },
+    ITERATOR: ['p_date', 'clientip', 'host', 'uri_rep', 'webcat', 'respcode_name'],
     getData: function () {
         var state;
 

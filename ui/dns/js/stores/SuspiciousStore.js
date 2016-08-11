@@ -29,10 +29,12 @@ var SuspiciousStore = assign(new RestStore(DnsConstants.API_SUSPICIOUS), {
     frame_time: 'Timestamp',
     ip_dst: 'Client IP',
     dns_qry_name: 'Query',
+    query_rep: ' ',
     dns_qry_class_name: 'Query Class',
     dns_qry_type_name: 'Query Type',
     dns_qry_rcode_name: 'Response Code'
   },
+  ITERATOR: ['frame_time', 'ip_dst', 'dns_qry_name', 'query_rep', 'dns_qry_class_name', 'dns_qry_type_name', 'dns_qry_rcode_name'],
   getData: function ()
   {
     var state;

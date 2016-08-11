@@ -26,14 +26,16 @@ var SuspiciousStore = assign(new RestStore(NetflowConstants.API_SUSPICIOUS), {
         rank: 'Rank',
         tstart: 'Time',
         srcIP: 'Source IP',
+        srcIP_rep: ' ',
         dstIP: 'Destination IP',
+        dstIP_rep: ' ',
         sport: 'Source Port',
         dport: 'Destination Port',
         proto: 'Protocol',
         ipkt: 'Input Packets',
         ibyt: 'Input Bytes'
     },
-    ITERATOR: ['rank', 'tstart', 'srcIP', 'dstIP', 'sport', 'dport', 'proto', 'ipkt', 'ibyt'],
+    ITERATOR: ['rank', 'tstart', 'srcIP', 'srcIP_rep', 'dstIP', 'dstIP_rep', 'sport', 'dport', 'proto', 'ipkt', 'ibyt'],
     getData: function () {
         var state;
 

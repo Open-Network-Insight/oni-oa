@@ -8,6 +8,9 @@ var SuspiciousStore = require('../stores/SuspiciousStore');
 var SuspiciousPanel = React.createClass({
     mixins: [GridPanelMixin, SuspiciousMixin],
     store: SuspiciousStore,
+    getInitialState: function () {
+        return {iterator: SuspiciousStore.ITERATOR};
+    },
     _renderCatCell: function (keyPrefix, reps) {
         var keys, services, tooltipContent;
 
@@ -59,17 +62,29 @@ var SuspiciousPanel = React.createClass({
         return date + ' ' + item['p_time'];
     },
     _render_host_cell: function (host, item, idx) {
-        var reps, highestRep, uriRep, uriCat;
+        var reps, highestRep;
 
         reps = OniUtils.parseReputation(item.uri_rep);
+        highestRep = OniUtils.getHighestReputation(reps);
+
+        return (
+            <p key={'host_' + idx} className={'text-' + OniUtils.CSS_RISK_CLASSES[highestRep]}>
+                {host}
+            </p>
+        );
+    },
+    _render_uri_rep_cell: function (uri_rep, item, idx) {
+        var reps, highestRep, uriRep, uriCat;
+
+        reps = OniUtils.parseReputation(uri_rep);
         highestRep = OniUtils.getHighestReputation(reps);
 
         uriRep = this._renderRepCell('host_rep_' + idx, reps);
         uriCat = this._renderCatCell('host_cat_' + idx, reps);
 
         return (
-            <p key={'host_' + idx} className={'text-' + OniUtils.CSS_RISK_CLASSES[highestRep]}>
-                {host} {uriRep} {uriCat}
+            <p key={'uri_info_' + idx} className={'uri_info text-' + OniUtils.CSS_RISK_CLASSES[highestRep]}>
+                {uriRep} {uriCat}
             </p>
         );
     },
@@ -120,7 +135,6 @@ var SuspiciousPanel = React.createClass({
     _render_csbytes_cell: false,
     _render_fulluri_cell: false,
     _render_uri_sev_cell: false,
-    _render_uri_rep_cell: false,
     _render_hash_cell: false,
     _render_subdomainentropy_cell: false,
     _render_top_domain_cell: false,

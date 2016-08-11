@@ -8,18 +8,19 @@ var SuspiciousStore = require('../stores/SuspiciousStore');
 var SuspiciousPanel = React.createClass({
   mixins: [GridPanelMixin, SuspiciousGridMixin],
   store: SuspiciousStore,
+  getInitialState: function () {
+    return {iterator: SuspiciousStore.ITERATOR};
+  },
   _render_dns_qry_name_cell: function (query, item, idx)
   {
-    var reps, highestRep, queryRep;
+    var reps, highestRep;
 
     reps = OniUtils.parseReputation(item.query_rep);
     highestRep = OniUtils.getHighestReputation(reps);
 
-    queryRep = this._renderRepCell('dns_qry_name_' + idx,  reps);
-
     return (
       <p key={'dns_qry_name_' + idx} className={'text-' + OniUtils.CSS_RISK_CLASSES[highestRep]}>
-        {query} {queryRep}
+        {query}
       </p>
     );
   },
@@ -64,6 +65,20 @@ var SuspiciousPanel = React.createClass({
       </p>
     );
   },
+  _render_query_rep_cell: function (query_rep, item, idx) {
+      var reps, highestRep, queryRep;
+
+      reps = OniUtils.parseReputation(query_rep);
+      highestRep = OniUtils.getHighestReputation(reps);
+
+      queryRep = this._renderRepCell('dns_query_rep_' + idx,  reps);
+
+      return (
+          <p key={'dns_query_rep_' + idx} className={'query_rep text-' + OniUtils.CSS_RISK_CLASSES[highestRep]}>
+              {queryRep}
+          </p>
+      );
+  },
   // Hidden cells
   _render_dns_qry_class_cell: false,
   _render_dns_qry_type_cell: false,
@@ -76,7 +91,6 @@ var SuspiciousPanel = React.createClass({
   _render_network_context_cell: false,
   _render_num_periods_cell: false,
   _render_query_length_cell: false,
-  _render_query_rep_cell: false,
   _render_resp_h_cell: false,
   _render_score_cell: false,
   _render_subdomain_cell: false,
