@@ -38,7 +38,7 @@ var IncidentProgressionPanel = React.createClass({
         width = element.width();
         height = element.height();
 
-        svg = d3.select(this.getDOMNode()).select('svg.canvas').attr('width', width).attr('height', height);
+        this.svg = svg = d3.select(this.getDOMNode()).select('svg.canvas').attr('width', width).attr('height', height);
 
         this.reqCanvas = svg.select('g.requests');
         this.refCanvas = svg.select('g.refered');
@@ -74,19 +74,21 @@ var IncidentProgressionPanel = React.createClass({
                                                     .range([d3.hsl(270, .75, .35), d3.hsl(70, 1.5, .8)])
                                                     .interpolate(d3Interpolate.interpolateCubehelix);
         }
-
-        return;
     },
     draw: function () {
-        var requestsRoot, referedRoot, leaves, node, canvasWidth, canvasHeight, width, height;
+        var requestRoot, referedRoot, node, canvasWidth, width, height, nodes, links;
 
-        // Build Requests root node
-        requestsRoot = d3.hierarchy({
-            id: this.state.root.id,
-            name: '',
-            type: this.state.root.type,
-            children: this.state.root.requests
-        });
+        /*leaves = Math.max(requestsRoot.leaves().length, referedRoot.leaves().length);
+
+         node = $(this.getDOMNode());
+         canvasWidth = canvasHeight = Math.max(node.width(), node.height());
+
+         // Height should be the same for both trees
+         height = Math.max(leaves * 50, canvasHeight);*/
+        // TODO: Remove and enable previous lines
+        node = $(this.getDOMNode());
+        canvasWidth = node.width();
+        height = node.height();
 
         // Build Refered root node
         referedRoot = d3.hierarchy({
@@ -96,35 +98,46 @@ var IncidentProgressionPanel = React.createClass({
             children: this.state.root.referer_for
         });
 
-        /*leaves = Math.max(requestsRoot.leaves().length, referedRoot.leaves().length);
-
-        node = $(this.getDOMNode());
-        canvasWidth = canvasHeight = Math.max(node.width(), node.height());
-
-        // Height should be the same for both trees
-        height = Math.max(leaves * 50, canvasHeight);*/
-        // TODO: Remove and enable previous lines
-        node = $(this.getDOMNode());
-        canvasWidth = node.width();
-        height = canvasHeight = node.height();
-
         // Init refered tree
         width = (canvasWidth/COLS_TOTAL) * COLS_RFERERS;
         this.referedTree = this.initTree(width, height);
+
+        nodes = this.referedTree.layout.nodes(referedRoot);
+        links = this.referedTree.layout.links(nodes);
+
         // Draw refered chart
-        this.drawTree(this.refCanvas, this.referedTree, referedRoot);
+        this.drawTree(this.refCanvas, this.referedTree, referedRoot, nodes, links, 0);
+
+        // Build Requests root node
+        requestRoot = d3.hierarchy({
+            id: this.state.root.id,
+            name: '',
+            type: this.state.root.type,
+            children: this.state.root.requests
+        });
 
         // Init requests tree
         width = (canvasWidth/COLS_TOTAL) * COLS_REQUESTS;
         this.requestsTree = this.initTree(width, height);
+
+        nodes = this.requestsTree.layout.nodes(requestRoot);
+        links = this.requestsTree.layout.links(nodes).map(l => {
+            if (l.source.depth==0) {
+                l.source.x = referedRoot.x;
+                l.source.y = referedRoot.y;
+            }
+
+            return l;
+        });
+
         // Draw requests chart
-        this.drawTree(this.reqCanvas, this.requestsTree, requestsRoot);
+        this.drawTree(this.reqCanvas, this.requestsTree, requestRoot, nodes, links, 1);
     },
-    drawTree: function (canvas, tree, root) {
+    drawTree: function (canvas, tree, root, nodes, links, startDepth) {
         var nodes, links, defaultTransition, enterTransition, exitTransition, d3_node, d3_link;
 
-        nodes = tree.layout.nodes(root);
-        links = tree.layout.links(nodes);
+        // Filter nodes and links based on startDepth
+        nodes = nodes.filter(n => n.depth>=startDepth);
 
         defaultTransition = d3.transition('default').duration(TRANSITION_DURATION);
         enterTransition = d3.transition('enter').duration(TRANSITION_DURATION);
@@ -230,7 +243,7 @@ var IncidentProgressionPanel = React.createClass({
                                 .attr('transform', n => {
                                     return n.data.type=='refered' || n.data.type=='fulluri' ? '' : 'scale(-1,1)'
                                 })
-                                .attr('y', d => d.data.type=='referer' ? 30 :-20)
+                                .attr('y', d => d.data.type=='referer' || d.data.type=='refered' ? 30 :-20)
                                 .text(n => n.data.name);
 
         d3_node.enter.transition(enterTransition)
@@ -251,27 +264,32 @@ var IncidentProgressionPanel = React.createClass({
             .attr('r', 0);
     },
     onMouseOverNode: function (canvas, node) {
-        canvas.selectAll('.node').classed('blur', n => n.data.type!='fulluri');
-        canvas.selectAll('.link').classed('blur', true);
+        // Do nothing on root node
+        if (node.data.type=='fulluri') return;
+
+        this.svg.selectAll('.node').classed('blur', n => n.data.type!='fulluri');
+        this.svg.selectAll('.link').classed('blur', true);
 
         function unblurNode(n) {
             var id, parentId;
 
+            // Unblur node
             id = n.data.id;
-            canvas.select('#' + id).classed('active', true).classed('blur', false);
+            this.svg.select('#' + id + '.' + n.data.type).classed('active', true).classed('blur', false);
 
             if (!n.parent) return;
 
+            // Unblur link to parent
             parentId = n.parent.data.id;
-            canvas.select('#' + parentId + id).classed('active', true).classed('blur', false);
+            this.svg.select('#' + parentId + id).classed('active', true).classed('blur', false);
         };
 
-        node.descendants().forEach(unblurNode);
-        node.ancestors().forEach(unblurNode);
+        node.descendants().forEach(unblurNode.bind(this));
+        node.ancestors().forEach(unblurNode.bind(this));
     },
     onMouseLeaveNode: function (canvas) {
-        canvas.selectAll('.node,.link').classed('blur', false);
-        canvas.selectAll('.active').classed('active', false);
+        this.svg.selectAll('.node,.link').classed('blur', false);
+        this.svg.selectAll('.active').classed('active', false);
     },
     zoom() {
         this.reqCanvas.attr('transform', 'translate(' + d3.event.translate + ')scale(-' + d3.event.scale + ',' + d3.event.scale + ')');
