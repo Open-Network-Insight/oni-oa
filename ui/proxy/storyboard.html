@@ -49,10 +49,9 @@
         .oni-incident-progression .node text {
             top: -10px;
             text-anchor: middle;
-            /*display: none;*/
             stroke: rgb(0, 0, 0);
+            stroke-width: 0px;
             font: 10pt verdana, sans-serif;
-            letter-spacing: 2pt;
             font-weight: normal;
 
             -webkit-touch-callout: none; /* iOS Safari */
@@ -61,10 +60,6 @@
             -moz-user-select: none;      /* Firefox */
             -ms-user-select: none;       /* Internet Explorer/Edge */
             user-select: none;
-        }
-
-        .oni-incident-progression .node.referer text {
-            text-anchor: end;
         }
 
         .oni-incident-progression .node circle {
@@ -90,10 +85,6 @@
 
         .oni-incident-progression .active {
             opacity: 1 !important;
-        }
-
-        .oni-incident-progression .active text {
-            /*display: initial;*/
         }
 
         .oni-incident-progression .link {

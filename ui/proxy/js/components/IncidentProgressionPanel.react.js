@@ -18,11 +18,15 @@ var IncidentProgressionPanel = React.createClass({
     mixins: [ContentLoaderMixin, ChartMixin],
     componentDidMount: function () {
         IncidentProgressionStore.addChangeDataListener(this._onChange);
-        window.addEventListener('resize', this.buildGraph);
+        window.addEventListener('resize', this._onWindowResize);
     },
     componentWillUnmount: function () {
         IncidentProgressionStore.removeChangeDataListener(this._onChange);
-        window.removeEventListener('resize', this.buildGraph);
+        window.removeEventListener('resize', this._onWindowResize);
+    },
+    _onWindowResize: function () {
+        this.buildChart();
+        this.draw();
     },
     initTree: function (width, height, invertedTree) {
         return {
@@ -38,7 +42,7 @@ var IncidentProgressionPanel = React.createClass({
         width = element.width();
         height = element.height();
 
-        svg = d3.select(this.getDOMNode()).select('svg.canvas').attr('width', width).attr('height', height);
+        this.svg = svg = d3.select(this.getDOMNode()).select('svg.canvas').attr('width', width).attr('height', height);
 
         this.reqCanvas = svg.select('g.requests');
         this.refCanvas = svg.select('g.refered');
@@ -66,27 +70,17 @@ var IncidentProgressionPanel = React.createClass({
         for (key in this.state.domains) {
             this.colorScales[key] = d3.scale.linear()
                                                     .domain([-1, this.state.domains[key].length])
-                                                    // Hue [276°, 96°]
-                                                    .range([d3.hsl(276, .6, 0), d3.hsl(96, .6, 1)])
-                                                    // Hue [-120°, 60°]
-                                                    //.range([d3.hsl(-120, .6, 0), d3.hsl(60, .6, 1)])
                                                     // Rainbow
                                                     .range([d3.hsl(270, .75, .35), d3.hsl(70, 1.5, .8)])
                                                     .interpolate(d3Interpolate.interpolateCubehelix);
         }
-
-        return;
     },
     draw: function () {
-        var requestsRoot, referedRoot, leaves, node, canvasWidth, canvasHeight, width, height;
+        var requestRoot, referedRoot, node, canvasWidth, width, height, nodes, links;
 
-        // Build Requests root node
-        requestsRoot = d3.hierarchy({
-            id: this.state.root.id,
-            name: '',
-            type: this.state.root.type,
-            children: this.state.root.requests
-        });
+        node = $(this.getDOMNode());
+        canvasWidth = node.width();
+        height = node.height();
 
         // Build Refered root node
         referedRoot = d3.hierarchy({
@@ -96,35 +90,46 @@ var IncidentProgressionPanel = React.createClass({
             children: this.state.root.referer_for
         });
 
-        /*leaves = Math.max(requestsRoot.leaves().length, referedRoot.leaves().length);
-
-        node = $(this.getDOMNode());
-        canvasWidth = canvasHeight = Math.max(node.width(), node.height());
-
-        // Height should be the same for both trees
-        height = Math.max(leaves * 50, canvasHeight);*/
-        // TODO: Remove and enable previous lines
-        node = $(this.getDOMNode());
-        canvasWidth = node.width();
-        height = canvasHeight = node.height();
-
         // Init refered tree
         width = (canvasWidth/COLS_TOTAL) * COLS_RFERERS;
         this.referedTree = this.initTree(width, height);
+
+        nodes = this.referedTree.layout.nodes(referedRoot);
+        links = this.referedTree.layout.links(nodes);
+
         // Draw refered chart
-        this.drawTree(this.refCanvas, this.referedTree, referedRoot);
+        this.drawTree(this.refCanvas, this.referedTree, referedRoot, nodes, links, 0);
+
+        // Build Requests root node
+        requestRoot = d3.hierarchy({
+            id: this.state.root.id,
+            name: '',
+            type: this.state.root.type,
+            children: this.state.root.requests
+        });
 
         // Init requests tree
         width = (canvasWidth/COLS_TOTAL) * COLS_REQUESTS;
         this.requestsTree = this.initTree(width, height);
+
+        nodes = this.requestsTree.layout.nodes(requestRoot);
+        links = this.requestsTree.layout.links(nodes).map(l => {
+            if (l.source.depth==0) {
+                l.source.x = referedRoot.x;
+                l.source.y = referedRoot.y;
+            }
+
+            return l;
+        });
+
         // Draw requests chart
-        this.drawTree(this.reqCanvas, this.requestsTree, requestsRoot);
+        this.drawTree(this.reqCanvas, this.requestsTree, requestRoot, nodes, links, 1);
     },
-    drawTree: function (canvas, tree, root) {
+    drawTree: function (canvas, tree, root, nodes, links, startDepth) {
         var nodes, links, defaultTransition, enterTransition, exitTransition, d3_node, d3_link;
 
-        nodes = tree.layout.nodes(root);
-        links = tree.layout.links(nodes);
+        // Filter nodes and links based on startDepth
+        nodes = nodes.filter(n => n.depth>=startDepth);
 
         defaultTransition = d3.transition('default').duration(TRANSITION_DURATION);
         enterTransition = d3.transition('enter').duration(TRANSITION_DURATION);
@@ -230,7 +235,7 @@ var IncidentProgressionPanel = React.createClass({
                                 .attr('transform', n => {
                                     return n.data.type=='refered' || n.data.type=='fulluri' ? '' : 'scale(-1,1)'
                                 })
-                                .attr('y', d => d.data.type=='referer' ? 30 :-20)
+                                .attr('y', d => d.data.type=='referer' || d.data.type=='refered' ? 30 :-20)
                                 .text(n => n.data.name);
 
         d3_node.enter.transition(enterTransition)
@@ -251,106 +256,37 @@ var IncidentProgressionPanel = React.createClass({
             .attr('r', 0);
     },
     onMouseOverNode: function (canvas, node) {
-        canvas.selectAll('.node').classed('blur', n => n.data.type!='fulluri');
-        canvas.selectAll('.link').classed('blur', true);
+        // Do nothing on root node
+        if (node.data.type=='fulluri') return;
+
+        this.svg.selectAll('.node').classed('blur', n => n.data.type!='fulluri');
+        this.svg.selectAll('.link').classed('blur', true);
 
         function unblurNode(n) {
             var id, parentId;
 
+            // Unblur node
             id = n.data.id;
-            canvas.select('#' + id).classed('active', true).classed('blur', false);
+            this.svg.select('#' + id + '.' + n.data.type).classed('active', true).classed('blur', false);
 
             if (!n.parent) return;
 
+            // Unblur link to parent
             parentId = n.parent.data.id;
-            canvas.select('#' + parentId + id).classed('active', true).classed('blur', false);
+            this.svg.select('#' + parentId + id).classed('active', true).classed('blur', false);
         };
 
-        node.descendants().forEach(unblurNode);
-        node.ancestors().forEach(unblurNode);
+        node.descendants().forEach(unblurNode.bind(this));
+        node.ancestors().forEach(unblurNode.bind(this));
     },
     onMouseLeaveNode: function (canvas) {
-        canvas.selectAll('.node,.link').classed('blur', false);
-        canvas.selectAll('.active').classed('active', false);
+        this.svg.selectAll('.node,.link').classed('blur', false);
+        this.svg.selectAll('.active').classed('active', false);
     },
     zoom() {
         this.reqCanvas.attr('transform', 'translate(' + d3.event.translate + ')scale(-' + d3.event.scale + ',' + d3.event.scale + ')');
         this.refCanvas.attr('transform', 'translate(' + d3.event.translate + ')scale(' + d3.event.scale + ')');
     },
-    /*_onChangeFinal: function () {
-        var state, nodeKeys;
-
-        state = IncidentProgressionStore.getData();
-
-        if (state.data) {
-            state.root = {id: 'fulluri', name: state.data.fulluri, type: 'fulluri', requests: []};
-            nodeKeys = {};
-
-            state.data.requests.forEach(request => {
-                var key, contentTypeKey, methodKey, ipKey, refererKey;
-
-                contentTypeKey = 'contentType@' + request.content_type;
-                if (!(contentTypeKey in nodeKeys)) { // Add contentType node
-                    nodeKeys[contentTypeKey] = {name: request.content_type, type: 'content-type', children: []};
-
-                    state.root.requests.push(nodeKeys[contentTypeKey]);
-                }
-
-                methodKey = 'method@'+request.method;
-                if (!(methodKey in nodeKeys)) { // Add method node
-                    nodeKeys[methodKey] = {name: request.method, type: 'method', parents: [], children: []};
-                }
-
-                key = contentTypeKey + methodKey;
-                if (!(key in nodeKeys)) { // Add content type as parent and method as children
-                    nodeKeys[key] = null;
-
-                    nodeKeys[methodKey].parents.push(nodeKeys[contentTypeKey]);
-
-                    if (nodeKeys[methodKey].parents.length>1) {
-
-                    }
-                    else {
-                        nodeKeys[contentTypeKey].children.push(nodeKeys[methodKey]);
-                    }
-                }
-
-                ipKey = 'ip@' + request.ip;
-                if (!(ipKey in nodeKeys)) { // Add ip node
-                    nodeKeys[ipKey] = {name: request.ip, type: 'client', parents: [], children: []};
-                }
-
-                key = contentTypeKey + methodKey + ipKey;
-                if (!(key in nodeKeys)) { // Add method node as parent of ip node
-                    nodeKeys[key] = null;
-
-                    nodeKeys[ipKey].parents.push(nodeKeys[methodKey]);
-                    nodeKeys[methodKey].children.push(nodeKeys[ipKey]);
-                }
-
-                //if (!request.referer || request.referer=='-') return;
-
-                refererKey = 'referrer@' + request.referer;
-                if (!(refererKey in nodeKeys)) { // Add referer node
-                    nodeKeys[refererKey] = {name: request.referer, type: 'referrer', parents: []};
-                }
-
-                key = contentTypeKey + methodKey + ipKey + refererKey;
-                if (!(key in nodeKeys)) { // Add method node as parent of ip node
-                    nodeKeys[key] = null;
-
-                    nodeKeys[refererKey].parents.push(nodeKeys[ipKey]);
-                    nodeKeys[ipKey].children.push(nodeKeys[refererKey]);
-                }
-            });
-
-            state.root.referer_for = state.data.referer_for
-                                                            //.filter(refered_uri => refered_uri && refered_uri!='-')
-                                                            .map(refered_uri => { return {name: refered_uri, type: 'refered'} });
-        }
-
-        this.setState(state);
-    },*/
     _onChange: function () {
         var state, nodes;
 

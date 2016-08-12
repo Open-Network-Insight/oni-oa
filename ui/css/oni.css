@@ -159,6 +159,21 @@
 /*******************************
  **       STORYBOARD          **
  *******************************/
+/*
+prevent the active panel from collapsing
+ */
+#oni-executive-threat-briefing.panel-group [aria-expanded=true] {
+    /*
+    http://caniuse.com/#feat=pointer-events
+    Works for MOST modern browsers. (- Opera Mobile)
+    */
+    pointer-events: none;
+}
+
+#oni-executive-threat-briefing.panel-group a[aria-expanded=true] {
+    text-decoration: underline;
+}
+
  .storyboard #incident_list, .storyboard .comment_summary  {
     list-style: none;
     text-align: left;
