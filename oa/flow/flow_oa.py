@@ -119,8 +119,8 @@ class OA(object):
         self._logger.info("Adding headers based on configuration file: score_fields.json")
         self._flow_scores = [ [ str(key) for (key,value) in self._conf['flow_score_fields'].items()] ]
 
-        ldaab_index = self._conf["flow_results_fileds"]["lda_score_ab"]
-        ldaba_index = self._conf["flow_results_fileds"]["lda_score_ba"]
+        ldaab_index = self._conf["flow_results_fields"]["lda_score_ab"]
+        ldaba_index = self._conf["flow_results_fields"]["lda_score_ba"]
 
         # filter results add sev and rank.
         self._logger.info("Filtering required columns based on configuration")       
