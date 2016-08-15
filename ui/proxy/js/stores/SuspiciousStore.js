@@ -6,7 +6,7 @@ var OniUtils = require('../../../js/utils/OniUtils');
 var ProxyConstants = require('../constants/ProxyConstants');
 var RestStore = require('../../../js/stores/RestStore');
 
-var IP_FILTER = 'clientip';
+var ALL_FILTER = 'all';
 var URI_FILTER = 'fulluri';
 
 var CHANGE_FILTER_EVENT = 'change_filter';
@@ -14,11 +14,9 @@ var HIGHLIGHT_THREAT_EVENT = 'hightlight_thread';
 var UNHIGHLIGHT_THREAT_EVENT = 'unhightlight_thread';
 var SELECT_THREAT_EVENT = 'select_treath';
 
-var filter = '';
 var filterName = '';
 var highlightedThread = null;
 var selectedThread = null;
-var unfilteredData = null;
 
 var SuspiciousStore = assign(new RestStore(ProxyConstants.API_SUSPICIOUS), {
     errorMessages: {
@@ -34,18 +32,24 @@ var SuspiciousStore = assign(new RestStore(ProxyConstants.API_SUSPICIOUS), {
     },
     ITERATOR: ['p_date', 'clientip', 'host', 'uri_rep', 'webcat', 'respcode_name'],
     getData: function () {
-        var state;
+        var state, filter;
 
-        if (!filter || !unfilteredData) {
-            state = this._data;
+        filter = this.getFilter();
+
+        if (!filter || !this._data) {
+            state = this._data || {data: []};
         }
         else {
             state = assign(
                 {},
-                unfilteredData,
+                this._data,
                 {
-                    data: unfilteredData.data.filter(function (item) {
-                        return filterName === IP_FILTER ? item[IP_FILTER] == filter : item[URI_FILTER].indexOf(filter) >= 0;
+                    data: this._data.data.filter((item) => {
+                        return filterName === URI_FILTER ?
+                                                    // Only look on URI field
+                                                    item[URI_FILTER].indexOf(filter) >= 0 :
+                                                    // Look on clientip and URI fields
+                                                    item.clientip == filter || item.fulluri.indexOf(filter) >= 0;
                     })
                 }
             );
@@ -60,28 +64,26 @@ var SuspiciousStore = assign(new RestStore(ProxyConstants.API_SUSPICIOUS), {
         return state;
     },
     setData: function (data) {
-        this._data = unfilteredData = data;
+        this._data = data;
 
         this.emitChangeData();
     },
     setDate: function (date) {
         this.setEndpoint(ProxyConstants.API_SUSPICIOUS.replace('${date}', date.replace(/-/g, '')));
     },
-    setFilter: function (newFilter) {
-        filter = newFilter;
-
+    setFilter: function (filter) {
         if (filter === '') {
             filterName = '';
-            this.removeRestFilter(IP_FILTER);
+            this.removeRestFilter(ALL_FILTER);
             this.removeRestFilter(URI_FILTER);
         }
         else if (OniUtils.IP_V4_REGEX.test(filter)) {
             this.removeRestFilter(URI_FILTER);
-            this.setRestFilter(IP_FILTER, filter);
-            filterName = IP_FILTER;
+            this.setRestFilter(ALL_FILTER, filter);
+            filterName = ALL_FILTER;
         }
         else {
-            this.removeRestFilter(IP_FILTER);
+            this.removeRestFilter(ALL_FILTER);
             this.setRestFilter(URI_FILTER, filter);
             filterName = URI_FILTER;
         }
@@ -89,7 +91,7 @@ var SuspiciousStore = assign(new RestStore(ProxyConstants.API_SUSPICIOUS), {
         this.emitChangeFilter();
     },
     getFilter: function () {
-        return filter;
+        return this.getRestFilter(filterName);
     },
     emitChangeFilter: function () {
         this.emit(CHANGE_FILTER_EVENT);
