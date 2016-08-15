@@ -125,8 +125,6 @@ class OA(object):
         self._logger.info("Adding headers")
         self._proxy_scores_headers = [  str(key) for (key,value) in self._conf['proxy_score_fields'].items() ]
 
-        # add file content filtering only required columns.
-        # self._proxy_scores = [ [ conn[i] for i in self._conf['column_indexes_filter'] ] for conn in self._proxy_results ]
         self._proxy_scores = self._proxy_results[:]
  
  
@@ -243,13 +241,12 @@ class OA(object):
                 hash_list.append(conn_hash)
                 clientip = conn[self._conf["proxy_score_fields"]["clientip"]]
                 fulluri = conn[self._conf["proxy_score_fields"]["fulluri"]]
-                date=conn[self._conf["proxy_score_fields"]["p_date"]].split('/')
+                date=conn[self._conf["proxy_score_fields"]["p_date"]].split('-')
                 if len(date) == 3:
-                    year=date[2]
-                    month=date[0].zfill(2)
-                    day=date[1].zfill(2)                
+                    year=date[0]
+                    month=date[1].zfill(2)
+                    day=date[2].zfill(2)                
                     hh=(conn[self._conf["proxy_score_fields"]["p_time"]].split(":"))[0]
-                    # print hh
                     self._get_proxy_details(fulluri,clientip,conn_hash,year,month,day,hh,proxy_iana)
 
 
@@ -272,7 +269,7 @@ class OA(object):
             with open(edge_tmp) as proxy_details_csv:
                 rows = csv.reader(proxy_details_csv, delimiter=',', quotechar='"')
                 next(proxy_details_csv)
-                update_rows = [[conn[0]] + [conn[1]] + [conn[2]] + [conn[3]] + [conn[4]] + [proxy_iana.get_name(conn[5],"proxy_http_rcode")  if proxy_iana else conn[5]] + [conn[6]] + [conn[7]] + [conn[8]] + [conn[9]] + [conn[10]] + [conn[11]] + [conn[12]] + [conn[13]] + [conn[14]] for conn in rows]
+                update_rows = [[conn[0]] + [conn[1]] + [conn[2]] + [conn[3]] + [conn[4]] + [proxy_iana.get_name(conn[5],"proxy_http_rcode") if proxy_iana else conn[5]] + [conn[6]] + [conn[7]] + [conn[8]] + [conn[9]] + [conn[10]] + [conn[11]] + [conn[12]] + [conn[13]] + [conn[14]] if len(conn) > 0 else [] for conn in rows]
                 update_rows = filter(None, update_rows)
                 header = ["p_date","p_time","clientip","host","webcat","respcode","reqmethod","useragent","resconttype","referer","uriport","serverip","scbytes","csbytes","fulluri"]
                 update_rows.insert(0,header)
