@@ -3,11 +3,13 @@
   "version": "1.1.0",
   "description": "Open Network Insight :: UI",
   "repository": "https://github.com/Open-Network-Insight/oni-oa",
+  "license": "Apache License, Version 2.0",
   "dependencies": {
     "bootstrap": "3.3.5",
     "bootstrap-datepicker": "1.6.0",
     "bootstrap-jquery": "^3.3.2",
     "d3": "^3.5.17",
+    "d3-hierarchy": "^1.0.2",
     "d3-interpolate": "^1.1.0",
     "d3-queue": "^1.0.1",
     "d3-tip": "^0.6.7",
