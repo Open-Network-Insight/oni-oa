@@ -38,6 +38,7 @@ class OA(object):
         self._ingest_summary_path = None
         self._dns_scores = []
         self._dns_scores_headers = []
+        self._results_delimiter = '\t'
 
         # get app configuration.
         self._oni_conf = Util.get_oni_conf()
@@ -110,7 +111,7 @@ class OA(object):
 
             # read number of results based in the limit specified.
             self._logger.info("Reading {0} dns results file: {1}".format(self._date,dns_results))
-            self._dns_results = Util.read_results(dns_results,self._limit)[:]        
+            self._dns_results = Util.read_results(dns_results,self._limit,self._results_delimiter)[:]
             if len(self._dns_results) == 0: self._logger.error("There are not flow results.");sys.exit(1)
 
         else:
