@@ -25,6 +25,7 @@ body.oni.oni_easy_mode {
   display: none;
 }
 
+
 .oni.oni_easy_mode .widget-area > .widget-subarea > .widget-box
 {
   position: relative;
@@ -68,21 +69,62 @@ body.oni.oni_easy_mode {
   background-image: url(./ajax-loader.gif);
 }
 
+/* Classes for the tooltip */
+.oni-tooltip .tooltip-inner {
+    word-wrap: break-word;
+}
+
+.oni-text-wrapper.overflown {
+  color: red;
+}
+
+.oni-text-wrapper {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    width: 12em;
+}
+
+.oni-text-wrapper.oni-text-sm {
+    width: 6em;
+}
+
+.oni-text-wrapper.oni-text-lg {
+    width: 18em;
+}
+
+.oni-text-wrapper.oni-text-xlg {
+    width: 30em;
+}
+
+/* Classes for the threat investigation notebook*/
 body[data-notebook-name*="Threat"] .widget-area .widget-box div table{
-  margin-top:10px;
+  margin:10px 10px 20px 0px;
+  font-size:12px;
 }
 
 
 body[data-notebook-name*="Threat"] .widget-area .widget-box div table td, th{
   border: solid 1px #CCC;
-  padding: 0 6px;
+  padding: 3px;
   background-color: #FFF;
+  line-height:14px;
 }
 
+body[data-notebook-name*="Threat"] .widget-area .widget-box div table td{
+  height:25px;  
+  max-width: 180px;
+  width:100px;
+}
 
 body[data-notebook-name*="Threat"] .widget-area .widget-box div table th{
   background-color: #0071C5;
   color: #FFF;
   text-align: center;
+}  
+
+body[data-notebook-name*="Threat"] .oni.oni_easy_mode .widget-area > .widget-subarea,
+body[data-notebook-name*="Threat"] .widget-area > .widget-subarea
+{
+  width: 90%;
 }
- 

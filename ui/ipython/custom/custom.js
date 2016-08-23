@@ -1,3 +1,20 @@
+$(function() {
+  $('body').tooltip({
+    selector: '.oni-text-wrapper[data-toggle]',
+    container: 'body',
+    template: '<div class="oni-tooltip tooltip" role="tooltip"><div class="tooltip-arrow"></div><div class="tooltip-inner"></div></div>',
+    title: function() {
+      return $(this).html();
+    },
+    html: true
+  });
+});
+
+$('body').on('show.bs.tooltip', '.oni-text-wrapper', function() {
+  return this.clientWidth !== this.scrollWidth || this.clientHeight !== this.scrollHeight;
+});
+
+
 require(['jquery'], function($)
 {
     var easyMode = {
@@ -13,7 +30,7 @@ require(['jquery'], function($)
             total: 0,
             execution_queue: []
         }
-    };
+    }
     /**
      * Trigger reload event on parent document
      */
@@ -101,6 +118,11 @@ require(['jquery'], function($)
 
         $('#oni_easy_mode_loader_progress').text(Math.floor(p));
     }
+
+
+
+
+
 
     function easyModeBootStrap (IPython)
     {
@@ -286,6 +308,9 @@ require(['jquery'], function($)
             cell.output_area.clear_output(false, true);
         });
 
+        
+
+
         $(function ()
         {
             console.info('ONI: DOM is ready');
@@ -293,6 +318,7 @@ require(['jquery'], function($)
             easyMode.stage |= easyMode.DOM_READY;
 
             easyModeBootStrap(IPython);
+
         });
     });
 });
