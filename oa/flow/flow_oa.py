@@ -44,12 +44,12 @@ class OA(object):
         self._oni_conf = Util.get_oni_conf()  
 
         # get scores fields conf
-        conf_file = "{0}/etc/flow_conf.json".format(self._scrtip_path)
+        conf_file = "{0}/flow_conf.json".format(self._scrtip_path)
         self._conf = json.loads(open (conf_file).read(),object_pairs_hook=OrderedDict)     
-
+ 
         # initialize data engine
         self._db = self._oni_conf.get('conf','DBNAME').replace("'","").replace('"','') 
-        self._engine = Data(self._db,self._logger)
+        self._engine = Data(self._db, self._table_name,self._logger)
               
     def start(self):       
         
@@ -119,8 +119,8 @@ class OA(object):
         self._logger.info("Adding headers based on configuration file: score_fields.json")
         self._flow_scores = [ [ str(key) for (key,value) in self._conf['flow_score_fields'].items()] ]
 
-        ldaab_index = self._conf["flow_results_fileds"]["lda_score_ab"]
-        ldaba_index = self._conf["flow_results_fileds"]["lda_score_ba"]
+        ldaab_index = self._conf["flow_results_fields"]["lda_score_ab"]
+        ldaba_index = self._conf["flow_results_fields"]["lda_score_ba"]
 
         # filter results add sev and rank.
         self._logger.info("Filtering required columns based on configuration")       
