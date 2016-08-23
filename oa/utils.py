@@ -71,12 +71,12 @@ class Util(object):
 		return get_results_cmd
 
 	@classmethod
-	def read_results(cls,file,limit):
+	def read_results(cls,file,limit, delimiter=','):
 		
 		# read csv results.
 		result_rows = []
 		with open(file, 'rb') as results_file:
-			csv_reader = csv.reader(results_file)
+			csv_reader = csv.reader(results_file, delimiter = delimiter)
 			for i in range(0, int(limit)):
 				try:
 					row = csv_reader.next()
