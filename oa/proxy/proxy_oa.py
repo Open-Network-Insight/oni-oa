@@ -40,6 +40,7 @@ class OA(object):
         self._proxy_scores = []
         self._proxy_scores_headers = []
         self._proxy_extra_columns = []
+        self._results_delimiter = '\t'
 
         # get app configuration.
         self._oni_conf = Util.get_oni_conf()
@@ -115,7 +116,7 @@ class OA(object):
 
             # read number of results based in the limit specified.
             self._logger.info("Reading {0} proxy results file: {1}".format(self._date,proxy_results))
-            self._proxy_results = Util.read_results(proxy_results,self._limit)[:]        
+            self._proxy_results = Util.read_results(proxy_results,self._limit,self._results_delimiter)[:]        
             if len(self._proxy_results) == 0: self._logger.error("There are not proxy results.");sys.exit(1)
         else:
             self._logger.error("There was an error getting ML results from HDFS")
@@ -176,7 +177,6 @@ class OA(object):
                 rep_results = {k: "{0}::{1}".format(rep_results.get(k, ""), result.get(k, "")).strip('::') for k in set(rep_results) | set(result)}
 
             self._proxy_scores = [ conn + [ rep_results[conn[key]] ]   for conn in self._proxy_scores  ]
-
         
     def _add_severity(self):
         # Add severity column
