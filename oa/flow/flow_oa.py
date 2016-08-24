@@ -39,6 +39,7 @@ class OA(object):
         self._ipynb_path = None
         self._ingest_summary_path = None
         self._flow_scores = []
+        self._results_delimiter = '\t'
 
         # get app configuration.
         self._oni_conf = Util.get_oni_conf()  
@@ -108,7 +109,7 @@ class OA(object):
 
             # read number of results based in the limit specified.
             self._logger.info("Reading {0} flow results file: {1}".format(self._date,flow_results))
-            self._flow_results = Util.read_results(flow_results,self._limit)          
+            self._flow_results = Util.read_results(flow_results,self._limit,self._results_delimiter)
             if len(self._flow_results) == 0: self._logger.error("There are not flow results.");sys.exit(1)
 
         else:
@@ -123,7 +124,7 @@ class OA(object):
         ldaba_index = self._conf["flow_results_fields"]["lda_score_ba"]
 
         # filter results add sev and rank.
-        self._logger.info("Filtering required columns based on configuration")       
+        self._logger.info("Filtering required columns based on configuration")
         self._flow_scores.extend([ [0] +  [ conn[i] for i in self._conf['column_indexes_filter'] ] + [(conn[ldaab_index] if (conn[ldaab_index]<= conn[ldaba_index]) else conn[ldaba_index])] + [n]  for n, conn in enumerate(self._flow_results) ])
      
     def _create_flow_scores_csv(self):
