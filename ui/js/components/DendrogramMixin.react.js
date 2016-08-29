@@ -20,7 +20,7 @@ function countLeafNodes(root)
 
     root.children.forEach(function (child)
     {
-        if (child.children)
+        if (child.children && child.children.length>0)
         {
             count += countLeafNodes(child);
         }
@@ -33,9 +33,9 @@ function countLeafNodes(root)
     return count;
 }
 
-function buildDendrogram (root, ipsrc)
+function buildDendrogram (root)
 {
-    var width, height, cluster, diagonal, svg, root, nodes, leafNodes, node, links, link;
+    var width, height, cluster, diagonal, svg, nodes, leafNodes, node, links, link;
 
     // Build data tree structure
 
