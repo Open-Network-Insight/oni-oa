@@ -118,10 +118,10 @@
         z-index: 2;
     }
 
-    .oni-frame-content > .panel.no-heading > .panel-body {      
-        padding-top: 0px;      
+    .oni-frame-content > .panel.no-heading > .panel-body {
+        padding-top: 0px;
     }
-    
+
     .oni-frame-content > .panel > .panel-body {
         height: 100%;
         padding: 35px 0 0 0;
@@ -177,13 +177,13 @@ prevent the active panel from collapsing
  .storyboard #incident_list, .storyboard .comment_summary  {
     list-style: none;
     text-align: left;
- } 
+ }
 
 /**    IMPACT ANALYSIS     **/
 .sb_impact rect.background {
     fill: none;
     pointer-events: all;
-} 
+}
 
 .sb_impact .axis {
     shape-rendering: crispEdges;
@@ -195,7 +195,7 @@ prevent the active panel from collapsing
     stroke-width: .5px;
 }
 
-.sb_impact svg{    
+.sb_impact svg{
     font: 10px sans-serif;
 }
 
@@ -257,7 +257,7 @@ prevent the active panel from collapsing
 .sb_timeline svg, .sb_timeline #legend{
     font: 10px sans-serif;
 }
- 
+
 .sb_timeline .zoom {
     fill: transparent;
     cursor: pointer;
@@ -284,4 +284,23 @@ prevent the active panel from collapsing
 
 .sb_timeline .graph-body .line circle {
     opacity: 0.4;
+}
+
+.oni-tooltip .tooltip-inner {
+    word-wrap: break-word;
+}
+
+.oni-text-wrapper {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    width: 12em;
+}
+
+.oni-text-wrapper.oni-text-sm {
+    width: 6em;
+}
+
+.oni-text-wrapper.oni-text-lg {
+    width: 18em;
 }

@@ -19,7 +19,7 @@ var SuspiciousPanel = React.createClass({
     highestRep = OniUtils.getHighestReputation(reps);
 
     return (
-      <p key={'dns_qry_name_' + idx} className={'text-' + OniUtils.CSS_RISK_CLASSES[highestRep]}>
+      <p key={'dns_qry_name_' + idx} className={'oni-text-wrapper text-' + OniUtils.CSS_RISK_CLASSES[highestRep]} data-toggle="tooltip">
         {query}
       </p>
     );

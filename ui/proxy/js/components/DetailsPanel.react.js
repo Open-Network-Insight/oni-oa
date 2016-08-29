@@ -11,6 +11,34 @@ var DetailsPanel = React.createClass({
     _render_p_date_cell: function (date, item) {
         return date + ' ' + item.p_time;
     },
+    _render_host_cell(host) {
+        return (
+            <p className="oni-text-wrapper" data-toggle="tooltip">
+                {host}
+            </p>
+        );
+    },
+    _render_useragent_cell(useragent) {
+        return (
+            <p className="oni-text-wrapper" data-toggle="tooltip">
+                {useragent}
+            </p>
+        );
+    },
+    _render_referer_cell(referer) {
+        return (
+            <p className="oni-text-wrapper" data-toggle="tooltip">
+                {referer}
+            </p>
+        );
+    },
+    _render_fulluri_cell(fulluri) {
+        return (
+            <p className="oni-text-wrapper" data-toggle="tooltip">
+                {fulluri}
+            </p>
+        );
+    },
     // Hidden cells
     _render_p_time_cell: false,
     _render_duration_cell: false,
