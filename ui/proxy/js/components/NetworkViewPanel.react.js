@@ -78,8 +78,7 @@ var NetworkViewPanel = React.createClass({
         this.state.root.py = height / 2;
 
         this.force = d3.layout.force()
-            .charge(function (d) { return d._children ? -d.size/100 : -30; })
-            .linkDistance(function (d) { return d.target._children ? 80 : 30; })
+            .charge(d => (d.root?-15:-10)*this.sizeScale(d.size))
             .size([width-100, height-100])
             .on('tick', this.tick);
 
@@ -120,7 +119,7 @@ var NetworkViewPanel = React.createClass({
     draw: function () {
         var nodes = this.flatten(this.state.root),
             links = d3.layout.tree().links(nodes),
-            selectedThreat, ids;
+            selectedThreat, ids, nodeEnter;
 
         selectedThreat = SuspiciousStore.getSelectedThreat();
 
@@ -145,21 +144,37 @@ var NetworkViewPanel = React.createClass({
         this.link.exit().remove();
 
         // Update nodes
-        this.node = this.canvas.selectAll('.node')
+        this.node = this.canvas.selectAll('.node, .proxy_node')
             .data(nodes.filter((node) => node.visible), function(d) { return d.id; });
 
-        this.node.transition()
-            .attr("r", function(d) {
+        this.node.transition().select('circle')
+            .attr("r", d => {
                 return this.sizeScale( d.root || d.expanded ? 0 : d.size );
-            }.bind(this));
+            });
 
-        this.node.enter().append("circle")
-            .attr("class", d => {
-                return 'node ' + (ids.indexOf(d.id)>-1 ? 'blink_me ':'') + OniUtils.CSS_RISK_CLASSES[d.rep] + (!d.children ? ' leaf' : '');
+        nodeEnter = this.node.enter().append('g');
+
+        nodeEnter.filter(node => !node.root)
+            .call(this.force.drag)
+            .on('mousedown', d => {
+                d3.event.stopPropagation();
             })
-            .attr("r", function(d) {
-                return this.sizeScale( d.root || d.expanded ? 0 : d.size );
-            }.bind(this))
+            .append("circle")
+                .attr("r", d => this.sizeScale( d.root || d.expanded ? 0 : d.size ));
+
+        nodeEnter.filter(node => node.root)
+                                        .append('text')
+                                                .classed('glyphicon', true)
+                                                .attr('x', -10)
+                                                .attr('y', 10)
+                                                .text('\u002a');
+
+        nodeEnter
+            .attr('class', d => OniUtils.CSS_RISK_CLASSES[d.rep])
+            .classed('node', d => !d.root)
+            .classed('proxy_node', d => d.root)
+            .classed('blink_me', d => ids.indexOf(d.id)>-1)
+            .classed('leaf', d => !d.children)
             .on("dblclick", this.onNodeDblClick)
             .on("contextmenu", (d, i) => {
                 d3.event.preventDefault();
@@ -199,8 +214,7 @@ var NetworkViewPanel = React.createClass({
             })
             .on("mouseout", () => {
                 this.tip.hide();
-            })
-            .call(this.force.drag);
+            });
 
         // Delete old nodes
         this.node.exit().remove();
@@ -289,14 +303,14 @@ var NetworkViewPanel = React.createClass({
                 tooltip: 'Double click to toggle child nodes',
                 rep: -1,
                 visible: true,
-                expanded: true,
+                expanded: false,
                 root: true
             };
 
             refs = {};
 
             state.data.forEach(function (item) {
-                var rep, methodKey, hostKey, uriKey, clientKey, path, obj;
+                var rep, methodKey, hostKey, uriKey, clientKey, obj;
 
                 if (item.host=='-') {
                     console.log('Skipping invalid URL: ' + item.fulluri);
@@ -306,9 +320,8 @@ var NetworkViewPanel = React.createClass({
                 rep = OniUtils.getHighestReputation(item.uri_rep);
                 data.rep = Math.max(data.rep, rep);
                 methodKey = item.reqmethod;
-                path = ['children'];
                 if (refs[methodKey]===undefined) {
-                    obj = {id: methodKey, name: item.reqmethod, type: 'Method', rep: rep, visible: true};
+                    obj = {id: methodKey, name: item.reqmethod, type: 'Method', rep: rep, visible: true, expanded: false};
 
                     refs[methodKey] = obj;
 
@@ -320,7 +333,7 @@ var NetworkViewPanel = React.createClass({
 
                 hostKey = methodKey + item.host;
                 if (refs[hostKey]===undefined) {
-                    obj = {id: hostKey, name: item.host, type: 'Host', rep: rep, visible: false};
+                    obj = {id: hostKey, name: item.host, type: 'Host', rep: rep, visible: false, expanded: false};
 
                     refs[hostKey] = obj;
 
@@ -338,6 +351,7 @@ var NetworkViewPanel = React.createClass({
                         type: 'Path',
                         rep: rep,
                         visible: false,
+                        expanded: false,
                         isDataFilter: true,
                         filter: item.fulluri,
                         tooltip: 'Secondary click to use URI as filter'
@@ -359,6 +373,7 @@ var NetworkViewPanel = React.createClass({
                         type: 'Ip',
                         rep: rep,
                         visible: false,
+                        expanded: false,
                         isDataFilter: true,
                         tooltip: 'Secondary click to use IP as filter'
                     };
@@ -370,7 +385,7 @@ var NetworkViewPanel = React.createClass({
                     item.resconttype && item.resconttype!='-' && (obj.tooltip+= '<strong>MIME type: </strong>' + item.resconttype + '<br />');
                     item.username && item.username!='-' && (obj.tooltip+= '<strong>Username: </strong>' + item.username + '<br />');
                     item.referer && item.referer!='-' && (obj.tooltip+= '<strong>Referer: </strong>' + item.referer + '<br />');
-                    item.respcode && item.respcode!='-' && (obj.tooltip+= '<strong>Response code: </strong>' + item.respcode + '<br />');
+                    item.respcode && item.respcode!='-' && (obj.tooltip+= `<strong>Response code: </strong>${item.respcode_name} (${item.respcode})<br />`);
                     obj.tooltip+= '<strong>SC bytes: </strong>' + item.scbytes + '<br />';
                     obj.tooltip+= '<strong>CS bytes: </strong>' + item.csbytes;
 

@@ -77,41 +77,51 @@
          * Network View Styles
          **/
 
-        .proxy-force .node {
+        .proxy-force .proxy_node text {
+            font-size: 15pt;
             cursor: pointer;
-            stroke: #939598;
+            stroke: #9ecae1;
+            fill: #eee;
+        }
+
+        .proxy-force .node circle {
+            cursor: pointer;
+            stroke: #9ecae1;
             stroke-width: 1.5px;
             fill: #eee;
         }
 
-        .proxy-force .node.danger {
+        .proxy-force .node.danger circle,
+        .proxy-force .proxy_node.danger text {
             stroke: #ed1c24;
         }
 
-        .proxy-force .node.warning {
+        .proxy-force .node.warning circle,
+        .proxy-force .proxy_node.warning text {
             stroke: #fdb813;
         }
 
-        .proxy-force .node.info {
+        .proxy-force .node.info circle,
+        .proxy-force .proxy_node.info text {
             stroke: #3182bd;
         }
 
-        .proxy-force .node.leaf {
+        .proxy-force .node.leaf circle {
             stroke: #939598;
             fill: #939598;
         }
 
-        .proxy-force .node.leaf.danger {
+        .proxy-force .node.leaf.danger circle {
             fill: #ed1c24;
             stroke: #ed1c24;
         }
 
-        .proxy-force .node.leaf.warning {
+        .proxy-force .node.leaf.warning circle {
             fill: #fdb813;
             stroke: #fdb813;
         }
 
-        .proxy-force .node.leaf.info {
+        .proxy-force .node.leaf.info circle {
             fill: #3182bd;
             stroke: #3182bd;
         }
