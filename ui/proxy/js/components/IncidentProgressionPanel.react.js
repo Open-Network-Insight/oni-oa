@@ -1,18 +1,16 @@
 var $ = require('jquery');
 var d3 = require('d3');
-var d3Interpolate = require('d3-interpolate');
+require('d3-tip')(d3);
 var React = require('react');
 
+var CategoryLayout = require('../../../js/utils/CategoryLayout');
 var ContentLoaderMixin = require('../../../js/components/ContentLoaderMixin.react');
 var ChartMixin = require('../../../js/components/ChartMixin.react');
 var IncidentProgressionStore = require('../stores/IncidentProgressionStore');
 
+var LEGEND_HEIGHT = 50;
 var TRANSITION_DURATION  = 3000;
-// 8 Imaginary columns in total for chart
-var COLS_TOTAL = 8;
-var COLS_REQUESTS = 4.5;
-var COLS_RFERERS = 1.5;
-var COLS_EMPTY = 2;
+var NODE_RADIOUS = 10;
 
 var IncidentProgressionPanel = React.createClass({
     mixins: [ContentLoaderMixin, ChartMixin],
@@ -28,349 +26,460 @@ var IncidentProgressionPanel = React.createClass({
         this.buildChart();
         this.draw();
     },
-    initTree: function (width, height, invertedTree) {
-        return {
-            layout: d3.layout.tree().size([height-30, width-30]),
-            diagonal: d3.svg.diagonal().projection(function(d) { return [d.y, invertedTree?-d.x:d.x]; })
-        };
-    },
     buildChart: function () {
-        var width, height, joint,  element, svg, key;
+        let element, width, height;
 
         element = $(this.getDOMNode());
 
         width = element.width();
         height = element.height();
 
-        this.svg = svg = d3.select(this.getDOMNode()).select('svg.canvas').attr('width', width).attr('height', height);
+        this.d3Dispatch = d3.dispatch('scroll');
+        this.d3Dispatch.on('scroll', this.onScroll);
+        this.svg = d3.select(this.getDOMNode()).selectAll('svg.canvas').attr('width', width).attr('height', height);
 
-        this.reqCanvas = svg.select('g.requests');
-        this.refCanvas = svg.select('g.refered');
+        this.canvas = this.svg.select('g');
 
-        if (!this.reqCanvas.node()) {
-            this.reqCanvas = svg.append('g').classed('requests', true);
-        }
+        if (!this.canvas.node()) {
+            this.canvas = this.svg.append('g').attr('transform', 'translate(0,' + LEGEND_HEIGHT + ')');
 
-        if (!this.refCanvas.node()) {
-            this.refCanvas = svg.append('g').classed('refered', true);
-        }
+            this.svg.on('mousewheel', () => {
+                this.d3Dispatch.scroll.call(this, d3.event);
 
-        joint = (width/COLS_TOTAL) * (COLS_REQUESTS+COLS_EMPTY/2);
-        this.reqCanvas.attr('transform', 'translate(' + joint + ', 15) scale(-1,1)');
-        this.refCanvas.attr('transform', 'translate(' + joint + ', 15)');
-
-        // TODO: Enable zoom behaviour
-        //svg.call(d3.behavior.zoom().on("zoom", this.zoom));
-
-        // Color scales
-
-        this.colorScales = {};
-
-        // TODO: Work on the color range http://bl.ocks.org/mbostock/11415064
-        for (key in this.state.domains) {
-            this.colorScales[key] = d3.scale.linear()
-                                                    .domain([-1, this.state.domains[key].length])
-                                                    // Rainbow
-                                                    .range([d3.hsl(270, .75, .35), d3.hsl(70, 1.5, .8)])
-                                                    .interpolate(d3Interpolate.interpolateCubehelix);
-        }
-    },
-    draw: function () {
-        var requestRoot, referedRoot, node, canvasWidth, width, height, nodes, links;
-
-        node = $(this.getDOMNode());
-        canvasWidth = node.width();
-        height = node.height();
-
-        // Build Refered root node
-        referedRoot = d3.hierarchy({
-            id: this.state.root.id,
-            name: this.state.root.name,
-            type: this.state.root.type,
-            children: this.state.root.referer_for
-        });
-
-        // Init refered tree
-        width = (canvasWidth/COLS_TOTAL) * COLS_RFERERS;
-        this.referedTree = this.initTree(width, height);
-
-        nodes = this.referedTree.layout.nodes(referedRoot);
-        links = this.referedTree.layout.links(nodes);
-
-        // Draw refered chart
-        this.drawTree(this.refCanvas, this.referedTree, referedRoot, nodes, links, 0);
-
-        // Build Requests root node
-        requestRoot = d3.hierarchy({
-            id: this.state.root.id,
-            name: '',
-            type: this.state.root.type,
-            children: this.state.root.requests
-        });
-
-        // Init requests tree
-        width = (canvasWidth/COLS_TOTAL) * COLS_REQUESTS;
-        this.requestsTree = this.initTree(width, height);
-
-        nodes = this.requestsTree.layout.nodes(requestRoot);
-        links = this.requestsTree.layout.links(nodes).map(l => {
-            if (l.source.depth==0) {
-                l.source.x = referedRoot.x;
-                l.source.y = referedRoot.y;
-            }
-
-            return l;
-        });
-
-        // Draw requests chart
-        this.drawTree(this.reqCanvas, this.requestsTree, requestRoot, nodes, links, 1);
-    },
-    drawTree: function (canvas, tree, root, nodes, links, startDepth) {
-        var nodes, links, defaultTransition, enterTransition, exitTransition, d3_node, d3_link;
-
-        // Filter nodes and links based on startDepth
-        nodes = nodes.filter(n => n.depth>=startDepth);
-
-        defaultTransition = d3.transition('default').duration(TRANSITION_DURATION);
-        enterTransition = d3.transition('enter').duration(TRANSITION_DURATION);
-        exitTransition = d3.transition('exit').duration(TRANSITION_DURATION);
-
-        // Draw links
-
-        d3_link = {};
-        d3_link.all = canvas.selectAll('.link').data(links, function (d) {
-            return d.source.data.id + d.target.data.id;
-        });
-
-        d3_link.all.transition(defaultTransition)
-            .attr('d', tree.diagonal);
-
-        function endDiagonal (l) {
-            var o = {
-                x: l.source.x,
-                y: l.source.y
-            };
-
-            return tree.diagonal({
-                source: o,
-                target: o
+                d3.event.stopPropagation();
+                d3.event.preventDefault();
             });
         }
 
-        // Add new links
-        d3_link.enter = d3_link.all.enter().insert('path', '.node')
-            .attr('id', d => d.source.data.id + d.target.data.id)
-            .classed('link', true)
-            .style('opacity', 0)
-            .attr('d', endDiagonal);
+        // Create color scale
+        this.colorScale = (() => {
+            let colorScale = d3.scale.category20().domain(d3.range(20));
 
-        d3_link.enter.transition(enterTransition)
-            .style('opacity', 1)
-            .attr('d', tree.diagonal);
+            return node => {
+                return colorScale(this.state.nodesDomain[node.type]);
+            };
+        })();
 
-        // Delete old links
+        this.ipWindow = {start: 0, length: height * .1 / NODE_RADIOUS};
 
-        d3_link.exit = d3_link.all.exit().transition(exitTransition);
+        this.upArrow = {id: 'upArrow', type: 'clientip', triangle: 'triangle-up', visible: false};
+        this.downArrow = {id: 'downArrow', type: 'clientip', triangle: 'triangle-down', visible: false};
 
-        d3_link.exit
-            .attr('d', endDiagonal)
-            .style('opacity', 0)
-            .remove();
+        // Remove old tips
+        d3.selectAll('.d3-tip').remove();
 
-        // Draw nodes
+        this.tip = d3.tip()
+                .attr('class', 'd3-tip')
+                .style('max-width', width+'px')
+                .style('margin-right', '20px')
+                .html(function (node) {
+                    var html;
 
-        d3_node = {};
-        d3_node.all = canvas.selectAll('.node').data(nodes, function (d) {
-            return d.data.id;
-        });
+                    html = '<h5 class="d3-tip-label">' + node.tooltip.title + '</h5>';
+                    html+= '<p class="d3-tip-message">' + node.tooltip.message + '</p>';
 
-        d3_node.all.transition(defaultTransition)
-            .attr('transform', d => 'translate(' + d.y + ',' + d.x + ')');
-
-        // Add new nodes
-        d3_node.enter = d3_node.all.enter().append('g')
-                                            .attr('id', d => d.data.id)
-                                            .attr('class', d => 'node ' + d.data.type)
-                                            .attr('transform', d => {
-                                                d = d.parent || d;
-                                                return 'translate(' + d.y + ',' + d.x + ')'
-                                            })
-                                            .style('opacity', 0);
-
-        function colorScale (n) {
-            return this.colorScales[n.data.type](this.state.domains[n.data.type].indexOf(n.data.name));
-        };
-
-        d3_node.enter.append('circle')
-                .classed('background', true)
-                .attr('r', 0);
-
-        d3_node.enter.append('circle')
-                .attr('r', 0)
-                .style('fill', colorScale.bind(this))
-                .style('stroke', colorScale.bind(this))
-                .on('mouseover', n => {
-                    this.onMouseOverNode(canvas, n);
+                    return html;
                 })
-                .on('mouseleave', n => {
-                    this.onMouseLeaveNode(canvas)
-                })
-                .on('dblclick', n => {
-                    d3.event.stopPropagation();
-
-                    if (n.data.type=='fulluri') return;
-
-                    if (n.data.children) {
-                        n.data._children = n.data.children;
-                        n.data.children = null;
-                    } else if (n.data._children) {
-                        n.data.children = n.data._children;
-                        n.data._children = null;
-                    }
-
-                    this.drawTree(canvas, tree, root);
+                .offset(function (node) {
+                    return [-10, 0];
                 });
 
-        d3_node.enter.append('text')
-                                .attr('transform', n => {
-                                    return n.data.type=='refered' || n.data.type=='fulluri' ? '' : 'scale(-1,1)'
-                                })
-                                .attr('y', d => d.data.type=='referer' || d.data.type=='refered' ? 30 :-20)
-                                .text(n => n.data.name);
+        this.canvas.call(this.tip);
+    },
+    _createLayout() {
+        let element = $(this.getDOMNode());
+        let categories = ['referer', 'clientip', 'reqmethod', 'resconttype', 'fulluri', 'refered'];
 
-        d3_node.enter.transition(enterTransition)
-            .style('opacity', 1)
-            .attr('transform', d => 'translate(' + d.y + ',' + d.x + ')')
-            .selectAll('circle')
-                .attr('r', 10);
+        return new CategoryLayout()
+                        .size([element.width(), element.height() - (LEGEND_HEIGHT*2)])
+                        .category(function (node) { return node.type; })
+                        .categories(categories)
+                        .link((n1, n2) => {
+                            let correct = n1.type=='fulluri' ? true : n2.type=='fulluri' ? false : categories.indexOf(n1.type)>categories.indexOf(n2.type);
+
+                            return {
+                                source: correct ? n1 : n2,
+                                target: correct ? n2 : n1
+                            };
+                        });
+    },
+    draw: function () {
+        let layout, nodes, links;
+
+        layout = this._createLayout();
+
+        nodes = this.applyWindowToNodes(this.state.nodes);
+
+        let windowEnd = this.ipWindow.start + this.ipWindow.length;
+        let totalIps = this.state.nodes.reduce((total, node) => total + (node.type=='clientip'?1:0), 0);
+        let atStart = this.ipWindow.start<=0;
+        let atEnd = windowEnd>=totalIps;
+
+        // Add dummy ip nodes to allocate space for scroll arrows
+        this.upArrow.visible = !atStart;
+        this.downArrow.visible = !atEnd;
+
+        nodes.unshift(this.upArrow);
+        nodes.push(this.downArrow);
+
+        nodes = layout.nodes(nodes);
+        links = layout.links(nodes);
+
+        let legendNodes = this.layoutCategories(layout.categories(), layout.size());
+
+        // Remove dummy ip nodes from main array and create a new array
+        nodes.splice(nodes.indexOf(this.upArrow), 1);
+        nodes.splice(nodes.indexOf(this.downArrow), 1);
+        let scrollArrowNodes = [this.upArrow, this.downArrow];
+
+        let transitions = {
+            update: d3.transition('transition').duration(TRANSITION_DURATION),
+            enter: d3.transition('enter').duration(TRANSITION_DURATION),
+            exit: d3.transition('transition').duration(TRANSITION_DURATION)
+        };
+
+        this.drawNodes(transitions, nodes);
+        this.drawScrollArrowNodes(transitions, scrollArrowNodes);
+        this.drawLinks(transitions, links);
+        this.drawChatLegend(transitions, legendNodes);
+    },
+    getRootLocation() {
+        return [this.state.root.x, this.state.root.y];
+    },
+    getNodeLocation(n, removing) {
+        if (n.type=='clientip') {
+            let delta = !d3.event || !d3.event.deltaY ? -100 : removing ? -d3.event.deltaY : d3.event.deltaY;
+
+            return [n.x, (delta<0 ? -LEGEND_HEIGHT-NODE_RADIOUS : $(this.getDOMNode()).height()+NODE_RADIOUS)];
+        }
+        else {
+            return this.getRootLocation();
+        }
+    },
+    drawNodes(transitions, nodes) {
+        let nodesUpdate = this.canvas.selectAll('.node').data(nodes, n => n.id);
+
+        let nodesEnter = nodesUpdate.enter();
+        let nodesExit = nodesUpdate.exit();
+
+        // Add new nodes
+        let nodeEnter = nodesEnter.insert('g', '.legend')
+            .attr('id', n => n.id)
+            .attr('class', n => n.type)
+            .style('opacity', 0)
+            .classed('node', true)
+            .attr('transform', n => 'translate('+ this.getNodeLocation(n) +')');
+
+        nodeEnter.append('circle')
+            .classed('background', true)
+            .attr('r', NODE_RADIOUS);
+
+        nodeEnter.append('circle')
+            .style('stroke', this.colorScale)
+            .style('fill', this.colorScale)
+                .attr('r', NODE_RADIOUS)
+            .on('mouseenter', this.onMouseEntersNode)
+            .on('mouseleave', this.onMouseLeavesNode);
+
+        nodeEnter.append('text')
+            .attr('y', n => n.type=='referer' || n.type=='refered' ? 30 :-20)
+            .text(n => n.name);
 
         // Remove old nodes
-        d3_node.exit = d3_node.all.exit().transition(exitTransition);
-
-        d3_node.exit
-            .attr('transform', n => 'translate(' + n.parent.y + ',' + n.parent.x + ')')
+        nodesExit.interrupt().transition(transitions.exit)
+            .attr('transform', n => 'translate(' + this.getNodeLocation(n, true) + ')')
             .style('opacity', 0)
             .remove();
 
-        d3_node.exit.selectAll('circle')
-            .attr('r', 0);
+        // Update all nodes
+        nodesUpdate.interrupt().transition(transitions.update)
+            .style('opacity', 1)
+            .attr('transform', n => 'translate('+n.x+','+n.y+')');
     },
-    onMouseOverNode: function (canvas, node) {
-        // Do nothing on root node
-        if (node.data.type=='fulluri') return;
+    drawLinks(transitions, links) {
+        let diagonal = d3.svg.diagonal();
 
-        this.svg.selectAll('.node').classed('blur', n => n.data.type!='fulluri');
-        this.svg.selectAll('.link').classed('blur', true);
+        let linksUpdate = this.canvas.selectAll('.link').data(links, l => l.source.id+l.target.id);
 
-        function unblurNode(n) {
-            var id, parentId;
+        let linksEnter = linksUpdate.enter();
+        let linksExit = linksUpdate.exit();
 
-            // Unblur node
-            id = n.data.id;
-            this.svg.select('#' + id + '.' + n.data.type).classed('active', true).classed('blur', false);
+        // Add links to new nodes
+        linksEnter.insert('path', '.node')
+            .attr('id', l => l.source.id + l.target.id)
+            .classed('link', true)
+            .style('opacity', 0)
+            .attr('d', diagonal);
 
-            if (!n.parent) return;
+        // Move links to final position
+        linksUpdate.interrupt().transition(transitions.update)
+            .style('opacity', 1)
+            .attr('d', diagonal);
 
-            // Unblur link to parent
-            parentId = n.parent.data.id;
-            this.svg.select('#' + parentId + id).classed('active', true).classed('blur', false);
+        linksExit.interrupt().transition(transitions.exit)
+            .style('opacity', 0)
+            .remove();
+    },
+    drawScrollArrowNodes(transitions, nodes) {
+        let updateSel = this.canvas.selectAll('.arrow').data(nodes.filter(arrow => arrow.visible), arrow => arrow.id);
+
+        let enterSel = updateSel.enter();
+        let exitSel = updateSel.exit();
+
+        updateSel.interrupt().transition(transitions.update)
+            .attr('transform', arrow => 'translate(' + arrow.x + ',' + arrow.y + ')');
+
+        enterSel.insert('g', '.node')
+            .classed('arrow', true)
+            .attr('transform', arrow => 'translate(' + arrow.x + ',' + arrow.y + ')')
+            .on('mouseenter', this.startScrollInterval)
+            .on('mouseleave', this.clearScrollInterval)
+            .append('path')
+                .attr('d', d3.svg.symbol().type(arrow => arrow.triangle));
+
+        exitSel
+            .each(this.clearScrollInterval)
+            .remove();
+    },
+    drawChatLegend(transitions, legends) {
+        let updateSel = this.canvas.selectAll('.legend').data(legends, legend => legend.id);
+        let enterSel = updateSel.enter();
+        let exitSel = updateSel.exit();
+
+        updateSel.interrupt().transition(transitions.update)
+            .attr('transform', legend => 'translate(' + legend.x + ',' + legend.y + ')');
+
+
+        let legendEnter = enterSel.append('g')
+            .classed('legend', true)
+            .attr('transform', legend => 'translate(' + legend.x + ',' + legend.y + ')');
+
+        legendEnter.append('rect')
+            .attr('fill', this.colorScale)
+            .attr('stroke', this.colorScale);
+
+        legendEnter.append('text')
+            .text(legend => {
+                return legend.name;
+            });
+
+        exitSel.remove();
+    },
+    applyWindowToNodes(rawNodes) {
+        let windowEnd = this.ipWindow.start + this.ipWindow.length;
+        let totalIps = 0;
+        let visibleIpNodes = rawNodes
+                                    .filter(node => node.type=='clientip')
+                                    .filter((ipNode, idx) => {
+                                        totalIps++;
+
+                                        return idx>=this.ipWindow.start && idx<windowEnd
+                                    })
+                                    .map(ipNode => ipNode.id);
+
+        return rawNodes.filter(node => {
+            return (
+                    (node.type=='clientip' && visibleIpNodes.indexOf(node.id)>=0)
+                    || node.type=='fulluri' || node.type=='refered'
+                ) ? true : node.paths.some(path => {
+                    return path.some(nodeId => visibleIpNodes.indexOf(nodeId)>=0);
+                })
+        });
+    },
+    layoutCategories(categories, size) {
+        let labels = {
+            refered: 'Referred',
+            fulluri: 'Threat',
+            resconttype: 'ContentType',
+            reqmethod: 'Method',
+            clientip: 'IP',
+            referer: 'Referer'
         };
 
-        node.descendants().forEach(unblurNode.bind(this));
-        node.ancestors().forEach(unblurNode.bind(this));
+        let categoryWidth = size[0] / categories.length;
+
+        let xOffset = (categoryWidth / 2) - 20;
+        let yOffset = $(this.getDOMNode()).height() - (LEGEND_HEIGHT*1.5);
+
+        let nodes = categories.map((category, idx) => {
+            return {
+                id: category,
+                name: labels[category],
+                type: category,
+                x: xOffset + (categoryWidth*idx) - 20,
+                y: yOffset
+            };
+        });
+
+        return nodes;
     },
-    onMouseLeaveNode: function (canvas) {
+    startScrollInterval(arrow) {
+        arrow.interval = setInterval(this.fireSrollEvent, 500, arrow);
+    },
+    fireSrollEvent(arrow) {
+        this.d3Dispatch.scroll.call(this, {deltaY: 200 * (/up$/.test(arrow.triangle) ? -1 : 1)});
+    },
+    clearScrollInterval(arrow) {
+        arrow.interval && clearInterval(arrow.interval);
+        arrow.interval && delete arrow.interval;
+    },
+    onMouseEntersNode: function (node) {
+        // Do nothing on root node
+        if (node==this.state.root) {
+            this.tip.show.call(this, node);
+
+            return;
+        }
+
+        this.canvas.selectAll('.node').classed('blur', n => n.type!='fulluri');
+        this.canvas.selectAll('.link').classed('blur', true);
+
+        function unblur(selector) {
+            // Unblur node
+            this.canvas.select(selector).classed('active', true).classed('blur', false);
+        };
+
+        node.paths.forEach(path => {
+            let lastId = 'fulluri';
+            path.forEach(function (id) {
+                //if (!parent) return;
+                unblur.call(this, '#'+id);
+                unblur.call(this, '#'+lastId+id);
+
+                lastId = id;
+            }.bind(this));
+        });
+    },
+    onMouseLeavesNode: function (node) {
+        if (node==this.state.root) {
+            this.tip.hide();
+
+            return;
+        }
+
         this.svg.selectAll('.node,.link').classed('blur', false);
         this.svg.selectAll('.active').classed('active', false);
     },
-    zoom() {
-        this.reqCanvas.attr('transform', 'translate(' + d3.event.translate + ')scale(-' + d3.event.scale + ',' + d3.event.scale + ')');
-        this.refCanvas.attr('transform', 'translate(' + d3.event.translate + ')scale(' + d3.event.scale + ')');
+    onScroll(e) {
+        let lastStart = this.ipWindow.start;
+
+        this.ipWindow.start += e.deltaY/200;
+
+        if (e.deltaY<0) {
+            this.ipWindow.start = Math.floor(this.ipWindow.start);
+        }
+        else {
+            this.ipWindow.start = Math.ceil(this.ipWindow.start);
+        }
+
+        if ((this.ipWindow.start + this.ipWindow.length)>this.state.ipCount) {
+            this.ipWindow.start = this.state.ipCount-this.ipWindow.length;
+        }
+
+        if (this.ipWindow.start<0) this.ipWindow.start = 0;
+
+        lastStart!=this.ipWindow.start && this.draw();
     },
-    _onChange: function () {
-        var state, nodes;
+    _getPathFromRequest(request, pathItems) {
+        return [
+            pathItems.reduce((str, item) => str + item + request[item], ''),
+            pathItems.filter(item => item!='referer' || request.referer!='-').map(item => item + request[item])
+        ];
+    },
+    _createNode(id, type, name) {
+        return {
+            id,
+            type,
+            name,
+            links: {},
+            paths: {}
+        }
+    },
+    _addRequestNodes(nodes, requests) {
+        let metaData = ['resconttype', 'reqmethod', 'clientip', 'referer'];
+
+        requests.forEach((request, idx) => {
+            let parentKey = 'fulluri';
+
+            metaData.forEach(type => {
+                let id = type + idx;
+                let key = type + request[type];
+
+                if (type=='referer' && request.referer=='-') return;
+
+                if (!(key in nodes)) {
+                    nodes[key] = this._createNode(id, type, request[type]);
+                }
+
+                let path = this._getPathFromRequest(request, metaData, nodes);
+                nodes[key].paths[path[0]] = path[1];
+                nodes[key].links[parentKey] = nodes[parentKey];
+                nodes[parentKey].links[key] = nodes[key];
+
+                parentKey = key;
+            });
+        });
+    },
+    _addReferedNodes(nodes, refered) {
+        let parentId = 'fulluri';
+
+        refered.forEach((refered_uri, idx) => {
+            let id = 'refered' + idx;
+
+            if (refered_uri=='-') return;
+
+            nodes[id] = this._createNode(id, 'refered', refered_uri);
+
+            nodes[id].paths[refered_uri] = [id];
+            nodes[id].links[parentId] = nodes[parentId];
+            nodes[parentId].links[id] = nodes[id];
+        });
+    },
+    _onChange() {
+        var state;
 
         state = IncidentProgressionStore.getData();
 
         if (state.data) {
-            state.root = {id: 'fulluri', name: 'Threat', type: 'fulluri', requests: []};
-
-            state.domains = {
-                fulluri: {},
-                resconttype: {},
-                reqmethod: {},
-                clientip: {},
-                referer: {}
-            };
-            state.domains.fulluri[state.data.fulluri] = true;
-
-            nodes = {
-                fulluri: {},
-                resconttype: {},
-                reqmethod: {},
-                clientip: {},
-                referer: {}
+            let nodes = {
+                fulluri: state.root=this._createNode('fulluri', 'fulluri', 'Threat')
             };
 
-            // Create fake root node
-            nodes.fulluri['fulluri' + state.data.fulluri] = {children: state.root.requests};
+            state.root.tooltip = {
+                title: 'URI',
+                message: state.data.fulluri
+            };
 
-            state.data.requests.forEach((request, idx) => {
-                var parentKey;
+            this._addRequestNodes(nodes, state.data.requests);
+            this._addReferedNodes(nodes, state.data.referer_for);
 
-                parentKey = 'fulluri' + state.data.fulluri;
 
-                // Create nodes
-                [
-                    {field: 'resconttype', parentField: 'fulluri'},
-                    {field: 'reqmethod', parentField: 'resconttype'},
-                    {field: 'clientip', parentField: 'reqmethod'},
-                    {field: 'referer', parentField: 'clientip'}
-                ].forEach(levelData => {
-                    var field, parentField, key;
+            state.nodesDomain = {
+                refered: 1,
+                fulluri: 3,
+                resconttype: 5,
+                reqmethod: 15,
+                clientip: 17,
+                referer: 19
+            };
+            state.ipCount = 0;
 
-                    field = levelData.field;
-                    parentField = levelData.parentField;
-                    key = parentKey + field + request[field];
+            state.nodes = Object.keys(nodes).map((key, idx) => {
+                let node = nodes[key];
 
-                    if (field=='referer' && (!request.referer || request.referer=='-')) return;
-
-                    if (key in nodes[field]) {
-                        // Do nothing
-                    }
-                    else {
-                        nodes[field][key] = {id: field + idx, name: request[field], type: field, children: []};
-
-                        nodes[parentField][parentKey].children.push(nodes[field][key]);
-
-                        state.domains[field][request[field]] = true;
-                    }
-
-                    parentKey = key;
+                node.paths = Object.keys(node.paths).map(key => {
+                    return node.paths[key].map(nodeKey => nodes[nodeKey].id);
                 });
+                node.type=='clientip' && state.ipCount++;
+
+                return node;
             });
 
-            state.domains = {
-                fulluri: Object.keys(state.domains.fulluri),
-                resconttype: Object.keys(state.domains.resconttype),
-                reqmethod: Object.keys(state.domains.reqmethod),
-                clientip: Object.keys(state.domains.clientip),
-                referer: Object.keys(state.domains.referer),
-                refered: []
-            };
-
-            state.root.referer_for = state.data.referer_for
-                                                        .filter(refered_uri => refered_uri && refered_uri!='-')
-                                                        .map((refered_uri, idx) => {
-                                                            state.domains.refered.push(refered_uri);
-
-                                                            return {
-                                                                id: 'refered' + idx, name: refered_uri, type: 'refered'
-                                                            }
-                                                        });
+            this.setState(state);
         }
-
-        this.setState(state);
+        else {
+            this.replaceState(state);
+        }
     }
 });
 

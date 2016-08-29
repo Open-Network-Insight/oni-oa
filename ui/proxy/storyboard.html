@@ -46,9 +46,8 @@
         }
 
         /* Incident Progression */
-        .oni-incident-progression .node text {
-            top: -10px;
-            text-anchor: middle;
+        .oni-incident-progression text {
+            alignment-baseline: middle;
             stroke: rgb(0, 0, 0);
             stroke-width: 0px;
             font: 10pt verdana, sans-serif;
@@ -60,6 +59,10 @@
             -moz-user-select: none;      /* Firefox */
             -ms-user-select: none;       /* Internet Explorer/Edge */
             user-select: none;
+        }
+
+        .oni-incident-progression .node text {
+            text-anchor: middle;
         }
 
         .oni-incident-progression .node circle {
@@ -80,7 +83,7 @@
         }
 
         .oni-incident-progression .blur {
-            opacity: 0.2 !important;
+            opacity: 0.1 !important;
         }
 
         .oni-incident-progression .active {
@@ -91,6 +94,18 @@
             fill: none;
             stroke: #ccc;
             stroke-width: 1.5px;
+        }
+
+        .oni-incident-progression .legend rect {
+            fill-opacity: 0.3;
+            stroke-opacity: 1;
+            width: 10px;
+            height: 10px;
+            transform: translate(0,-5px);
+        }
+
+        .oni-incident-progression .legend text {
+            transform: translate(15px, 0);
         }
     </style>
 </head>
@@ -181,7 +196,7 @@
     <script type="application/javascript" src="../node_modules/jquery/dist/jquery.min.js"></script>
     <script type="application/javascript" src="../node_modules/d3/d3.min.js"></script>
     <script type="application/javascript" src="../node_modules/d3-hierarchy/build/d3-hierarchy.min.js"></script>
-    <script type="application/javascript" src="../js/lib/eventDrops.js"></script> 
+    <script type="application/javascript" src="../js/lib/eventDrops.js"></script>
     <script type="application/javascript" src="../node_modules/bootstrap/dist/js/bootstrap.min.js"></script>
     <script type="application/javascript" src="../node_modules/bootstrap-datepicker/dist/js/bootstrap-datepicker.min.js"></script>
     <script type="application/javascript" src="js/storyboard.bundle.min.js"></script>

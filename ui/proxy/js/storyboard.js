@@ -1,3 +1,4 @@
+require("babel-polyfill");
 var React = require('react');
 
 var DateInput = require('../../js/components/DateInput.react');
