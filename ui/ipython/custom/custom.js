@@ -1,20 +1,3 @@
-$(function() {
-  $('body').tooltip({
-    selector: '.oni-text-wrapper[data-toggle]',
-    container: 'body',
-    template: '<div class="oni-tooltip tooltip" role="tooltip"><div class="tooltip-arrow"></div><div class="tooltip-inner"></div></div>',
-    title: function() {
-      return $(this).html();
-    },
-    html: true
-  });
-});
-
-$('body').on('show.bs.tooltip', '.oni-text-wrapper', function() {
-  return this.clientWidth !== this.scrollWidth || this.clientHeight !== this.scrollHeight;
-});
-
-
 require(['jquery'], function($)
 {
     var easyMode = {
@@ -318,6 +301,21 @@ require(['jquery'], function($)
             easyMode.stage |= easyMode.DOM_READY;
 
             easyModeBootStrap(IPython);
+
+            $('body').tooltip({
+                selector: '.oni-text-wrapper[data-toggle]',
+                container: 'body',
+                template: '<div class="oni-tooltip tooltip" role="tooltip"><div class="tooltip-arrow"></div><div class="tooltip-inner"></div></div>',
+                title: function() {
+                  return $(this).html();
+                },
+                html: true
+            });
+
+            $('body').on('show.bs.tooltip', '.oni-text-wrapper', function() {
+              return this.clientWidth !== this.scrollWidth || this.clientHeight !== this.scrollHeight;
+            });
+
 
         });
     });
