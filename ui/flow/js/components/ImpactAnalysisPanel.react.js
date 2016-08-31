@@ -203,14 +203,14 @@ function stack(i) {
 }
 
 
-var ImpactAnalysisPanel = React.createClass({  
+var ImpactAnalysisPanel = React.createClass({
     componentDidMount: function ()
     {
-        ImpactAnalysisStore.addChangeDataListener(this._onChange); 
+        ImpactAnalysisStore.addChangeDataListener(this._onChange);
     },
     componentWillUnmount: function ()
     {
-        ImpactAnalysisStore.removeChangeDataListener(this._onChange); 
+        ImpactAnalysisStore.removeChangeDataListener(this._onChange);
     },
     _onChange: function ()
     {
@@ -242,7 +242,7 @@ var ImpactAnalysisPanel = React.createClass({
         delete state.data;
 
         this.setState(state);
-    }, 
+    },
     getInitialState: function ()
     {
         return {loading: false};
@@ -253,7 +253,11 @@ var ImpactAnalysisPanel = React.createClass({
 
         if (this.state.error)
         {
-          content = this.state.error;
+            content = (
+                <div className="text-center text-danger">
+                    {this.state.error}
+                </div>
+            );
         }
         else if (this.state.loading)
         {

@@ -146,7 +146,11 @@ var DendrogramMixin = {
 
     if (this.state.error)
     {
-      content = this.state.error;
+        content = (
+            <div className="text-center text-danger">
+                {this.state.error}
+            </div>
+        );
     }
     else if (this.state.loading)
     {

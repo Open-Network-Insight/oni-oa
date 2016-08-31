@@ -1,10 +1,10 @@
-var React = require('react');   
+var React = require('react');
 var queue = require('d3-queue');
 var GlobeViewStore = require('../stores/GlobeViewStore');
 
 var m0, o0, fill, proj, sky, path, swoosh, links, svg, width, height;
 var dataset, container;
- 
+
 function buildGraph(root, ipsrc) {
     container = $(this.getDOMNode());
     container.html("");
@@ -51,7 +51,7 @@ function buildGraph(root, ipsrc) {
         .attr("width", width)
         .attr("height", height)
         .on("mousedown", mousedown);
-                
+
     queue()
         .defer(d3.json, "../flow/world-110m.json")
         .defer(getRawData)
@@ -59,11 +59,11 @@ function buildGraph(root, ipsrc) {
 
 }
 
-function getRawData(callback){ 
+function getRawData(callback){
     callback(null,dataset.children);
 }
 
-function ready(error, world, places) {  
+function ready(error, world, places) {
     if (error != null && error != undefined) {
         container.html('<p class="lead text-danger"> Oops! looks like the data for this incident is missing. </p>');
         return;
@@ -150,7 +150,7 @@ function ready(error, world, places) {
         .enter().append("path")
         .attr("class", "point")
         .attr("d", path);
-  
+
     places.sourceips.forEach(function (a, j) {
         places.destips.forEach(function (b, k) {
             if (j == k) {
@@ -270,16 +270,16 @@ function mouseup() {
         m0 = null;
     }
 }
- 
 
-var GlobeViewPanel = React.createClass({  
+
+var GlobeViewPanel = React.createClass({
     componentDidMount: function ()
     {
-        GlobeViewStore.addChangeDataListener(this._onChange); 
+        GlobeViewStore.addChangeDataListener(this._onChange);
     },
     componentWillUnmount: function ()
     {
-        GlobeViewStore.removeChangeDataListener(this._onChange); 
+        GlobeViewStore.removeChangeDataListener(this._onChange);
     },
     _onChange: function ()
     {
@@ -295,14 +295,14 @@ var GlobeViewPanel = React.createClass({
         if (!state.loading)
         {
             filterName = GlobeViewStore.getFilterName();
-            root.children = state.data; 
+            root.children = state.data;
         }
 
         state.root = root;
         delete state.data;
 
         this.setState(state);
-    }, 
+    },
     getInitialState: function ()
     {
         return {loading: false};
@@ -313,7 +313,11 @@ var GlobeViewPanel = React.createClass({
 
         if (this.state.error)
         {
-            content = this.state.error;
+            content = (
+                <div className="text-center text-danger">
+                    {this.state.error}
+                </div>
+            );
         }
         else if (this.state.loading)
         {

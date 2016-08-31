@@ -4,7 +4,7 @@ var ContentLoaderMixin = {
     renderError: function () {
         return (
             <div className="oni-content-loader">
-                <span className="text-danger">{this.state.error}</span>
+                <div className="text-center text-danger">{this.state.error}</div>
             </div>
         );
     },

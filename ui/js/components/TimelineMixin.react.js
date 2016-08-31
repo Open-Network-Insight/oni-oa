@@ -11,7 +11,7 @@ function buildGraph(root, ipsrc) {
     var data = [];
     var dataDate = root.date.split(' ')[0];
     var endTime = Date.parse(dataDate + " 23:59");
- 
+
     var startTime = Date.parse(dataDate + " 00:00");
     csvdata = root.children;
 
@@ -59,7 +59,7 @@ function buildGraph(root, ipsrc) {
         if (event.dates.length > 0) {
             data.push(event);
         }
-    }    
+    }
 
     var color = d3.scale.category10();
 
@@ -78,7 +78,7 @@ function buildGraph(root, ipsrc) {
     });
 
     var width = chartPlaceholder.width()-5; // 5 is the magic number to avoid having horizontal scroll bar
- 
+
     var graph = d3.chart.eventDrops()
         .start(new Date(startTime))
         .end(new Date(endTime))
@@ -102,10 +102,10 @@ function buildGraph(root, ipsrc) {
         );
 
     var element = d3.select(chartPlaceholder[0]).append('div').datum(data);
-    
-    graph(element); 
+
+    graph(element);
 }
- 
+
 
 var TimelineMixin = {
   getInitialState: function ()
@@ -114,11 +114,15 @@ var TimelineMixin = {
   },
    render:function()
     {
-        var content; 
+        var content;
 
         if (this.state.error)
         {
-            content = this.state.error;
+            content = (
+                <div className="text-center text-danger">
+                    {this.state.error}
+                </div>
+            );
         }
         else if (this.state.loading)
         {
@@ -132,14 +136,14 @@ var TimelineMixin = {
         {
             content = [<div id="graph" key="timeline_graph"></div>, <div id="legend" key="timeline_legend"></div>];
         }
-        return ( 
-                <div>{content}</div>  
+        return (
+                <div>{content}</div>
         )
     },
     componentDidUpdate: function ()
     {
         if (!this.state.loading && !this.state.error)
-        { 
+        {
             buildGraph.call(this, this.state.root);
         }
     }
