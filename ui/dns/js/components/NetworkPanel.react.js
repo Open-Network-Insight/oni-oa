@@ -45,13 +45,13 @@ function filterDataAndBuildGraph()
   //Get the nodes from the data
   var nodes = data.map(function (d)
                        {
-                          var _name = getDnsNodeName(d.dns_qry_name);
-                          return { name: _name, isInternal: 1, fullName: d.dns_qry_name };
+                          var top_domain = getDnsNodeName(d.dns_qry_name);
+                          return { name: top_domain, isInternal: 1};
                         });
 
   var nodes_2 = data.map(function (d)
                          {
-                            return { name: d.ip_dst, isInternal: 0, fullName: d.ip_dst};
+                            return { name: d.ip_dst, isInternal: 0};
                           });
 
   nodes = getUniqueNodes(nodes.concat(nodes_2));
@@ -327,16 +327,16 @@ function filterDataAndBuildGraph()
 //load Chord diagram on the node click
 function nodeclick (d)
 {
-  EdInActions.selectIp(d.fullName);
+  EdInActions.selectIp(d.name);
   OniActions.toggleMode(OniConstants.DETAILS_PANEL, OniConstants.VISUAL_DETAILS_MODE);
   EdInActions.reloadVisualDetails();
 }
 
-function nodeContextualClick (d, i)
+function nodeContextualClick (d)
 {
   d3.event.preventDefault();
 
-  EdInActions.setFilter(d.fullName);
+  EdInActions.setFilter(d.name);
   EdInActions.reloadSuspicious();
 }
 
