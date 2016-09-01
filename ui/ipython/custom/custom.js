@@ -29,9 +29,7 @@ require(['jquery'], function($)
      */
     function showEasyMode()
     {
-        if (easyMode.ready) $(document.body).addClass('oni').addClass('oni_easy_mode');
-
-        $(document.body).removeClass('oni_ninja_mode');
+        $(document.body).addClass('oni_easy_mode').removeClass('oni_ninja_mode');
     }
 
     /**
@@ -41,15 +39,7 @@ require(['jquery'], function($)
      */
     function hideEasyMode()
     {
-        $(document.body).addClass('oni_ninja_mode').removeClass('oni').removeClass('oni_easy_mode');
-    }
-
-    /**
-     *  Look for UI widgets
-     */
-    function isEasyModePresent()
-    {
-        return $('.widget-area > .widget-subarea > .widget-box').length>0;
+        $(document.body).addClass('oni_ninja_mode').removeClass('oni_easy_mode');
     }
 
     function insertProgressIndicator()
@@ -67,6 +57,8 @@ require(['jquery'], function($)
      */
     function removeProgressIndicator()
     {
+        $(document.body).removeClass('oni_easy_mode_loading');
+
         $('#oni_easy_mode_loader').remove();
     }
 
@@ -83,6 +75,8 @@ require(['jquery'], function($)
      */
     function showBuildingUiIndicator()
     {
+        $(document.body).addClass('oni_easy_mode_loading');
+
         insertProgressIndicator();
 
         updateProgressIndicator(
@@ -102,51 +96,36 @@ require(['jquery'], function($)
         $('#oni_easy_mode_loader_progress').text(Math.floor(p));
     }
 
-
-
-
-
-
     function easyModeBootStrap (IPython)
     {
         if (easyMode.stage!=easyMode.ENV_READY) return;
 
-        // 1. Look for widgets
-        if (isEasyModePresent())
+        // 1 Build widgets
+        easyMode.building = true;
+
+        console.info('ONI: Building easy mode...');
+
+        // 2 Create an execution queue to display progress
+        easyMode.cells.execution_queue = [];
+
+        easyMode.cells.total = 0;
+        IPython.notebook.get_cells().forEach(function (cell)
         {
-            // 1.1 Widgets present
-            easyMode.ready = true;
-            // 1.1.1 Make sure they are visible
-            removeProgressIndicator();
-            showEasyMode();
-        }
-        else
-        {
-            // 1.2 Widgets not present
-            easyMode.building = true;
-
-            console.info('ONI: Building easy mode...');
-
-            // 1.2.1 Create an exection queue to display progress
-            easyMode.cells.execution_queue = [];
-
-            easyMode.cells.total = 0;
-            IPython.notebook.get_cells().forEach(function (cell)
+            if (cell.cell_type==='code')
             {
-                if (cell.cell_type==='code')
-                {
-                    easyMode.cells.total++;
-                }
-            });
-            // Make it twice to show progress when requesting execution
-            easyMode.cells.total++;
+                easyMode.cells.total++;
+            }
+        });
 
-            // 1.2.2 Execute all cells ( Generate UI )
-            IPython.notebook.execute_all_cells();
+        // Add an extra cell to show progress when requesting execution
+        easyMode.cells.total++;
 
-            updateBuildingUiIndicator();
-        }
+        // 3 Execute all cells ( Generate UI )
+        IPython.notebook.execute_all_cells();
+
+        updateBuildingUiIndicator();
     }
+
     function isEasyModeAvailable()
     {
         return window.parent!=window;
@@ -161,8 +140,8 @@ require(['jquery'], function($)
     }
 
     if (isEasyModeAvailable()) {
-        // Add oni CSS class for styling
-        $(document.body).addClass('oni');
+        // Add oni CSS classes (easymode enabled by default)
+        $(document.body).addClass('oni').addClass('oni_easy_mode').addClass('oni_easy_mode_loading');
 
         // Listen for URL's hash changes
         $(window).on('hashchange', function ()
@@ -176,6 +155,23 @@ require(['jquery'], function($)
             showBuildingUiIndicator();
         });
     }
+
+    // Enable oni tooltip text wrapper
+    $(function () {
+        $('body').tooltip({
+            selector: '.oni-text-wrapper[data-toggle]',
+            container: 'body',
+            template: '<div class="oni-tooltip tooltip" role="tooltip"><div class="tooltip-arrow"></div><div class="tooltip-inner"></div></div>',
+            title: function () {
+                return $(this).html();
+            },
+            html: true
+        });
+
+        $('body').on('show.bs.tooltip', '.oni-text-wrapper', function () {
+            return this.clientWidth !== this.scrollWidth || this.clientHeight !== this.scrollHeight;
+        });
+    });
 
     /**
      * The following code enables toggle from normal user mode (wizard) and ninja node (notebook UI)
@@ -291,9 +287,6 @@ require(['jquery'], function($)
             cell.output_area.clear_output(false, true);
         });
 
-        
-
-
         $(function ()
         {
             console.info('ONI: DOM is ready');
@@ -301,22 +294,6 @@ require(['jquery'], function($)
             easyMode.stage |= easyMode.DOM_READY;
 
             easyModeBootStrap(IPython);
-
-            $('body').tooltip({
-                selector: '.oni-text-wrapper[data-toggle]',
-                container: 'body',
-                template: '<div class="oni-tooltip tooltip" role="tooltip"><div class="tooltip-arrow"></div><div class="tooltip-inner"></div></div>',
-                title: function() {
-                  return $(this).html();
-                },
-                html: true
-            });
-
-            $('body').on('show.bs.tooltip', '.oni-text-wrapper', function() {
-              return this.clientWidth !== this.scrollWidth || this.clientHeight !== this.scrollHeight;
-            });
-
-
         });
     });
 });

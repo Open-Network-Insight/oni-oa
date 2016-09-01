@@ -13,7 +13,7 @@ function buildGraph(root, ipsrc) {
     var endTime = Date.parse(dataDate + " 23:59");
 
     var startTime = Date.parse(dataDate + " 00:00");
-    csvdata = root.children;
+    var csvdata = root.children;
 
     names = [];
 
@@ -44,14 +44,12 @@ function buildGraph(root, ipsrc) {
     }
 
     function parseddate(sdate) {
-        dtpart = sdate.split(" ")
-        dpart = dtpart[0].split("-")
-        tpart = dtpart[1].split(":")
+        let dtpart = sdate.split(" ")
+        let dpart = dtpart[0].split("-")
+        let tpart = dtpart[1].split(":")
         //The 7 numbers specify the year, month, day, hour, minute, second, in that order:
         //2014-07-08 02:38:59
-        pdate = new Date(parseInt(dpart[0]), parseInt(dpart[1]) - 1, parseInt(dpart[2]), parseInt(tpart[0]) - 1, parseInt(tpart[1]) - 1, parseInt(tpart[2]) - 1);
-
-        return pdate
+        return new Date(parseInt(dpart[0]), parseInt(dpart[1]) - 1, parseInt(dpart[2]), parseInt(tpart[0]) - 1, parseInt(tpart[1]) - 1, parseInt(tpart[2]) - 1);
     }
 
     for (var i = 0; i < names.length; i++) {

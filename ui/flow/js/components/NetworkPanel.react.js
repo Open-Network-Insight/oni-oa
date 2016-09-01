@@ -79,8 +79,8 @@ function draw(selectedEdgeId, sourceIpNodeId, targetIpNodeId, data) {
 
   var svg = d3.select(this.getDOMNode())
                 .append('svg')
-                    .attr('width', '100%')
-                    .attr('height', '100%')
+                    .attr('width', w)
+                    .attr('height', h)
                 .append('g');
 
   // Graph force

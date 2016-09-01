@@ -36,42 +36,19 @@
     <meta name="msapplication-TileImage" content="../images/favicon/ms-icon-144x144.png">
     <meta name="theme-color" content="#ffffff">
     <style>
-    .dendrogram .node.depth_1 text
-    {
-        transform: translateY(-10px);
-    }
+        .oni-row {
+            height: 50%;
+        }
 
-    td.dns_qry_name .oni-text-wrapper
-    {
-        width: 100%;
-    }
-
-    /**
-     * Small and Desktop CSS
-     **/
-    @media(max-width: 768px) {
-        /***************************************
-         **             Suspicious            **
-         ***************************************/
-        th.dns_qry_name, td.dns_qry_name
+        td.dns_qry_name .oni-text-wrapper
         {
             max-width: 200px;
         }
-    }
 
-    /**
-     * Desktop CSS
-    **/
-    @media(min-width: 769px) {
-        /***************************************
-         **             Suspicious            **
-         ***************************************/
-        th.dns_qry_name, td.dns_qry_name
+        .dendrogram .node.depth_1 text
         {
-            width: 50%;
-            max-width: 300px;
+            transform: translateY(-10px);
         }
-    }
     </style>
 </head>
 <body>

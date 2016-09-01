@@ -1,43 +1,84 @@
-/*******************************
- **         Responsive        **
- *******************************/
-.oni-frame-content > .panel > .panel-heading {
+/* All devices */
+.oni-maximized {
+    width: 100% !important;
+    height: 100% !important;
+}
+
+.oni-minimized {
+    position: absolute;
+    top: -1000000px;
+    left: -1000000px;
+}
+
+.row.oni-row {
+    margin: 0;
+}
+
+.oni-frame > .oni-frame-content > .panel > .panel-heading {
     height: 35px;
 }
 
-.oni-frame-content > .panel > .panel-body {
-    padding: 0;
-}
-
-.oni-frame-content > .panel > .panel-body > .panel-body-container {
-    overflow-x: auto;
-}
-
-.oni-frame-content > .panel > .panel-heading .panel-toolbar {
+.oni-frame > .oni-frame-content > .panel > .panel-heading .panel-toolbar {
     list-style: none;
     padding: 0;
     margin: 0;
 }
 
-.oni-frame-content > .panel > .panel-heading .panel-toolbar li {
+.oni-frame > .oni-frame-content > .panel > .panel-heading .panel-toolbar li {
     display: inline-block;
     padding-left: 5px;
     cursor: pointer;
 }
 
-/**
- * Mobile CSS
-**/
-@media(max-width: 767px) {
+.oni-frame > .oni-frame-content > .panel > .panel-body {
+    padding: 0;
 }
 
-/**
- * Small and Desktop CSS
- **/
-@media(min-width: 768px) {
+.oni-frame > .oni-frame-content > .panel > .panel-body > .panel-body-container.container-box {
+    overflow: hidden !important;
+}
+
+.oni-frame > .oni-frame-content > .panel > .panel-body > .panel-body-container.container-box > .inner-container-box {
+    max-height: 100%;
+    overflow: auto;
+}
+
+.oni-frame > .oni-frame-content > .panel > .panel-body > .panel-body-container {
+    width: 100%;
+    overflow-x: auto;
+}
+
+.oni-frame .panel-body-container.container-box > * {
+    height: 100%;
+    width: 100%;
+    padding: 0;
+    margin: 0;
+    border: none;
+}
+
+/* Extra small devices (phones, less than 768px) */
+
+/* Small devices (tablets, 768px and up) */
+@media (max-width: 991px) {
+    .oni-row {
+        min-height: 400px;
+    }
+
+    .oni-frame,
+    .oni-frame > .oni-frame-content,
+    .oni-frame > .oni-frame-content > .panel,
+    .oni-frame > .oni-frame-content > .panel > .panel-body,
+    .oni-frame > .oni-frame-content > .panel > .panel-body > .panel-body-container,
+    .oni-frame > .oni-frame-content > .panel > .panel-body > .panel-body-container.container-box > *
+    {
+        min-height: inherit;
+    }
+}
+
+/* Medium devices (desktops, 992px and up, two columns) */
+@media (min-width: 992px) {
     html, body {
         height: 100%;
-        min-height: 900px;
         overflow-x: hidden;
     }
 
@@ -57,99 +98,51 @@
         padding: 94px 0 0 0;
     }
 
-    #oni-content > .row {
+    #oni-content > .oni-row {
         margin: 0;
-    }
-
-    .oni-maximized {
-        width: 100% !important;
-        height: 100% !important;
-    }
-
-    .oni-minimized {
-        position: absolute;
-        top: -1000000px;
-        left: -1000000px;
     }
 
     .oni-frame {
         height: 100%;
-        padding-left: 10px;
-        padding-right: 10px;
+        padding: 0;
     }
 
-    .oni-frame-content {
+    .oni-frame > .oni-frame-content {
         height: 100%;
-        padding: 10px 0;
+        padding: 10px;
     }
 
-    .oni-frame-content > .panel {
+    .oni-frame > .oni-frame-content > .panel {
         width: 100%;
         height: 100%;
         margin: 0;
         position: relative;
     }
 
-    .oni-frame-content > .panel > .panel-heading .panel-toolbar li.resize-small,
-    .oni-frame.oni-maximized .oni-frame-content > .panel > .panel-heading .panel-toolbar li.fullscreen {
-       display: none;
-    }
-
-    .row.oni-maximized .oni-frame-content > .panel > .panel-heading .panel-toolbar li.resize-small {
-       display: inline-block;
-    }
-}
-
-/**
- * Desktop CSS
-**/
-@media(min-width: 992px) {
-    body {
-        overflow-x: hidden;
-    }
-
-    #oni-content > .row {
-        height: 50%;
-    }
-
-    .oni-frame-content > .panel > .panel-heading {
+    .oni-frame > .oni-frame-content > .panel > .panel-heading {
         width: 100%;
         position: absolute;
         z-index: 2;
     }
 
-    .oni-frame-content > .panel.no-heading > .panel-body {
-        padding-top: 0px;
-    }
-
-    .oni-frame-content > .panel > .panel-body {
+    .oni-frame > .oni-frame-content > .panel > .panel-body {
         height: 100%;
+        width: 100%;
         padding: 35px 0 0 0;
         overflow: hidden;
     }
 
-    .oni-frame-content > .panel > .panel-body > .panel-body-container {
-        height: 100%;
-        overflow: auto;
-    }
-
-    .oni-frame .panel-body-container.container-box {
-        overflow: hidden !important;
-    }
-
-    .oni-frame .panel-body-container.container-box > .inner-container-box {
-      max-height: 100%;
-      overflow: auto;
-    }
-
-    .oni-frame .panel-body-container.container-box > * {
-        height: 100%;
+    .oni-frame > .oni-frame-content > .panel.no-heading > .panel-body {
         width: 100%;
-        padding: 0;
-        margin: 0;
-        border: none;
+        padding-top: 0px;
+    }
+
+    .oni-frame > .oni-frame-content > .panel > .panel-body > .panel-body-container {
+        height: 100%;
     }
 }
+
+/* Large devices (large desktops, 1200px and up) */
 
 /*******************************
  **           ONI             **
@@ -174,10 +167,10 @@ prevent the active panel from collapsing
     text-decoration: underline;
 }
 
- .storyboard #incident_list, .storyboard .comment_summary  {
+.storyboard #incident_list, .storyboard .comment_summary  {
     list-style: none;
     text-align: left;
- }
+}
 
 /**    IMPACT ANALYSIS     **/
 .sb_impact rect.background {
@@ -268,12 +261,12 @@ prevent the active panel from collapsing
 .sb_timeline .x-axis path,
 .sb_timeline .x-axis line,
 {
-    path,
-    line {
-        stroke: black;
-        fill: none;
-        stroke-width: 1px;
-    }
+path,
+line {
+    stroke: black;
+    fill: none;
+    stroke-width: 1px;
+}
 }
 
 .sb_timeline .y-axis g line {

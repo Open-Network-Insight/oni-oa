@@ -34,16 +34,16 @@ var IPythonNotebookPanel = React.createClass({
                 },
                 getButtons: function () {
                     var className = 'glyphicon-education';
-    
+
                     if (easyMode) {
                         className = 'education';
                     }
                     else {
                         className = 'user';
                     }
-    
+
                     return [
-                        <button key="easyModeBtn" type="button" className="btn btn-default btn-xs pull-right"
+                        <button key="easyModeBtn" type="button" className="btn btn-default btn-xs pull-right hidden-xs hidden-sm"
                                 onClick={closure.toggleIPythonNotebookPanel}>
                             <span className={'glyphicon glyphicon-' + className} aria-hidden="true"></span>
                         </button>

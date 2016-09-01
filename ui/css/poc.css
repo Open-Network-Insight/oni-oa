@@ -303,12 +303,3 @@ path.line {
     stroke: #000;
     stroke-width: .5px;
 }
-
-/**
- * Desktop CSS
-**/
-@media(min-height: 700px) {
-    body {
-        /*overflow: hidden;*/
-    }
-}

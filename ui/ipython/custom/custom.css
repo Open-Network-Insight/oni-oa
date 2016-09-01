@@ -1,135 +1,145 @@
-body.oni.oni_easy_mode {
-    background-color: white !important;
+.oni.oni_easy_mode {
+    background-color: white;
 }
 
-.oni #header,
-.oni #site,
-.oni #pager
-{
-  position: absolute;
-  top: -10000px;
-  left: -10000px;
+.oni.oni_easy_mode:not(.oni_easy_mode_loading) #site {
+    height: 100% !important;
 }
 
-.oni.oni_easy_mode .widget-area
-{
-    margin-top: 20px;
-  position: fixed;
-  top: 0px;
-  left: 0px;
-  width: 100%;
+.oni.oni_easy_mode:not(.oni_easy_mode_loading) #notebook {
+    padding: 0 !important;
+    box-shadow: none;
+    -webkit-box-shadow: none;
 }
 
-.oni.oni_easy_mode .widget-area > .prompt
-{
-  display: none;
+.oni.oni_easy_mode #header,
+.oni.oni_easy_mode #pager,
+.oni.oni_easy_mode #tooltip,
+.oni.oni_easy_mode #notebook > .end_space,
+.oni.oni_easy_mode .cell:not(.code_cell),
+.oni.oni_easy_mode .cell.code_cell > .input,
+.oni.oni_easy_mode .cell.code_cell > .widget-area > .prompt {
+    position: absolute !important;
+    top: -1000000000px;
+    left: -1000000000px;
 }
 
-
-.oni.oni_easy_mode .widget-area > .widget-subarea > .widget-box
-{
-  position: relative;
-  margin: 0 auto;
+.oni.oni_easy_mode.oni_easy_mode_loading .cell.code_cell {
+    position: absolute !important;
+    top: -1000000000px;
+    left: -1000000000px;
 }
 
-.oni.oni_ninja_mode #header,
-.oni.oni_ninja_mode #site,
-.oni.oni_ninja_mode #pager
-{
-  position: relative;
-  top: 0px;
-  left: 0px;
+.oni.oni_easy_mode #notebook-container {
+    -webkit-box-shadow: none;
+    box-shadow: none;
 }
 
-.oni #oni_easy_mode_loader
-{
-  text-align: center;
-  margin-top: 50px;
+.oni.oni_easy_mode .cell.code_cell {
+    border-color: transparent !important;
+    padding: 0 !important;
 }
 
-.oni.oni_easy_mode #oni_easy_mode_loader
+/*****************************************
+ **         EASY MODE SPINNER           **
+ *****************************************/
+.oni #oni_easy_mode_loader {
+    display: none;
+}
+
+.oni.oni_easy_mode #oni_easy_mode_loader {
+    display: block;
+    position: fixed;
+    top: 10px;
+    width: 100%;
+    text-align: center;
+    margin-top: 50px;
+}
+
+.oni.oni_easy_mode #oni_easy_mode_loader_spinner
 {
-  position: fixed;
-  top: 10px;
-  right: 10px;
-  margin-top: 0px;
+    display: inline-block;
+    width: 16px;
+    height: 11px;
+    margin-left: 5px;
+    background-image: url(./ajax-loader.gif);
+}
+
+.oni.oni_easy_mode:not(.oni_easy_mode_loading) #oni_easy_mode_loader
+{
+    right: 25px;
+    margin-top: 0px;
+    width: auto;
 }
 
 .oni.oni_ninja_mode #oni_easy_mode_loader
 {
-  display: none;
+    display: none;
 }
 
-.oni #oni_easy_mode_loader_spinner
-{
-  display: inline-block;
-  width: 16px;
-  height: 11px;
-  margin-left: 5px;
-  background-image: url(./ajax-loader.gif);
-}
-
-/* Classes for the tooltip */
-.oni-tooltip .tooltip-inner {
+/*****************************************
+ **         ONI TOOLTIP STYLING         **
+ *****************************************/
+.oni .oni-tooltip .tooltip-inner {
     word-wrap: break-word;
 }
 
-.oni-text-wrapper.overflown {
-  color: red;
+.oni .oni-text-wrapper.overflown {
+    color: red;
 }
 
-.oni-text-wrapper {
+.oni .oni-text-wrapper {
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
     width: 12em;
 }
 
-.oni-text-wrapper.oni-text-sm {
+.oni .oni-text-wrapper.oni-text-sm {
     width: 6em;
 }
 
-.oni-text-wrapper.oni-text-lg {
+.oni .oni-text-wrapper.oni-text-lg {
     width: 18em;
 }
 
-.oni-text-wrapper.oni-text-xlg {
+.oni .oni-text-wrapper.oni-text-xlg {
     width: 30em;
 }
 
 /* Classes for the threat investigation notebooks*/
 body.oni_easy_mode[data-notebook-name*="Threat"] .widget-area .widget-box div table,
 body.oni_ninja_mode[data-notebook-name*="Threat"] .widget-area .widget-box div table{
-  margin:10px 10px 20px 0px;
-  font-size:12px;
+    margin:10px 10px 20px 0px;
+    font-size:12px;
 }
 
 
 body.oni_easy_mode[data-notebook-name*="Threat"] .widget-area .widget-box div table td, th,
 body.oni_ninja_mode[data-notebook-name*="Threat"] .widget-area .widget-box div table td, th{
-  border: solid 1px #CCC;
-  padding: 3px;
-  background-color: #FFF;
-  line-height:14px;
+    border: solid 1px #CCC;
+    padding: 3px;
+    background-color: #FFF;
+    line-height:14px;
 }
 
 body.oni_easy_mode[data-notebook-name*="Threat"] .widget-area .widget-box div table td,
 body.oni_ninja_mode[data-notebook-name*="Threat"] .widget-area .widget-box div table td{
-  height:25px;  
-  max-width: 180px;
-  width:100px;
+    height:25px;
+    max-width: 180px;
+    width:100px;
 }
 
 body.oni_easy_mode[data-notebook-name*="Threat"] .widget-area .widget-box div table th,
 body.oni_ninja_mode[data-notebook-name*="Threat"] .widget-area .widget-box div table th{
 
-  background-color: #0071C5;
-  color: #FFF;
-  text-align: center;
-}  
+    background-color: #0071C5;
+    color: #FFF;
+    text-align: center;
+}
 
 body.oni_easy_mode[data-notebook-name*="Threat"] .widget-area > .widget-subarea,
 body.oni_ninja_mode[data-notebook-name*="Threat"] .widget-area > .widget-subarea
 {
-  width: 90%;
+    width: 90%;
 }

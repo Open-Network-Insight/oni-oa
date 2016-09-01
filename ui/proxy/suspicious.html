@@ -34,42 +34,18 @@
     <meta name="msapplication-TileImage" content="../images/favicon/ms-icon-144x144.png">
     <meta name="theme-color" content="#ffffff">
     <style>
+        .oni-row {
+            height: 50%;
+        }
+
+        td.host .oni-text-wrapper, td.useragent .oni-text-wrapper,
         td.referer .oni-text-wrapper, td.fulluri .oni-text-wrapper
         {
-            width: 100%;
+            max-width: 200px;
         }
 
         td.uri_rep {
             white-space: nowrap;
-        }
-
-        /**
-         * Small and Desktop CSS
-         **/
-        @media(max-width: 768px) {
-            /***************************************
-             **             Suspicious            **
-             ***************************************/
-            th.useragent, th.referer, th.fulluri,
-            td.useragent, td.referer, td.fulluri
-            {
-                max-width: 200px;
-            }
-        }
-
-        /**
-         * Desktop CSS
-        **/
-        @media(min-width: 769px) {
-            /***************************************
-             **             Suspicious            **
-             ***************************************/
-            th.useragent, th.referer, th.fulluri,
-            td.useragent, td.referer, td.fulluri
-            {
-                width: 50%;
-                max-width: 300px;
-            }
         }
 
         /**
