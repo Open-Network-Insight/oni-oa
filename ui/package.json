@@ -29,6 +29,7 @@
     "watchify": "~2.1.0"
   },
   "scripts": {
+    "postinstall": "npm run build-all",
     "build-all": "npm run build-flow && npm run build-dns && npm run build-proxy",
     "build-flow": "cd flow/ && npm run build-all && cd ../",
     "build-dns": "cd dns/ && npm run build-all && cd ../",
