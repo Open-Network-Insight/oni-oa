@@ -36,20 +36,14 @@ var CommentsStore = require('./stores/CommentsStore');
 React.render(
   <div id="oni-content">
     <PanelRow maximized>
-        <div className="oni-sidebar col-md-4">
-            <PanelRow>
-                <Panel className="col-md-12" title={OniConstants.COMMENTS_PANEL}>
-                    <ExecutiveThreatBriefingPanel store={CommentsStore} />
-                </Panel>
-            </PanelRow>
-            <PanelRow>
-                <Panel className="col-md-12 sb_timeline" title={OniConstants.TIMELINE_PANEL}>
-                    <TimelinePanel />
-                </Panel>
-            </PanelRow>
-        </div>
-        <Panel className="col-md-8" title={OniConstants.INCIDENT_PANEL} container>
+        <Panel className="col-md-4 oni-sidebar" title={OniConstants.COMMENTS_PANEL} expandable>
+            <ExecutiveThreatBriefingPanel store={CommentsStore} />
+        </Panel>
+        <Panel className="col-md-8 oni-stage" title={OniConstants.INCIDENT_PANEL} container expandable>
             <IncidentProgressionPanel className="oni-incident-progression"/>
+        </Panel>
+        <Panel className="col-md-4 oni-sidebar sb_timeline" title={OniConstants.TIMELINE_PANEL} expandable>
+            <TimelinePanel />
         </Panel>
     </PanelRow>
   </div>,

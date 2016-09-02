@@ -36,7 +36,7 @@ var IncidentProgressionPanel = React.createClass({
 
         this.d3Dispatch = d3.dispatch('scroll');
         this.d3Dispatch.on('scroll', this.onScroll);
-        this.svg = d3.select(this.getDOMNode()).selectAll('svg.canvas').attr('width', width).attr('height', height);
+        this.svg = d3.select(this.getDOMNode()).selectAll('svg.canvas');
 
         this.canvas = this.svg.select('g');
 
@@ -104,7 +104,11 @@ var IncidentProgressionPanel = React.createClass({
                         });
     },
     draw: function () {
-        let layout, nodes, links;
+        let element, layout, nodes, links;
+
+        // Make sure svg element takes all available space
+        element = $(this.getDOMNode());
+        this.svg.style('width', element.width()).style('height', element.height());
 
         layout = this._createLayout();
 
