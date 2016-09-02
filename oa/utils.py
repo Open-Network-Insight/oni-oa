@@ -97,10 +97,10 @@ class Util(object):
 			return None
 	
 	@classmethod
-	def create_csv_file(cls,full_path_file,content):
+	def create_csv_file(cls,full_path_file,content,delimiter=','): 
 
 		with open(full_path_file, 'w+') as u_file:
-			writer = csv.writer(u_file)
+			writer = csv.writer(u_file, quoting=csv.QUOTE_NONE, delimiter=delimiter)
 			writer.writerows(content)
 
 class SecHead(object):

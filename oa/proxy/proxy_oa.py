@@ -131,14 +131,14 @@ class OA(object):
  
     def _create_proxy_scores_csv(self):
         
-        proxy_scores_csv = "{0}/proxy_scores.csv".format(self._data_path)
+        proxy_scores_csv = "{0}/proxy_scores.tsv".format(self._data_path)
         proxy_scores_final = self._proxy_scores[:];
         proxy_scores_final.insert(0,self._proxy_scores_headers)
-        Util.create_csv_file(proxy_scores_csv,proxy_scores_final)   
+        Util.create_csv_file(proxy_scores_csv,proxy_scores_final, self._results_delimiter)   
 
         # create bk file
-        proxy_scores_bu_csv = "{0}/proxy_scores_bu.csv".format(self._data_path)
-        Util.create_csv_file(proxy_scores_bu_csv,proxy_scores_final)  
+        proxy_scores_bu_csv = "{0}/proxy_scores_bu.tsv".format(self._data_path)
+        Util.create_csv_file(proxy_scores_bu_csv,proxy_scores_final, self._results_delimiter)   
   
 
     def _add_reputation(self):

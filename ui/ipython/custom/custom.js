@@ -1,5 +1,48 @@
-require(['jquery'], function($)
+/**
+ * Trigger reload event on parent document
+ */
+function reloadParentData()
 {
+    window.parent.iframeReloadHook && window.parent.iframeReloadHook();
+}
+
+require(['jquery', 'bootstrap'], function($, bootstrap)
+{
+    function retry(query) {
+        var regex = new RegExp(query + '=(\\d)');
+
+        var matcher = regex.exec(window.location.hash);
+
+        var attempt = matcher ? ++matcher[1] : 2;
+
+        // Set hash
+        window.location.hash = '#' + query + '=' + attempt;
+        window.location.reload();
+    }
+
+    // jQuery must be available for easy mode to woark properly
+    if ($===undefined) {
+        if (/#oni_jquery_retry=[015-9]/.test(window.location.hash)) {
+            alert('Notebook was not able to load jQuery after 5 attempts. Please try again later, this is a known issue.');
+            console.warn('Bootstrap\'s tooltip was not loaded.');
+        }
+        else {
+            confirm('Notebook failed to load jQuery, easy mode would not work properly without it. Would you you like to try again?')
+            && retry('oni_jquery_retry');
+        }
+
+        return;
+    }
+
+    if ($.fn.tooltip===undefined) {
+        if (/#oni_bootstrap_retry=\d/.test(window.location.hash)) {
+            alert('Notebook was not able to load bootstrap\'s tooltip plugin. You can still work withuot this feature.');
+        } else {
+            confirm('Notebook was not able to load bootstrap\'s tooltip plugin. You can still work withuot this feature. Would you like to try again?')
+            && retry('oni_bootstrap_retry');
+        }
+    }
+
     var easyMode = {
         stage: 0,
         KERNEL_READY: 1,
@@ -13,13 +56,6 @@ require(['jquery'], function($)
             total: 0,
             execution_queue: []
         }
-    }
-    /**
-     * Trigger reload event on parent document
-     */
-    function reloadParentData()
-    {
-        window.parent.iframeReloadHook && window.parent.iframeReloadHook();
     }
 
     /**

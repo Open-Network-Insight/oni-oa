@@ -1,4 +1,5 @@
 var assign = require('object-assign');
+var d3 = require('d3');
 
 var OniConstants = require('../../../js/constants/OniConstants');
 var OniDispatcher = require('../../../js/dispatchers/OniDispatcher');
@@ -19,6 +20,7 @@ var highlightedThread = null;
 var selectedThread = null;
 
 var SuspiciousStore = assign(new RestStore(ProxyConstants.API_SUSPICIOUS), {
+    _parser: d3.tsv,
     errorMessages: {
         404: 'Please choose a different date, no data has been found'
     },
