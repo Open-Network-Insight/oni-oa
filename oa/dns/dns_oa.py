@@ -156,9 +156,9 @@ class OA(object):
         self._rep_services = []
         self._logger.info("Initializing reputation services.")
         for service in rep_conf:               
-             config = rep_conf[service]
-             module = __import__("components.reputation.{0}.{0}".format(service), fromlist=['Reputation'])
-             self._rep_services.append(module.Reputation(config,self._logger))
+            config = rep_conf[service]
+            module = __import__("components.reputation.{0}.{0}".format(service), fromlist=['Reputation'])
+            self._rep_services.append(module.Reputation(config,self._logger))
                 
         # get columns for reputation.
         rep_cols = {}
@@ -187,7 +187,8 @@ class OA(object):
 
         # add hh value and sev columns.
         dns_date_index = self._conf["dns_results_fields"]["frame_time"]
-	self._dns_scores = [conn + [ filter(None,conn[dns_date_index].split(" "))[3].split(":")[0]] + [0] + [0] for conn in self._dns_scores  ]
+        self._dns_scores = [conn + [ filter(None,conn[dns_date_index].split(" "))[3].split(":")[0]] + [0] + [0] for conn in self._dns_scores  ]
+
 
     def _add_iana(self):
 
@@ -212,7 +213,6 @@ class OA(object):
             dns_nc = NetworkContext(nc_conf,self._logger)
             ip_dst_index = self._conf["dns_results_fields"]["ip_dst"]
             self._dns_scores = [ conn + [dns_nc.get_nc(conn[ip_dst_index])] for conn in self._dns_scores ]
-
         else:
             self._dns_scores = [ conn + [""] for conn in self._dns_scores ]
 
@@ -266,14 +266,19 @@ class OA(object):
  
             # add IANA to results.
             if dns_iana:
+                update_rows = []
                 self._logger.info("Adding IANA translation to details results")
                 with open(edge_tmp) as dns_details_csv:
                     rows = csv.reader(dns_details_csv, delimiter=',', quotechar='|')
-        		    next(dns_details_csv)
-        		    update_rows = [[conn[0]] + [conn[1]] + [conn[2]] + [conn[3]] + [conn[4]] + [dns_iana.get_name(conn[5],"dns_qry_class")] + [dns_iana.get_name(conn[6],"dns_qry_type")] + [dns_iana.get_name(conn[7],"dns_qry_rcode")] + [conn[8]] for conn in rows]
-        		    update_rows = filter(None, update_rows)
-        		    header = [ "frame_time", "frame_len", "ip_dst","ip_src","dns_qry_name","dns_qry_class_name","dns_qry_type_name","dns_qry_rcode_name","dns_a" ]
-        		    update_rows.insert(0,header)
+                    try:
+                        next(rows)
+                        update_rows = [[conn[0]] + [conn[1]] + [conn[2]] + [conn[3]] + [conn[4]] + [dns_iana.get_name(conn[5],"dns_qry_class")] + [dns_iana.get_name(conn[6],"dns_qry_type")] + [dns_iana.get_name(conn[7],"dns_qry_rcode")] + [conn[8]] for conn in rows]
+                        update_rows = filter(None, update_rows)
+                        header = [ "frame_time", "frame_len", "ip_dst","ip_src","dns_qry_name","dns_qry_class_name","dns_qry_type_name","dns_qry_rcode_name","dns_a" ]
+                        update_rows.insert(0,header)
+                    except IndexError:
+                        pass
+
             else:
                 self._logger.info("WARNING: NO IANA configured.")
 
