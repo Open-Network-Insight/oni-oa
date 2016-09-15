@@ -1,56 +1,54 @@
-# **Open Network Insight Ipython/Jupyter Front-End**
+# **Open Network Insight**
 
 The visualization repository contains all the front-end code and files related to the Open Network Insight visuals, such as styles, pages, data files, etc.
 Some of the technologies used are:
 
- - [Jupyter Ipython](http://jupyter.org/)
+ - [IPython==3.2.1](https://ipython.org/ipython-doc/3/index.html)
  - [D3js](http://d3js.org/)
  - [JQuery](https://jquery.com/)
- - [Boostrap](http://getbootstrap.com/)
- - [ReactJS](https://facebook.github.io/react/)
+ - [Bootstrap](http://getbootstrap.com/)
+ - [ReactJS](https://facebook.github.io/react/)  
 
 ----------
 
 
 ## **Folder Structure**
 
-**ipython** 
-This is the ipython notebook server root folder, below are more details about child folders:
+This is the root folder, below are more details about child folders:
 
- - **css**: Pages style sheets  
- - **dataset**: pages data files 
- - **fonts**: pages fonts (Intel Clear font)
- - **images**: Images assets (Intel Logo/others)
- - **js**: JavaScript libraries (D3js, Jquery) and other utility scripts
- - **master**: Data analysis notebooks
- - **op**: DevOps notebooks
- - **user**: User related notebooks and data, it also keeps data generated for an specific date, which is being used to display the charts in the main pages
- - **vast**: Vast/training data related pages and scripts.
-
-**ipython->vast**
-It contains the pages, scripts, notebooks and data files related to the vast/training data. It is basically a copy of the main root folder but with slightly code differences to fit the needs of the training data.
+ - [**context**](context/README.md) : Static files for adding network context to the data  
+ - [**oa**](oa/README.md) : Operational Analytics path
+ - [**ui**](ui/README.md) : GUI files
 
 ----------
 
-## **Operational Analitycs**
-* [DNS](ipython/dns/README.md)
-* [FLOW](ipython/flow/README.md)
+## **Operational Analytics (Back end)**
+* [DNS](oa/dns/README.md)
+* [FLOW](oa/flow/README.md)
+* [PROXY](oa/proxy/README.md)
 
-## **IPython NoteBooks**
+## **IPython Notebooks**
 * Flow
- * [EdgeNotebook](ipython/flow/EdgeNotebook.md) 
- * [ThreatInvestigation](ipython/flow/ThreatInvestigation.md)
+ * [EdgeNotebook](oa/flow/ipynb_templates/EdgeNotebook.md) 
+ * [ThreatInvestigation](oa/flow/ipynb_templates/ThreatInvestigation.md)
 * DNS
- * [EdgeNotebook](ipython/dns/EdgeNotebook.md) 
- * [ThreatInvestigation](ipython/dns/ThreatInvestigation.md)
+ * [EdgeNotebook](oa/dns/ipynb_templates/EdgeNotebook.md) 
+ * [ThreatInvestigation](oa/dns/ipynb_templates/ThreatInvestigation.md)
+* PROXY
+ * [EdgeNotebook](oa/proxy/ipynb_templates/EdgeNotebook.md) 
+ * [ThreatInvestigation](oa/proxy/ipynb_templates/ThreatInvestigation.md)
 
 ##**Views**
 
-###Analyst View (index_sconnects.html)
+###Analyst View (suspicious.html)
 The Analyst view provides a dashboard showing the top 250 suspicious connects. 
 
-###**Ingest Summary (index_ingest.html)**
+###**Threat Investigation (threat-investigation.html)**
+HTML page container for the Threat Investigation Notebook
+
+###**Story Board (storyboard.html)**
+Executive Briefing dashboard
+
+###**Ingest Summary (ingest-summary.html)**
 Interactive histogram dashboard that shows the amount of data captured in a certain period of time.
 
-###**Story Board (storyboard_sconnect.html)**
-Executive Briefing dashboard
