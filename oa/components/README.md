@@ -1,6 +1,6 @@
 # COMPONENTS
 
-This document will explain the necessary steps to configure the oni-oa component.
+This document will explain the necessary steps to configure the oni-oa components.
 
 ## Folder Structure
 
@@ -8,7 +8,7 @@ This document will explain the necessary steps to configure the oni-oa component
                                             | engine.json           -> Configuration file to setup db engine and node
 
         reputation                      -> Reputation services python module
-                                            | fb                        -> GTI sub-module for facebook ThreatExchange
+                                            | fb                        -> Sub-module for Facebook ThreatExchange service
                                             | gti                       -> GTI sub-module for McAfee GTI
                                             | gti/gti_cat_codes.csv     -> GTI category and family names 
                                             | reputation_config.json    -> Configuration file for the reputation services module
@@ -64,7 +64,7 @@ Example:
 ###Reputation
 Reputation check module.
 
-This module is called during oni-oa execution to check the reputation for any given IP, URL or URI (depending on the pipeline). The reputation module makes use of two third-party services, McAfee GTI and Facebook ThreatExchange. 
+This module is called during oni-oa execution to check the reputation for any given IP, DNS name or URI (depending on the pipeline). The reputation module makes use of two third-party services, McAfee GTI and Facebook ThreatExchange. 
 Each of these services are represented by a sub-module in this project, McAfee GTI is implemented by sub-module gti and Facebook ThreatExchange by sub-module fb. For more information see Folder Structure section.
 
 **Pre-requisites**
@@ -72,11 +72,11 @@ Each of these services are represented by a sub-module in this project, McAfee G
 - McAfee GTI client and credentials. McAfee GTI client is not included in this project. To get a copy of their [rest client](https://secure.mcafee.com/apps/downloads/my-products/login.aspx?region=us) and credentials 
 (server, user, password) get in touch with a McAfee® representative at Licensing@McAfee.com. *If you are not interested on using McAfee GTI or you are not McAfee customer you can always disable McAfee GTI reputation check.*
 
-- Facebook API Key. For Facebook ThreatExchange it is required to obtain first an API Key. To learn more about how to get an API Key go to [Facebook Developers](https://developers.facebook.com/). *If you are not interested on using Facebook ThreatExchange you can always disable ThreatExchange reputation check.*
+- Facebook API Key. To enable the Facebook ThreatExchange service, it is required to obtain first an API Key. To learn more about how to get an API Key go to [Facebook Developers](https://developers.facebook.com/). *If you are not interested on using Facebook ThreatExchange you can always disable ThreatExchange reputation check.*
 
 **Enable/Disable GTI service**
 
-It's possible to disable any of the reputation services mentioned above, all it takes is to remove the configuration for the undesired service in gti_config.json. To learn more about this see the next section.
+It's possible to disable any of the reputation services mentioned above, all it takes is to remove the configuration for the undesired service in gti_config.json. To learn more about it, see the section below.
 
 **Configuration**
 
@@ -132,7 +132,7 @@ Internet Assigned Numbers Authority codes translation module.
 with different code types for DNS and HTTP queries and usually they will be located in oa/components/iana/. These files can be
 moved to any preferred location.
 
-To set this up, replace each value with the absolute path for each IANA codes catalog, for example if IANA code files are in the
+In order to configure this module, replace each value with the absolute path for each IANA codes catalog, for example if IANA code files are in the
 default location, your configuration file should look like this:
 
 		{
@@ -150,7 +150,7 @@ Network Context module.
 
 **Pre-requisites**
 
-Before start working with network context it's required to generate a comma separated file with the corresponding network context information.
+Before start working with network context module, it is required to have a comma separated network context file.
 
 This file can be placed anywhere in the system running oni-oa, although we suggest you place it inside the _context_ folder to keep uniformity.
 The following schema is expected:
@@ -182,8 +182,7 @@ This is an optional functionality you can enable / disable depending on your pre
 **Pre-requisites**
 To start using this module, you need to include a comma separated file containing the geolocation for most (or all) IPs.
 To learn more about the expected schema for this file or where to find a full geolocation db, please refer 
-to the [_context_](https://github.com/Open-Network-Insight/oni-oa/blob/1.1/oa/context/README.md)
- documentation  
+to the  [_context_](https://github.com/Open-Network-Insight/oni-oa/blob/1.1/oa/context/README.md) documentation  
 
  
 **Configuration**

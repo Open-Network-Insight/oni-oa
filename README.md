@@ -1,6 +1,6 @@
 # **Open Network Insight**
 
-The visualization repository contains all the front-end code and files related to the Open Network Insight visuals, such as styles, pages, data files, etc.
+The visualization repository contains all the front-end code and files related to the Open Network Insight visual elements, such as styles, pages, data files, etc.
 Some of the technologies used are:
 
  - [IPython==3.2.1](https://ipython.org/ipython-doc/3/index.html)
@@ -14,10 +14,10 @@ Some of the technologies used are:
 
 ## **Folder Structure**
 
-This is the root folder, below are more details about child folders:
+Oni-oa is the root folder, below are more details about child folders:
 
  - [**context**](context/README.md) : Static files for adding network context to the data  
- - [**oa**](oa/README.md) : Operational Analytics path
+ - [**oa**](oa/INSTALL.md) : Operational Analytics path
  - [**ui**](ui/README.md) : GUI files
 
 ----------

@@ -1,7 +1,7 @@
 # ONI Operational Analytics
 
-ONI OA is a set of python modules and utilities with routines to extract data, transform and load results into output files.
-Operational Analytics represents the last step before users can score connections and analyze data from the UI.
+ONI OA is a set of python modules and utilities with routines to extract and transform data, and load results into output files.
+Operational Analytics represents the last step before users can score connections and analyze data in the UI.
 
 Operational Analytics scripts are very similar for the different data types supported however the code is divided into 3 
 main modules due to differences on the data model and what context information is required for each data type.
@@ -20,8 +20,8 @@ that can be found for each data source please visit ONI [wiki](https://github.co
         proxy       ->      Proxy OA module to process and transform Proxy oni-ml results returning Proxy
                             data to be presented in the UI.
         start_oa.py ->      Main Operational Analytics script. Given a set of parameters, this script can
-                            process and trasnform data for any of the supported data types.
-        utils.py    ->      Miscellanious utilities required by start_oa.py to load data, load logger, etc.
+                            process and transform data for any of the supported data types.
+        utils.py    ->      Miscellaneous utilities required by start_oa.py to load data, load logger, etc.
         
 More information about oa/flow in [README.md](https://github.com/Open-Network-Insight/oni-oa/tree/1.1/oa/flow)
 
@@ -38,13 +38,13 @@ In order to execute this process there are a few prerequisites:
  1. Python 2.7.
  2.  Components configuration. To find about how to configure each of the extra components included in this project
         visit oa/components/[README.md](https://github.com/Open-Network-Insight/oni-oa/tree/1.1/oa/components).
-        This components are required to add context or extract additional information that is going to complement your 
-        original data. Each of this components are independent each other. Based on the data type some components are 
+        These components are required to add context or extract additional information that is going to complement your 
+        original data. Each of this components are independent from each other. Based on the data type some components are 
         required or not.
  3. oni-ml results. Operational Analytics works and transforms Machine Learning results. The implementation of Machine Learning
         in this project is through [oni-ml](https://github.com/Open-Network-Insight/oni-ml). Although the Operational Analytics
-         is prepared to read csv files and there is not a direct dependency between oni-oa and oni-ml, it's highly recomended
-        to have these two pieces set up together.
+         is prepared to read csv files and there is not a direct dependency between oni-oa and oni-ml, it's highly recommended
+         to have these two pieces set up together.
          If users want to implement their own machine learning piece to detect suspicious connections they need to refer
          to each data type module to know more about input format and schema.
  4. oni-setup project installed. Oni-setup project contains scripts to install hive database and the main configuration
@@ -54,7 +54,7 @@ In order to execute this process there are a few prerequisites:
 ##Operational Analytics installation and usage
 ####Installation
  
- Operational Analytics installation consist on the configuration of extra modules or components and creation of a set of files.
+ Operational Analytics installation consists on the configuration of extra modules or components and creation of a set of files.
  Depending on the data type that is going to be processed some components are required and other components are not.
  If users are planning to analyze the three data types supported (Flow, DNS and Proxy) then all components should be configured.
 
@@ -64,7 +64,7 @@ In order to execute this process there are a few prerequisites:
  2. Add context files. Context files should go into oni-oa/context folder and they should contain network and geo localization context.  
  For more information on context files go to [oni-oa/context/README.md](https://github.com/Open-Network-Insight/oni-oa/tree/1.1/README.md) 
     
-    2.1. Add a file ipranges.csv: Ip ranges file used by OA when running data type Flow. 
+    2.1. Add a file ipranges.csv: Ip ranges file is used by OA when running data type Flow. 
          It should contain a list of ip ranges and the label for the given range, example:
             
             10.0.0.1,10.255.255.255,Internal
@@ -72,7 +72,7 @@ In order to execute this process there are a few prerequisites:
     2.2. Add a file iplocs.csv: Ip localization file used by OA when running data type Flow. 
          Create a csv file with ip ranges in integer format and give the coordinates for each range.
      
-    2.3. Add a file networkcontext.csv: Ip names file used by OA when running data type DNS and Proxy. This file
+    2.3. Add a file networkcontext.csv: Ip names file is used by OA when running data type DNS and Proxy. This file
          should contains two columns, one for Ip the other for the name, example: 
     
             10.192.180.150, AnyMachine
@@ -80,18 +80,18 @@ In order to execute this process there are a few prerequisites:
             
             
  3. oni-setup project contains scripts to install hive database but also includes the main configuration file for this tool.
-     That file is called duxbay.conf contains different variables user can set up to customize their installation, in fact, some
+     That file is called duxbay.conf which contains different variables that the user can set up to customize their installation, in fact, some
      of them are required to be updated in order to have oni-ml and oni-oa working.
      
      To run the OA process it's required to install oni-setup. If it's already installed just make sure the following configuration are set up in duxbay.conf file.
     
         LUSER: represents the home folder for the user in the Machine Learning node. It's used to know where to return feedback.
         HUSER: represents the HDFS folder. It's used to know from where to get Machine Learning results.
-        IMPALA_DEM: represents the node running Impala demon. It's needed to execute Impala queries in the OA process.
+        IMPALA_DEM: represents the node running Impala daemon. It's needed to execute Impala queries in the OA process.
         DBNAME: Hive database, the name is required for OA to execute queries against this database.
         LPATH: represents the local path where the feedback is going to be sent, it actually works with LUSER.
     
- 4. Configure components. Components are python modules included in this project that add context and detail to the data 
+ 4. Configure components. Components are python modules included in this project that add context and details to the data 
     being analyzed. There are five components and while not all components are required to every data type, it's recommended to
     configure all of them in case new data types are analyzed in the future.
     For more details about how to configure each component go to [oni-oa/oa/components/README.md](https://github.com/Open-Network-Insight/oni-oa/blob/1.1/oa/components/README.md).
@@ -100,11 +100,11 @@ In order to execute this process there are a few prerequisites:
  
  Operational Analytics process is triggered with the execution of start_oa.py. This Python script will execute the OA process
   for only one data type (Flow, DNS or Proxy) at a time. If users need to process multiple data types at the same time, multiple
-  instances of the same script need to be executed. 
+  instances of the same script needs to be executed. 
   
   To execute Operational Analytics in ONI 1.1 go to folder oni-oa/oa and execute the following command:
         
-        [solution-user@edge-server] python2.7 start_oa.py -d YYYYMMDD -t [flow, dns, proxy] -l N
+        [solution-user@edge-server] python2.7 start_oa.py -d YYYYMMDD -t [flow, dns, proxy] -l <integer>
     
   Example
   
@@ -112,14 +112,14 @@ In order to execute this process there are a few prerequisites:
         
   Parameters
  
-        -d Date for the machine learning results that ara going to be processed. Format should be YYYY (year in 4 digits)
+        -d Date for the machine learning results that are going to be processed. Format should be YYYY (year in 4 digits)
            MM for month (2 digits) and DD for day (2 digits).
         -t Data type to be analyzed. Accepted parameters are flow, dns and proxy. Each one of these values will trigger the 
            OA process for the corresponding data type.
-        -l Data limit. Usually ML results contains thousand of records. With limit OA will process top K results. 
+        -l Data limit. Usually ML results contains thousands of records. With "Data limit" OA will process top K results. 
 
  Depending on the number of records being processed and the data type, Operational Analytics can take long or short time to execute.
- When the process completes you can go to oni-oa/data/\<data type> folder and check there are results.
+ When the process completes you can go to oni-oa/data/\<data type> folder and check the results.
  
  For more information on each data type and output files go to each [oni-oa/oa/flow](https://github.com/Open-Network-Insight/oni-oa/tree/1.1/oa/dns), 
  [oni-oa/oa/dns](https://github.com/Open-Network-Insight/oni-oa/tree/1.1/oa/flow) or [oni-oa/oa/proxy](https://github.com/Open-Network-Insight/oni-oa/tree/1.1/oa/proxy)

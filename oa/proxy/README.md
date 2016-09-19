@@ -9,8 +9,7 @@ Proxy sub-module will extract and transform Proxy data already ranked by oni-ml 
 ###proxy_oa.py
 
 Proxy oni-oa main script.
-
-This script contains the logic to extract and transform data from oni-ml and output results files for UI. This script is executed through the start_oa.py file, which validates the required parameters to execute the oa process.  
+ 
 It executes the following steps:
 
 		1. Creates the right folder structure to store the data and the ipython notebooks. This is: 
@@ -29,22 +28,22 @@ It executes the following steps:
 		 
 		6. Adds a new column for the severity of each connection.
 		 
-		7. Translates the 'response code' to human readable text according to the IANA protocol. The translated values are stored in the respcode_name column.
+		7. Translates the 'response code' to human readable text according to the IANA specification. The translated values are stored in the respcode_name column.
 		 
 		8. Add Network Context.
 		
 		9. Creates a hash for every full_uri + clientip pair to use as filename.  
 		 
-		10. Saves proxy_scores.csv file.
+		10. Saves proxy_scores.tsv file.
 		 
-		11. Creates a backup of proxy_scores.csv file.
+		11. Creates a backup of proxy_scores.tsv file.
 		
-		12. Creates proxy data detail files. 
+		12. Creates proxy data details files. 
 
 
 **Dependencies**
 
-- python 2.7. [Python 2.7](https://www.python.org/download/releases/2.7/) should be installed in the node running DNS OA. 
+- python 2.7. [Python 2.7](https://www.python.org/download/releases/2.7/) should be installed in the node running Proxy OA. 
 
 	The following modules are already included but some of them require configuration. Please refer to the _components_ documentation for more information. 
 - [components/iana](https://github.com/Open-Network-Insight/oni-oa/blob/1.1/oa/proxy#IANA-iana)
@@ -53,9 +52,9 @@ It executes the following steps:
 - [components/reputation](https://github.com/Open-Network-Insight/oni-oa/blob/1.1/oa/components#Reputation)
 - proxy_conf.json
 
-**Pre-requisites**
+**Prerequisites**
 
-Before running Proxy OA, users need to configure components for the first time. Is important to mention that configuring these components make them work for other data sources as Flow and DNS.
+Before running Proxy OA, users need to configure components for the first time. It is important to mention that configuring these components make them work for other data sources as Flow and DNS.
 
 - Configure database engine
 - Configure Reputation services
@@ -65,7 +64,7 @@ Before running Proxy OA, users need to configure components for the first time. 
 
 **Output**
 
-- proxy_scores.tsv: One result file, tab separated, with the given number of rows. Also known as suspicious connects.
+- proxy_scores.tsv: Main results file for Proxy OA. This file is tab separated and it's limited to the number of rows the user selected when running [oa/start_oa.py](https://github.com/Open-Network-Insight/oni-oa/tree/1.1/oa).
 
 		Schema with zero-indexed columns: 
 
@@ -97,10 +96,10 @@ Before running Proxy OA, users need to configure components for the first time. 
 		25.hash: string
 
 
-- proxy_scores_bu.tsv: One backup file of suspicious connects in case user want to roll back any changes made during analysis. Schema is same as proxy_scores.tsv.
+- proxy_scores_bu.tsv: The backup file of suspicious connects in case user want to roll back any changes made during analysis. Schema is same as proxy_scores.tsv.
      
 
-- edge-clientip-\<hash>HH.tsv: One file for each fulluri + clientip connection for each hour of the day. This file contains details for each connection between a fulluri and a clientip.
+- edge-clientip-\<hash>HH.tsv: One file for each fulluri + clientip connection for each hour of the day.
 
 		Schema with zero-indexed columns:
 
@@ -121,7 +120,7 @@ Before running Proxy OA, users need to configure components for the first time. 
 		14.fulluri: string
 
 ###proxy_conf.json
-This file is part of the initial configuration for the proxy pipeline. Here you'll find mapped all the columns included in the proxy_results.csv and proxy_scores.tsv files.
+This file is part of the initial configuration for the proxy pipeline It will contain mapped all the columns included in the proxy_results.csv and proxy_scores.tsv files.
 
 This file contains three main arrays:
 
@@ -131,7 +130,10 @@ This file contains three main arrays:
 
 
 ### ipynb_templates
-Templates of notebooks are stored in this folder and these will be replicated to a the python Notebooks path every time the OA process is executed. If a new functionality is required for the ipython notebooks, the templates need to be updated accordingly to include that functionality in future executions. For further reference on how to customize the notebooks, please refer to:
-
+After OA process completes, a copy of each iPython notebook is going to be copied to the ipynb/\<pipeline>/\<date> path. 
+With these iPython notebooks user will be able to perform further analysis and score connections. User can also
+experiment adding or modifying the code. 
+If a new functionality is required for the ipython notebook, the templates need to be modified to include the functionality for new executions.
+For further reference on how to work with these notebooks, you can read:  
 [Edge Notebook.ipynb](https://github.com/Open-Network-Insight/oni-oa/blob/1.1/oa/proxy/ipynb_templates/EdgeNotebook.md)  
 [Threat_Investigation.ipynb](https://github.com/Open-Network-Insight/oni-oa/blob/1.1/oa/proxy/ipynb_templates/ThreatInvestigation.md)

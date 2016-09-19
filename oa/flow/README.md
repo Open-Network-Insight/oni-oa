@@ -2,15 +2,14 @@
 
 oni-oa sub-module for Open Network Insight, version 1.1
 
-Flow OA reads output from oni-ml transform to human readable format (csv). 
-The output data will be used by the presentation layer (suspicious connects, network view, suspicious details).
-
-For more information about how this module is executed go to [oa/README.md](https://github.com/Open-Network-Insight/oni-oa/blob/1.1/oa/README.md)
+Flow sub-module will extract and transform Flow data already ranked by oni-ml and will load into csv files for presentation layer.
 
 ## **Flow OA Components**
 
 ### flow_oa.py
-Flow oni-oa main script
+Flow oni-oa main script  
+
+It executes the following steps:
 
     1. Creates required folder structure if does not exist for output files. This is: 
 		
@@ -20,10 +19,10 @@ Flow oni-oa main script
     2. Creates a copy of iPython notebooks out of templates in ipynb_templates folder into output folder.
     3. Reads Flow oni-ml results for a given date and loads only the requested limit.
     4. Add network context to source and destination IPs.
-    5. Add geolocalization to source and destination IPs.
+    5. Add geolocation to source and destination IPs.
     6. Saves transformed data into a new csv file, this file is called flow_scores.csv.
-    7. Creates details files. These details include information about each suspicious connect and connections information
-       to draw chord diagram.
+    7. Creates details, and chord diagram files. These details include information about each suspicious connection and some additional information
+       to draw chord diagrams.
 
 **Dependencies**
 
@@ -39,9 +38,9 @@ The following files are not included:
 - [context/iploc.csv](https://github.com/Open-Network-Insight/oni-oa/tree/1.1/context)
 - [context/ipranges.csv](https://github.com/Open-Network-Insight/oni-oa/tree/1.1/context)
 
-**Pre-requisites**
+**Prerequisites**
 
-Before running Flow OA users need to configure components for the first time. Is important to mention that configuring these components make them work for other data sources as DNS and Proxy.
+Before running Flow OA users need to configure components for the first time. It is important to mention that configuring these components make them work for other data sources as DNS and Proxy.
 - Configure reputation module components/reputation
 - Configure network context module components/nc
 - Configure geo localization module components/geo
@@ -74,9 +73,9 @@ Before running Flow OA users need to configure components for the first time. Is
         18.  srcIP_rep:      string
         29.  dstIP_rep:      string
        
-- flow_scores_bu.csv. Backup file for flow_scores.csv in case user needs to rollback the scoring or the changes made during analysis. Schema it's same as flow_scores.csv.
+- flow_scores_bu.csv. Backup file for flow_scores.csv in case user needs to roll back the scoring or the changes made during analysis. Schema it's same as flow_scores.csv.
 
-- edge-\<source IP>-\<destination IP>-\<HH>-\<MM>.csv. Edge files. One for each suspicious connection containing the detail of each connection occurred between source IP and destination IP during a particular minute.
+- edge-\<source IP>-\<destination IP>-\<HH>-\<MM>.tsv. Edge files. One for each suspicious connection containing the details for each comunication occurred during the same specific minute between source IP and destination IP.
 
         Schema with zero-indexed columns:
         0.  tstart:     string
@@ -93,7 +92,7 @@ Before running Flow OA users need to configure components for the first time. Is
         11. output:     int
         12. rip:        string
 
-- chord-\<client ip>.tsv. Chord files. One for each distinct client ip. This files contain details of packages and data transferred between the client ip and every other ip it connected.
+- chord-\<client ip>.tsv. Chord files. One for each distinct client ip. These files contain details of packets and data transferred between the client ip and every other IP it connected to.
 
         Schema with zero-indexed columns:
         0.  srcip:      string
@@ -105,21 +104,21 @@ Before running Flow OA users need to configure components for the first time. Is
         
 ### flow_config.json
 
-Flow oni-oa configuration. Contains column name and indexes for source and output files.
-This Json file contains 3 main attributes:
+Flow oni-oa configuration. Contains columns name and index for input and output files.
+This Json file contains 3 main arrays:
    
-    - flow_results_fields: list of column name and index of ML flow_results.csv file. Flow OA uses this map to reference columns by name.
+    - flow_results_fields: list of column name and index of ML flow_results.csv file. Flow OA uses this mapping to reference columns by name.
     - column_indexes_filter: the list of indices to take out of flow_results_fields for OA process. 
-    - flow_score_fields: list of column name and index for flow_score.csv. After the OA process completes more columns are added.
+    - flow_score_fields: list of column name and index for flow_scores.csv. After the OA process completes more columns are added.
         
 
 
 ### ipynb_templates
 Templates for iPython notebooks.
-After OA process completes a copy of each iPython notebook is going to be copied to the same location of results files. 
-With this iPython notebooks user will be able to perform further analysis and score connections. User can also
+After OA process completes, a copy of each iPython notebook is going to be copied to the ipynb/\<pipeline>/\<date> path. 
+With these iPython notebooks user will be able to perform further analysis and score connections. User can also
 experiment adding or modifying the code. 
 If a new functionality is required for the ipython notebook, the templates need to be modified to include the functionality for new executions.
-For further reference on how to work with these notebooks, you can read:
+For further reference on how to work with these notebooks, you can read:  
 - [Edge Notebook](https://github.com/Open-Network-Insight/oni-oa/blob/1.1/oa/flow/ipynb_templates/EdgeNotebook.md)
 - [Threat Investigation Notebook](https://github.com/Open-Network-Insight/oni-oa/blob/1.1/oa/flow/ipynb_templates/ThreatInvestigation.md)
