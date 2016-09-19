@@ -253,7 +253,7 @@ class OA(object):
     def _get_proxy_details(self,fulluri,clientip,conn_hash,year,month,day,hh,proxy_iana):
 
         limit = 250
-        output_delimiter = ','
+        output_delimiter = '\t'
         edge_file ="{0}/edge-{1}-{2}.tsv".format(self._data_path,clientip,conn_hash)
         edge_tmp  ="{0}/edge-{1}-{2}.tmp".format(self._data_path,clientip,conn_hash)
 
@@ -267,18 +267,21 @@ class OA(object):
             # add IANA to results.
             self._logger.info("Adding IANA translation to details results")
             with open(edge_tmp) as proxy_details_csv:
-                rows = csv.reader(proxy_details_csv, delimiter=',', quotechar='"')
+                rows = csv.reader(proxy_details_csv, delimiter=output_delimiter,quotechar='"')
                 next(proxy_details_csv)
                 update_rows = [[conn[0]] + [conn[1]] + [conn[2]] + [conn[3]] + [conn[4]] + [proxy_iana.get_name(conn[5],"proxy_http_rcode") if proxy_iana else conn[5]] + [conn[6]] + [conn[7]] + [conn[8]] + [conn[9]] + [conn[10]] + [conn[11]] + [conn[12]] + [conn[13]] + [conn[14]] if len(conn) > 0 else [] for conn in rows]
                 update_rows = filter(None, update_rows)
                 header = ["p_date","p_time","clientip","host","webcat","respcode","reqmethod","useragent","resconttype","referer","uriport","serverip","scbytes","csbytes","fulluri"]
                 update_rows.insert(0,header)
 
+		# due an issue with the output of the query.
+		update_rows = [ [ w.replace('"','') for w in l ] for l in update_rows ]
+	
 
             # create edge file.
             self._logger.info("Creating edge file:{0}".format(edge_file))
             with open(edge_file,'wb') as proxy_details_edge:
-                writer = csv.writer(proxy_details_edge, quoting=csv.QUOTE_NONE, delimiter='\t')
+                writer = csv.writer(proxy_details_edge, quoting=csv.QUOTE_NONE, delimiter=output_delimiter)
                 if update_rows:
                     writer.writerows(update_rows)
                 else:
