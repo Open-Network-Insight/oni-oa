@@ -70,9 +70,9 @@ Each of these services are represented by a sub-module in this project, McAfee G
 **Pre-requisites**
 
 - McAfee GTI client and credentials. McAfee GTI client is not included in this project. To get a copy of their [rest client](https://secure.mcafee.com/apps/downloads/my-products/login.aspx?region=us) and credentials 
-(server, user, password) get in touch with a McAfee® representative at Licensing@McAfee.com. *If you are not interested on using McAfee GTI or you are not McAfee customer you can always disable McAfee GTI reputation check.*
+(server, user, password) get in touch with a McAfee® representative at Licensing@McAfee.com. *If you are not interested on using McAfee GTI or you are not McAfee customer you can disable McAfee GTI reputation check.*
 
-- Facebook API Key. To enable the Facebook ThreatExchange service, it is required to obtain first an API Key. To learn more about how to get an API Key go to [Facebook Developers](https://developers.facebook.com/). *If you are not interested on using Facebook ThreatExchange you can always disable ThreatExchange reputation check.*
+- Facebook API Key. To enable the Facebook ThreatExchange service, it is required to obtain first an API Key. To learn more about how to get an API Key go to [Facebook Developers](https://developers.facebook.com/). *If you are not interested on using Facebook ThreatExchange you can disable ThreatExchange reputation check.*
 
 **Enable/Disable GTI service**
 

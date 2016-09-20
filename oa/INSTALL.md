@@ -1,9 +1,9 @@
 # ONI Operational Analytics
 
-ONI OA is a set of python modules and utilities with routines to extract and transform data, and load results into output files.
-Operational Analytics represents the last step before users can score connections and analyze data in the UI.
+ONI Operational Analytics (OA) is a set of python modules and utilities with routines to extract and transform data, loading the results into output files.
+OA represents the last step before users can score connections and analyze data in the UI.
 
-Operational Analytics scripts are very similar for the different data types supported however the code is divided into 3 
+OA scripts are very similar for the different data types supported however the code is divided into 3 
 main modules due to differences on the data model and what context information is required for each data type.
 
 The three supported data types are Flow, DNS and Proxy. For more information about the type of information and insights
@@ -54,7 +54,7 @@ In order to execute this process there are a few prerequisites:
 ##Operational Analytics installation and usage
 ####Installation
  
- Operational Analytics installation consists on the configuration of extra modules or components and creation of a set of files.
+ OA installation consists on the configuration of extra modules or components and creation of a set of files.
  Depending on the data type that is going to be processed some components are required and other components are not.
  If users are planning to analyze the three data types supported (Flow, DNS and Proxy) then all components should be configured.
 
@@ -98,7 +98,7 @@ In order to execute this process there are a few prerequisites:
     
  ####Usage
  
- Operational Analytics process is triggered with the execution of start_oa.py. This Python script will execute the OA process
+ OA process is triggered with the execution of start_oa.py. This Python script will execute the OA process
   for only one data type (Flow, DNS or Proxy) at a time. If users need to process multiple data types at the same time, multiple
   instances of the same script needs to be executed. 
   
@@ -118,7 +118,7 @@ In order to execute this process there are a few prerequisites:
            OA process for the corresponding data type.
         -l Data limit. Usually ML results contains thousands of records. With "Data limit" OA will process top K results. 
 
- Depending on the number of records being processed and the data type, Operational Analytics can take long or short time to execute.
+ Depending on the number of records being processed and the data type, OA can take long or short time to execute.
  When the process completes you can go to oni-oa/data/\<data type> folder and check the results.
  
  For more information on each data type and output files go to each [oni-oa/oa/flow](https://github.com/Open-Network-Insight/oni-oa/tree/1.1/oa/dns), 
