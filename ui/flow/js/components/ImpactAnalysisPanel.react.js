@@ -44,7 +44,7 @@ function buildGraph(root, ipsrc)
 
     hierarchy.nodes(root);
     x.domain([0, root.value]).nice();
-    down(root, 0);
+    down.call(this.getDOMNode(), root, 0);
 
 }
 
