@@ -2,7 +2,7 @@ var React = require('react');
 var queue = require('d3-queue');
 var GlobeViewStore = require('../stores/GlobeViewStore');
 
-var m0, o0, fill, proj, sky, path, swoosh, links, svg, width, height;
+var m0, o0, fill, proj, sky, path, swoosh, links, svg, width, height, arcLines;
 var dataset, container;
 
 function buildGraph(root, ipsrc) {
