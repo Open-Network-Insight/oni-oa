@@ -227,7 +227,7 @@ require(['jquery', 'bootstrap'], function($, bootstrap)
             // Skip this event while building UI
             if (!easyMode.ready) return;
 
-            $('#notebook button.btn:not([disabled])').addClass('oniDisabled').attr('disabled', 'disabled');
+            $('#notebook button.btn').not('.oniSkipAutoDisable').not('[disabled]').addClass('oniDisabled').attr('disabled', 'disabled');
 
             insertProgressIndicator();
         });
