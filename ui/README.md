@@ -76,7 +76,7 @@ Provides tools for interactive visualization, noise filters, white listing, and 
 
 ## Intended Audience
 
-This document is intended for front end developers who want to contribute to our user inteface. To get the most benefit from this guidance, you should already have an understanding of the following technologies:
+This document is intended for front end developers who want to contribute to our user interface. To get the most benefit from this guide, you should already have an understanding of the following technologies:
 
 - HTML
 - CSS
@@ -94,7 +94,7 @@ Our UI is build on top of Flux application architecture principles, having an un
 
 ### ReactJS + Flux
 
-This arquitecture allows for modular code that is also scalable and easy to maintain. We have chosen ReactJS to build our UI and on top of that we adopted the Flux pattern as a complement. This allows contributors to get on board quickly as they will find lots of information on the internet.
+This architecture allows for modular code that is also scalable and easy to maintain. We have chosen ReactJS to build our UI and on top of that we adopted the Flux pattern as a complement. This allows contributors to get on board quickly as they will find lots of information on the internet.
 
 For more information about ReactJS and Flux, please go to:
 
@@ -206,7 +206,7 @@ JavaScript bundle minified file:
 
 #### App directory structure
 
-Our code follows the recomendation for ReactJS+Flux applications, the project structure looks like this:
+Our code follows the recommendation for ReactJS+Flux applications, the project structure looks like this:
 
 - *ONI/ui/js/*
     - [_actions_](#app-actions)
@@ -246,7 +246,7 @@ Actions that are used through the application
 
 _ONI/ui/js/actions/EdInActions.js_
 
-Suspicous related actions
+Suspicious related actions
 
 >- UPDATE_FILTER
 >
@@ -266,7 +266,7 @@ Suspicous related actions
 >
 >- HIGHLIGHT_THREAT
 >
->   Request to hightlight a threat
+>   Request to highlight a threat
 >
 >- UNHIGHLIGHT_THREAT
 >
@@ -345,7 +345,7 @@ Each node element in the "_children_" list has the same structure.
 
 __Note__:
 
-> _"children"_ property could be empty or ommited.
+> _"children"_ property could be empty or omitted.
 
 ###### _ONI/ui/js/components/DetailsPanelMixin.react.js_
 
@@ -353,13 +353,13 @@ Extends [GridPanelMixin.react.js](#gridpanelmixin-react-js) and defines common f
 
 ###### _ONI/ui/js/components/ExecutiveThreatBriefingPanel.react.js_
 
-Renders a list of available comments added using our threat investigation section. As soons as user selects a comment it will trigger a `SELECT_COMMENT` action from  [StoryBoardActions](#storyboardactions-js) at the same as a summary is shown for selected comment. Listen for change events from [CommentsStore](#CommentsStore.js).
+Renders a list of available comments added using our threat investigation section. As soon as user selects a comment it will trigger a `SELECT_COMMENT` action from  [StoryBoardActions](#storyboardactions-js) at the same as a summary is shown for selected comment. Listen for change events from [CommentsStore](#CommentsStore.js).
 
 ###### _ONI/ui/js/components/GridPanelMixin.react.js_
 
 A helper component which renders a table. It allows for customization on final components.
 
-While executing the render function, this components looks for:
+While executing the render function, this component looks for:
 
 > - `this.state.data`
 >
@@ -367,7 +367,7 @@ While executing the render function, this components looks for:
 >
 > - `this.state.error`
 >
->   A custom error meessage to display.
+>   A custom error message to display.
 >
 > - `this.state.headers`
 >
@@ -391,7 +391,7 @@ _render_{CELL_NAME}_cell : function () {
 ...
 ```
 
-If no custom cell render is porvided, a default function will be used to render the cell value as plain text.
+If no custom cell render is provided, a default function will be used to render the cell value as plain text.
 
 Each table row support the following events:
 
@@ -435,7 +435,7 @@ Listen for [OniStore](#OniStore.js) events:
 
 > - EXPAND_PANEL
 >
->   Makes panel expand and take over available space on screen by hidding extra panels.
+>   Makes panel expand and take over available space on screen by hiding extra panels.
 >
 > - RESTORE_PANEL
 >
@@ -486,7 +486,7 @@ Each node element in the "_children_" list has the same structure.
 
 __Note__:
 
-> _"children"_ property could be empty or ommited.
+> _"children"_ property could be empty or omitted.
 
 ##### App Constants
 
@@ -558,7 +558,7 @@ Misc
 
 ###### _ONI/ui/js/dispatchers/OniDispatcher.js_
 
-As per Flux arquitecture, ONI defines its own action dispatcher.
+As per Flux architecture, ONI defines its own action dispatcher.
 
 ##### App Stores
 
@@ -614,7 +614,7 @@ Attaches a listener for data changes.
 
 > removeChangeEventListener(callback)
 
-Dettaches listener.
+Detaches listener.
 
 > reload()
 
@@ -683,7 +683,7 @@ Attaches a listener for data changes.
 
 > removeChangeEventListener(callback)
 
-Dettaches listener.
+Detaches listener.
 
 > reload()
 
@@ -708,11 +708,11 @@ A layout to build D3 charts that positions nodes on a canvas. Nodes belonging to
 
 ###### DateUtils.js
 
-Date related utililties.
+Date related utilities.
 
 > calcDate(date, delta, unit)
 
-Returns a new date objec. The result is calculated by adding/substracting "delta" "unit"s (days, months, years) to the original date.
+Returns a new date object. The result is calculated by adding/subtracting "delta" "unit's" (days, months, years) to the original date.
 
 > formatDate(date)
 
