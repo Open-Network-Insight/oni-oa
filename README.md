@@ -1,6 +1,7 @@
 # **Open Network Insight**
+ONI Operational Analytics (OA) is a collection of modules, which includes both the data processing and transformation as well as the GUI module for data visualization. 
 
-The visualization repository contains all the front-end code and files related to the Open Network Insight visual elements, such as styles, pages, data files, etc.
+The visualization repository (UI folder) contains all the front-end code and files related to the Open Network Insight visual elements, such as styles, pages, data files, etc.
 Some of the technologies used are:
 
  - [IPython==3.2.1](https://ipython.org/ipython-doc/3/index.html)

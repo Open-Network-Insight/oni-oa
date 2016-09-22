@@ -1,16 +1,12 @@
 # DNS
 
-oni-oa sub-module for Open-Network-Insight, version 1.1
-
-DNS sub-module will extract and transform DNS (Domain Name Service) data already ranked by oni-ml and will load into csv files for presentation layer.
+DNS sub-module extracts and transforms DNS (Domain Name Service) data already ranked by oni-ml and will load into csv files for presentation layer.
 
 ## DNS Components
 
 ###dns_oa.py
 
-DNS oni-oa main script.
- 
-It executes the following steps:
+DNS oni-oa main script executes the following steps:
 
 
 		1. Creates the right folder structure to store the data and the ipython notebooks. This is: 
@@ -45,30 +41,32 @@ It executes the following steps:
 
 **Dependencies**
 
-Before running DNS OA users need to configure components for the first time. It is important to mention that configuring these components make them work for other data sources as Flow and Proxy.
-
-- python 2.7. [Python 2.7](https://www.python.org/download/releases/2.7/) should be installed in the node running Proxy OA.  
+- [Python 2.7](https://www.python.org/download/releases/2.7/) should be installed in the node running Proxy OA.  
 
 	The following modules are already included but some of them require configuration. See the following sections for more information. 
-- [components/iana](https://github.com/Open-Network-Insight/oni-oa/blob/1.1/oa/proxy#IANA-iana)
-- [components/data](https://github.com/Open-Network-Insight/oni-oa/blob/1.1/oa/proxy#data)
-- [components/nc](https://github.com/Open-Network-Insight/oni-oa/blob/1.1/oa/proxy#Network-Context-nc)
-- [components/reputation](https://github.com/Open-Network-Insight/oni-oa/blob/1.1/oa/components#Reputation)
+- [components/iana](https://github.com/Open-Network-Insight/oni-oa/blob/1.1/oa/components#IANA-iana)
+- [components/data](https://github.com/Open-Network-Insight/oni-oa/blob/1.1/oa/components#data)
+- [components/nc](https://github.com/Open-Network-Insight/oni-oa/blob/1.1/oa/components#network-context-nc)
+- [components/reputation](https://github.com/Open-Network-Insight/oni-oa/blob/1.1/oa/components/reputation)
 - dns_conf.json
+
 
     
 **Prerequisites**
+
+Before running DNS OA users need to configure components for the first time. It is important to mention that configuring these components make them work for other data sources as Flow and Proxy.  
 
 - Configure database engine
 - Configure GTI services
 - Configure IANA service
 - Configure Network Context service
+- Configure Geolocation 
 - Generate ML results for DNS
   
 
 **Output**
 
-- dns_scores.csv: Main results file for DNS OA. This file will contain suspicious connects information and it's limited to the number of rows the user selected when running [oa/start_oa.py](https://github.com/Open-Network-Insight/oni-oa/tree/1.1/oa).
+- dns_scores.csv: Main results file for DNS OA. This file will contain suspicious connects information and it's limited to the number of rows the user selected when running [oa/start_oa.py](https://github.com/Open-Network-Insight/oni-oa/blob/1.1/oa/INSTALL.md#usage).
  
 		Schema with zero-indexed columns: 
 		

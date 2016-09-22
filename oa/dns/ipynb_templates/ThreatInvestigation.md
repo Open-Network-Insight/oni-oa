@@ -1,9 +1,9 @@
 #DNS Threat Investigation Notebook
 
 ###Dependencies
-- iPython == 3.2.1 [check documentation](https://ipython.org/ipython-doc/3/index.html)
-- Python 2.7.6 
-- ipywidgets
+- [iPython == 3.2.1](https://ipython.org/ipython-doc/3/index.html)
+- [Python 2.7.6](https://www.python.org/download/releases/2.7.6/)
+- [ipywidgets 5.1.1](https://ipywidgets.readthedocs.io/en/latest/user_install.html#with-pip)
 
 The following python modules will have to be imported for the notebook to work correctly:
 
@@ -22,7 +22,7 @@ The following python modules will have to be imported for the notebook to work c
 ##Pre-requisites  
 - Execution of the oni-oa process for DNS 
 - Score a set connections in the Edge Investigation Notebook
-- Correct setup of the duxbay.conf file. You can check this [link](https://github.com/Open-Network-Insight/open-network-insight/wiki/Edit%20Solution%20Configuration) 
+- Correct setup of the duxbay.conf file. [Read more](https://github.com/Open-Network-Insight/open-network-insight/wiki/Edit%20Solution%20Configuration) 
 
 
 ##Additional Configuration  

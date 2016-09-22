@@ -1,31 +1,22 @@
-###GTI (gti)
-DNS Global Threat Intelligence module.
-
-This module is called in dns_oa.py for IP reputation check. The GTI module makes use of two third-party services, McAfee GTI and Facebook ThreatExchange. Each of these services are represented by a sub-module in this project, McAfee GTI is implemented by sub-module gti and Facebook ThreatExchange by sub-module fb. For more information see [Folder Structure](https://github.com/Open-Network-Insight/oni-oa/blob/1.0.1-dns_oa_readme_creation/ipython/dns/README.md#folder-structure).
-
-## How to implement a new reputation service for DNS OA
-
-DNS GTI comes with two sub-modules and they correspond to the reputation services we are supporting by default.
-  - gti: implements logic to call and return results from McAfee reputation service.
-  - fb: implements logic to call and return results from facebook ThreatExchange reputation service.
+###Reputation
+This section describes the functionality of the current reputation service modules and how you can implement your own. 
 
  It's possible to add new reputation services by implementing a new sub-module, to do that developers should follow
  these steps:
 
-1. Map the responses of the new reputation service with DNS reputation table.
+1. Map the responses of the new reputation service, according to this reputation table.
 
-    | Key  | Value |
-    |---|---|
+    | Key | Value |
+    |-----|-------|
     |UNVERIFIED|-1|
     |NONE      |0 |
     |LOW       |1 |
     |MEDIUM    |2 |
     |HIGH      |3 |
 
-2. Add a new configuration for the new reputation service in gti_config.json.
+2. Add a new key for the new reputation service in gti_config.json.
 
-        {
-			"targe_columns" :  [3],
+        { 
 			"gti" : { …
 			},
 			"fb" : {…
@@ -36,11 +27,11 @@ DNS GTI comes with two sub-modules and they correspond to the reputation service
 		}
 3. Create file structure for new sub-module.
 
-        [solution-user@edge-server]$ cd ~/ipython/dns/gti/
+        [solution-user@edge-server]$ cd ~/oni-oa/components/reputation/
         [solution-user@edge-server]$ mkdir mynewreputationservice
         [solution-user@edge-server]$ cd mynewreputationservice
 
-4. Add _ _init_ _.py file.
+4. Create an empty _ _init_ _.py file.
 5. Add a new file *reputation.py*. Each sub-module should contain a reputation.py file.
 6. Write your code in reputation.py. The code should contain the follow structure:
 

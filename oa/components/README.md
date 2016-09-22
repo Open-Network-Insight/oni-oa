@@ -1,4 +1,4 @@
-# COMPONENTS
+# Operational Analytics Components 
 
 This document will explain the necessary steps to configure the oni-oa components.
 
@@ -27,7 +27,7 @@ This document will explain the necessary steps to configure the oni-oa component
 
 
 ###Data
-Data source module
+_Data source module._
 
 This module needs to be configured correctly to avoid errors during the oni-oa execution. Here you need to select the correct database engine to obtain the correct results while creating additional details files.
 Currently oni-oa is prepared to work with Impala, but you can always configure any other database engine and make the corresponding updates in the code.
@@ -46,9 +46,9 @@ You need to update the _engine.json_ file accordingly:
         }
 
 Where:
-- database engine: Whichever database engine you have installed and configured in your cluster to work with ONI. i.e. "Impala" or "Hive".
+- <database engine>: Whichever database engine you have installed and configured in your cluster to work with ONI. i.e. "Impala" or "Hive".
 For this key, the value you enter needs to match exactly with one of the following keys, where you'll need to add the corresponding node name. 
-- node: The node name in your cluster where you have the database service running. 
+- <node>: The node name in your cluster where you have the database service running. 
 
 Example:
 
@@ -62,7 +62,7 @@ Example:
 
 
 ###Reputation
-Reputation check module.
+_Reputation check module._
 
 This module is called during oni-oa execution to check the reputation for any given IP, DNS name or URI (depending on the pipeline). The reputation module makes use of two third-party services, McAfee GTI and Facebook ThreatExchange. 
 Each of these services are represented by a sub-module in this project, McAfee GTI is implemented by sub-module gti and Facebook ThreatExchange by sub-module fb. For more information see Folder Structure section.
@@ -77,6 +77,7 @@ Each of these services are represented by a sub-module in this project, McAfee G
 **Enable/Disable GTI service**
 
 It's possible to disable any of the reputation services mentioned above, all it takes is to remove the configuration for the undesired service in gti_config.json. To learn more about it, see the section below.
+To add a different reputation service, you can read all about it [here](https://github.com/Open-Network-Insight/oni-oa/tree/1.1/oa/components/reputation)
 
 **Configuration**
 
@@ -124,7 +125,7 @@ It's possible to disable any of the reputation services mentioned above, all it 
         - app_secret: App secret to connect to ThreatExchange service.
 
 ###IANA
-Internet Assigned Numbers Authority codes translation module.
+_Internet Assigned Numbers Authority codes translation module._
 
 **Configuration**
 
@@ -146,7 +147,7 @@ default location, your configuration file should look like this:
 
 
 ###Network Context (nc)
-Network Context module.
+_Network Context module._
 
 **Pre-requisites**
 
@@ -175,11 +176,11 @@ configuration file should look like this:
 
          
 ###Geoloc
-Geolocation module.
+_Geolocation module._
 
 This is an optional functionality you can enable / disable depending on your preferences.
 
-**Pre-requisites**
+**Pre-requisites**  
 To start using this module, you need to include a comma separated file containing the geolocation for most (or all) IPs.
 To learn more about the expected schema for this file or where to find a full geolocation db, please refer 
 to the  [_context_](https://github.com/Open-Network-Insight/oni-oa/blob/1.1/oa/context/README.md) documentation  
