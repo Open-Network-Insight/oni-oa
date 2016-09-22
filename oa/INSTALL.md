@@ -3,11 +3,12 @@
 ONI Operational Analytics (OA) is a set of python modules and utilities with routines to extract and transform data, loading the results into output files.
 OA represents the last step before users can score connections and analyze data in the UI.
 
-OA scripts are very similar for the different data types supported however the code is divided into 3 
-main modules due to differences on the data model and what context information is required for each data type.
-
 The three supported data types are Flow, DNS and Proxy. For more information about the type of information and insights
 that can be found for each data source please visit ONI [wiki](https://github.com/Open-Network-Insight/open-network-insight/wiki).
+
+OA scripts are very similar for the different data types supported however the code is divided into 3 
+main modules due to differences in the data model and what context information is required for each data type.
+
 
 ## Folder Structure
 
@@ -39,7 +40,7 @@ In order to execute this process there are a few prerequisites:
  2.  Components configuration. To find about how to configure each of the extra components included in this project
         visit oa/components/[README.md](https://github.com/Open-Network-Insight/oni-oa/tree/1.1/oa/components).
         These components are required to add context or extract additional information that is going to complement your 
-        original data. Each of this components are independent from each other. Based on the data type some components are 
+        original data. Each of these components are independent from each other. Based on the data type some components are 
         required or not.
  3. oni-ml results. Operational Analytics works and transforms Machine Learning results. The implementation of Machine Learning
         in this project is through [oni-ml](https://github.com/Open-Network-Insight/oni-ml). Although the Operational Analytics
@@ -54,7 +55,7 @@ In order to execute this process there are a few prerequisites:
 ##Operational Analytics installation and usage
 ####Installation
  
- OA installation consists on the configuration of extra modules or components and creation of a set of files.
+ OA installation consists of the configuration of extra modules or components and creation of a set of files.
  Depending on the data type that is going to be processed some components are required and other components are not.
  If users are planning to analyze the three data types supported (Flow, DNS and Proxy) then all components should be configured.
 
@@ -79,9 +80,9 @@ In order to execute this process there are a few prerequisites:
             10.192.1.1,     MySystem
             
             
- 3. oni-setup project contains scripts to install hive database but also includes the main configuration file for this tool.
-     That file is called duxbay.conf which contains different variables that the user can set up to customize their installation, in fact, some
-     of them are required to be updated in order to have oni-ml and oni-oa working.
+ 3. The oni-setup project contains scripts to install the hive database and also includes the main configuration file for this tool.
+     The main file is called duxbay.conf and it which contains different variables that the user can set up to customize their installation. Some variables are
+     must be updated in order to have oni-ml and oni-oa working.
      
      To run the OA process it's required to install oni-setup. If it's already installed just make sure the following configuration are set up in duxbay.conf file.
     
@@ -118,6 +119,7 @@ In order to execute this process there are a few prerequisites:
            OA process for the corresponding data type.
         -l Data limit. Usually ML results contains thousands of records. With "Data limit" OA will process top K results. 
 
+ The execution time of OA varies based on the number of records being processed and the data type.
  Depending on the number of records being processed and the data type, OA can take long or short time to execute.
  When the process completes you can go to oni-oa/data/\<data type> folder and check the results.
  

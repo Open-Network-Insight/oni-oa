@@ -1,15 +1,11 @@
 # **Flow OA**
-
-oni-oa sub-module for Open Network Insight, version 1.1
-
-Flow sub-module will extract and transform Flow data already ranked by oni-ml and will load into csv files for presentation layer.
+ 
+Flow sub-module extracts and transforms Flow data already ranked by oni-ml and will load into csv files for presentation layer.
 
 ## **Flow OA Components**
 
 ### flow_oa.py
-Flow oni-oa main script  
-
-It executes the following steps:
+Flow oni-oa main script executes the following steps:
 
     1. Creates required folder structure if does not exist for output files. This is: 
 		
@@ -26,12 +22,13 @@ It executes the following steps:
 
 **Dependencies**
 
--  python 2.7. [Python 2.7](https://www.python.org/download/releases/2.7/) should be installed in the node running Flow OA.
+- [Python 2.7](https://www.python.org/download/releases/2.7/) should be installed in the node running Flow OA.
 
 The following files and modules are already included but some of them require configuration. See the following sections for more information:
-- [components/nc](https://github.com/Open-Network-Insight/oni-oa/tree/1.1/oa/components)
-- [components/geoloc](https://github.com/Open-Network-Insight/oni-oa/tree/1.1/oa/components)
-- [components/reputation](https://github.com/Open-Network-Insight/oni-oa/tree/1.1/oa/components)
+- [components/iana](https://github.com/Open-Network-Insight/oni-oa/blob/1.1/oa/components#IANA-iana)
+- [components/data](https://github.com/Open-Network-Insight/oni-oa/blob/1.1/oa/components#data)
+- [components/nc](https://github.com/Open-Network-Insight/oni-oa/blob/1.1/oa/components#network-context-nc)
+- [components/reputation](https://github.com/Open-Network-Insight/oni-oa/blob/1.1/oa/components/reputation)
 - flow_config.json
 
 The following files are not included:
@@ -40,16 +37,18 @@ The following files are not included:
 
 **Prerequisites**
 
-Before running Flow OA users need to configure components for the first time. It is important to mention that configuring these components make them work for other data sources as DNS and Proxy.
-- Configure reputation module components/reputation
-- Configure network context module components/nc
-- Configure geo localization module components/geo
-- Create iploc.csv file context/iploc.csv
-- Generate ML results for Flow
+Before running Flow OA users need to configure components for the first time. It is important to mention that configuring these components make them work for other data sources as DNS and Proxy.  
+
+- Configure database engine
+- Configure GTI services
+- Configure IANA service
+- Configure Network Context service
+- Configure Geolocation service
+- Generate ML results for Flow  
 
 **Output**
 
-- flow_scores.csv. Main results file for Flow OA. This file will contain suspicious connects information and it's limited to the number of rows the user selected when running [oa/start_oa.py](https://github.com/Open-Network-Insight/oni-oa/tree/1.1/oa).
+- flow_scores.csv. Main results file for Flow OA. This file will contain suspicious connects information and it's limited to the number of rows the user selected when running [oa/start_oa.py](https://github.com/Open-Network-Insight/oni-oa/blob/1.1/oa/INSTALL.md#usage).
        
         Schema with zero-indexed columns:
         0.   sev:            int
