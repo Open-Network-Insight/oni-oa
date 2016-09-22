@@ -1,16 +1,12 @@
 # PROXY
 
-oni-oa sub-module for Open-Network-Insight, version 1.1
-
 Proxy sub-module will extract and transform Proxy data already ranked by oni-ml and will load into csv files for presentation layer.
 
 ## Proxy Components
 
 ###proxy_oa.py
 
-Proxy oni-oa main script.
- 
-It executes the following steps:
+Proxy oni-oa main script executes the following steps:
 
 		1. Creates the right folder structure to store the data and the ipython notebooks. This is: 
 		
@@ -43,18 +39,18 @@ It executes the following steps:
 
 **Dependencies**
 
-- python 2.7. [Python 2.7](https://www.python.org/download/releases/2.7/) should be installed in the node running Proxy OA. 
+- [Python 2.7](https://www.python.org/download/releases/2.7/) should be installed in the node running Proxy OA. 
 
 	The following modules are already included but some of them require configuration. Please refer to the _components_ documentation for more information. 
-- [components/iana](https://github.com/Open-Network-Insight/oni-oa/blob/1.1/oa/proxy#IANA-iana)
-- [components/data](https://github.com/Open-Network-Insight/oni-oa/blob/1.1/oa/proxy#data)
-- [components/nc](https://github.com/Open-Network-Insight/oni-oa/blob/1.1/oa/proxy#Network-Context-nc)
-- [components/reputation](https://github.com/Open-Network-Insight/oni-oa/blob/1.1/oa/components#Reputation)
+- [components/iana](https://github.com/Open-Network-Insight/oni-oa/blob/1.1/oa/components#IANA-iana)
+- [components/data](https://github.com/Open-Network-Insight/oni-oa/blob/1.1/oa/components#data)
+- [components/nc](https://github.com/Open-Network-Insight/oni-oa/blob/1.1/oa/components#network-context-nc)
+- [components/reputation](https://github.com/Open-Network-Insight/oni-oa/blob/1.1/oa/components/reputation)
 - proxy_conf.json
 
 **Prerequisites**
 
-Before running Proxy OA, users need to configure components for the first time. It is important to mention that configuring these components make them work for other data sources as Flow and DNS.
+Before running Proxy OA, users need to configure components for the first time. It is important to mention that configuring these components make them work for other data sources as Flow and DNS.  
 
 - Configure database engine
 - Configure Reputation services
@@ -64,7 +60,7 @@ Before running Proxy OA, users need to configure components for the first time. 
 
 **Output**
 
-- proxy_scores.tsv: Main results file for Proxy OA. This file is tab separated and it's limited to the number of rows the user selected when running [oa/start_oa.py](https://github.com/Open-Network-Insight/oni-oa/tree/1.1/oa).
+- proxy_scores.tsv: Main results file for Proxy OA. This file is tab separated and it's limited to the number of rows the user selected when running [oa/start_oa.py](https://github.com/Open-Network-Insight/oni-oa/blob/1.1/oa/INSTALL.md#usage).
 
 		Schema with zero-indexed columns: 
 

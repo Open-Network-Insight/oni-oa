@@ -1,9 +1,9 @@
 #PROXY Edge Investigation Notebook
 
 ###Dependencies
-- iPython == 3.2.1 [check documentation](https://ipython.org/ipython-doc/3/index.html)
-- Python 2.7.6 
-- ipywidgets
+- [iPython == 3.2.1](https://ipython.org/ipython-doc/3/index.html)
+- [Python 2.7.6](https://www.python.org/download/releases/2.7.6/)
+- [ipywidgets 5.1.1](https://ipywidgets.readthedocs.io/en/latest/user_install.html#with-pip)
 
 The following python modules will be imported for the notebook to work correctly:    
 
@@ -20,8 +20,8 @@ The following python modules will be imported for the notebook to work correctly
 
 ###Pre-requisites
 - Execution of the oni-oa process for Proxy
-- Correct setup the duxbay.conf file
-- Have a public key authentication between the current UI node and the ML node. You can follow these [instructions](https://github.com/Open-Network-Insight/open-network-insight/wiki/Configure%20User%20Accounts#configure-user-accounts)
+- Correct setup the duxbay.conf file [Read more](https://github.com/Open-Network-Insight/open-network-insight/wiki/Edit%20Solution%20Configuration)
+- Have a public key created between the current UI node and the ML node. [Read more](https://github.com/Open-Network-Insight/open-network-insight/wiki/Configure%20User%20Accounts#configure-user-accounts)
 
 
 ###Data
