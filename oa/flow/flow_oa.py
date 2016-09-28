@@ -39,7 +39,7 @@ class OA(object):
         self._ipynb_path = None
         self._ingest_summary_path = None
         self._flow_scores = []
-        self._results_delimiter = ','
+        self._results_delimiter = '\t'
 
         # get app configuration.
         self._oni_conf = Util.get_oni_conf()  
