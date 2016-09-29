@@ -164,7 +164,7 @@ class OA(object):
             dst_ip_index = self._conf["flow_score_fields"]["dstIP"]              
             
             # add networkcontext per connection.
-            ip_internal_ranges = filter(None,nc_ranges[0])    
+            ip_internal_ranges = filter(None,nc_ranges)     
             self._logger.info("Adding networkcontext to suspicious connections.")
             self._flow_scores = [ conn + [ self._is_ip_internal(conn[src_ip_index],ip_internal_ranges)]+[ self._is_ip_internal(conn[dst_ip_index],ip_internal_ranges)] for conn in flow_scores]
            
@@ -176,10 +176,14 @@ class OA(object):
         self._flow_scores.insert(0,flow_headers)
 
     def _is_ip_internal(self,ip, ranges):
+        result = 0
+        for row in ranges:
+            if Util.ip_to_int(ip) >= row[0] and Util.ip_to_int(ip) <= row[1]: 
+                result = 1
+                break
+        return result
 
-        if Util.ip_to_int(ip) >= ranges[0] and Util.ip_to_int(ip) <= ranges[1]: return 1
-        return 0
-
+        
     def _add_geo_localization(self):
 
         # use ipranges to see if the IPs are internals.         
