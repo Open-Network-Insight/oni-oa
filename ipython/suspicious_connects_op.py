@@ -31,11 +31,6 @@ def main():
     spath = spath.format(userDir, sdate)
     scores_full_path = spath + scores_f
 
-    impala_cmd = "impala-shell -i {0} -q 'INVALIDATE METADATA {1}.flow'".format(impala_node,db)
-    check_output(impala_cmd,shell=True)
-    
-    impala_cmd = "impala-shell -i {0} -q 'REFRESH {1}.flow'".format(impala_node,db)
-    check_output(impala_cmd,shell=True)
 
     print "Creating Edge Files..."
     conns_list = []
@@ -69,14 +64,14 @@ def main():
         hr = conn[3]
         mm = conn[4]
 
-        impala_query = ("SELECT treceived as tstart,sip as srcip,dip as dstip,sport as sport,dport as dport,proto as proto,flag as flags,stos as TOS,ibyt as bytes,ipkt as pkts,input as input, output as output,rip as rip  from {0}.{1} where ((sip=\"{2}\" AND dip=\"{3}\") or (sip=\"{3}\" AND dip=\"{2}\")) AND m={4} AND d={5} AND h={6} AND trminute={7} order by tstart limit 100").format(db,table,sip,dip,mh,dy,hr,mm)
+        query = (" \"set hive.cli.print.header=true; SELECT treceived as tstart,sip as srcip,dip as dstip,sport as sport,dport as dport,proto as proto,flag as flags,stos as TOS,ibyt as bytes,ipkt as pkts,input as input, output as output,rip as rip  from {0}.{1} where ((sip=\"{2}\" AND dip=\"{3}\") or (sip=\"{3}\" AND dip=\"{2}\")) AND m={4} AND d={5} AND h={6} AND trminute={7} SORT by tstart limit 100").format(db,table,sip,dip,mh,dy,hr,mm)
 
         edge_file = "{0}edge-{1}-{2}-{3}-{4}.tsv".format(spath,sip.replace(".","_"),dip.replace(".","_"),hr,mm)
-        impala_cmd = "impala-shell -i {0} --print_header -B --output_delimiter='\\t' -q '{1}' -o {2}".format(impala_node,impala_query,edge_file)
+        query_cmd = "hive -S -e {0} > {1}" .format(query, edge_file)
 
         print 'processing line ',rowct
-        print impala_cmd
-        check_output(impala_cmd, shell=True)
+        print query_cmd
+        check_output(query_cmd, shell=True)
 
     print "Done Creating Edge Files..."
 
@@ -122,13 +117,13 @@ def main():
                 chord_file = "{0}chord-{1}.tsv".format(spath,ip.replace(".","_"))
                 dstip_list = dstip[:-1]
                 
-                impala_query = ("SELECT sip as srcip, dip as dstip, MAX(ibyt) as maxbyte, AVG(ibyt) as avgbyte, MAX(ipkt) as maxpkt, AVG(ipkt) as avgpkt from {0}.{1} where m={2} and d={3} and ( (sip='{4}' and dip IN({5})) or (sip IN({5}) and dip='{4}') ) group by sip,dip").format(db,table,mh,dy,ip,dstip_list)
+                query = ("\"set hive.cli.print.header=true; SELECT sip as srcip, dip as dstip, MAX(ibyt) as maxbyte, AVG(ibyt) as avgbyte, MAX(ipkt) as maxpkt, AVG(ipkt) as avgpkt from {0}.{1} where m={2} and d={3} and ( (sip='{4}' and dip IN({5})) or (sip IN({5}) and dip='{4}') ) group by sip,dip").format(db,table,mh,dy,ip,dstip_list)
 
-                impala_cmd = "impala-shell -i {0} --print_header -B --output_delimiter='\\t' -q \"{1}\" -o {2}".format(impala_node,impala_query,chord_file)
+                query_cmd = "hive -S -e {0} > {1}".format(query,chord_file)
                 print 'processing line ',ipct
-                print impala_cmd
+                print query_cmd
 
-                check_output(impala_cmd,shell=True)
+                check_output(query_cmd,shell=True)
 
         if ipct == topct:
             break
